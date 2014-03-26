@@ -1,13 +1,25 @@
+%{
+	/*copy to head of lexical.c*/
+
+	int chars = 0;
+	int words = 0;
+	int lines = 0;
+%}
+
+
 digit [0-9]
 letter_ [_a-zA-Z]
 
 %%
 
-{digit}* 	{
-				printf("Integer value %d\n", atoi(yytext));
-			}
+/*INT*/
+
+/*FLOAT*/
+
+/*ID*/
 
 %%
+	/*copy to tail of lexical.c*/
 
 int main(int argc, char** argv){
 
@@ -19,5 +31,8 @@ int main(int argc, char** argv){
 	}
 
 	while(yylex() != 0);
+
+	printf("Scanner finished!");
+
 	return 0;
 }
