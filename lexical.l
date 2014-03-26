@@ -1,14 +1,19 @@
 digit [0-9]
+letter_ [_a-zA-Z]
 
-letter_ [_a-zA-Z
 %%
+
+{digit}* 	{
+				printf("Integer value %d\n", atoi(yytext));
+			}
+
 %%
 
 int main(int argc, char** argv){
 
 	if( argc > 1){
 		if(!(yyin = fopen(argv[1], "r"))){
-			perror("Cannot open file %s.\n", argv[1]);
+			perror(argv[1]);
 			return 1;
 		}
 	}
