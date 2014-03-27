@@ -1,6 +1,13 @@
 
 %{
 	#include "syntax.h"
+
+	int yycolumn = 1;
+
+	/*#define YY_USER_ACTION	yylloc.first_line = yylloc.last_line = yylineno; \
+		yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
+		yycolumn += yyleng;*/
+
 %}
 
 %option yylineno
@@ -41,42 +48,44 @@ WHILE 		while
 %%
 
 {INT}		{ 
-				yylval = atoi(yytext);
+				//yylval = atoi(yytext);
+				//yylloc.first_column = 1;
 				return INT;
 	 		}
 
-{FLOAT}		{ printf("Float %f ", atof(yytext)); }
+{FLOAT}		{ return FLOAT; }
 
-{SEMI}		{ printf("SEMI \"%s\" ", yytext);	}
-{COMMA}		{ printf("COMMA \"%s\" ", yytext); }								
-{ASSIGNOP}	{ printf("ASSIGNOP \"%s\" ", yytext);	}
-{RELOP}		{ printf("RELOP \"%s\" ", yytext); }
-{PLUS}		{ printf("PLUS \"%s\" ", yytext); }
-{MINUS}		{ printf("MINUS \"%s\" ", yytext); }
-{STAR}		{ printf("STAR \"%s\" ", yytext); }
-{DIV}		{ printf("DIV \"%s\" ", yytext); }
-{AND}		{ printf("AND \"%s\" ", yytext); }
-{OR}		{ printf("OR \"%s\" ", yytext); }
-{DOT}		{ printf("DOT \"%s\" ", yytext); }
-{NOT}		{ printf("NOT \"%s\" ", yytext); }
-{TYPE}		{ printf("TYPE \"%s\" ", yytext); }
-{LP}		{ printf("LP \"%s\" ", yytext); }
-{RP}		{ printf("RP \"%s\" ", yytext); }
-{LB}		{ printf("LB \"%s\" ", yytext); }
-{RB}		{ printf("RB \"%s\" ", yytext); }
-{LC}		{ printf("LC \"%s\" ", yytext); }
-{RC}		{ printf("RC \"%s\" ", yytext); }
-{STRUCT}	{ printf("STRUCT \"%s\" ", yytext); }
-{RETURN}	{ printf("RETURN \"%s\" ", yytext); }
-{IF}		{ printf("IF \"%s\" ", yytext); }
-{ELSE}		{ printf("ELSE \"%s\" ", yytext); }
-{WHILE}		{ printf("WHILE \"%s\" ", yytext); }
+{SEMI}		{ return SEMI; }
+{COMMA}		{ return COMMA; }								
+{ASSIGNOP}	{ return ASSIGNOP; }
+{RELOP}		{ return RELOP; }
+{PLUS}		{ return PLUS; }
+{MINUS}		{ return MINUS; }
+{STAR}		{ return STAR; }
+{DIV}		{ return DIV; }
+{AND}		{ return AND; }
+{OR}		{ return OR; }
+{DOT}		{ return DOT; }
+{NOT}		{ return NOT; }
+{TYPE}		{ return TYPE; }
+{LP}		{ return LP; }
+{RP}		{ return RP; }
+{LB}		{ return LB; }
+{RB}		{ return RB; }
+{LC}		{ return LC; }
+{RC}		{ return RC; }
+{STRUCT}	{ return STRUCT; }
+{RETURN}	{ return RETURN; }
+{IF}		{ return IF; }
+{ELSE}		{ return ELSE; }
+{WHILE}		{ return WHILE; }
 
-{ID}		{ printf("ID \"%s\" ", yytext); }
+{ID}		{ return ID; }
 
 {ws}		{ ; }
-{enter}		{ printf("End of line %d\n", yylineno - 1); }
+{enter}		{ yycolumn = 1; }
 
-.			{ printf("Error Type 1 at line %d: Undefined Characters \"%s\"", yylineno, yytext); }
+.			{ printf("Error type 1 at line %d column %d: Mysterious character '%s'\n", yylineno, yycolumn, yytext); }
 
 %%
+

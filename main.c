@@ -1,6 +1,6 @@
 #include <stdio.h>
-
-extern FILE* yyin;
+#include <stdlib.h>
+#include "lexical.c"
 
 int main(int argc, char** argv){
 
@@ -14,13 +14,12 @@ int main(int argc, char** argv){
 		return 1;
 	}
 	
-
-	/*
 	yyrestart(f);
-	yyparse();*/
-
-	yyin = f;
-	yylex();
+	yyparse();
 
 	return 0;
+}
+
+yyerror(char *msg){
+	fprintf(stderr, "Error type 2 at line %d column %d: %s \"%s\"\n", yylineno, yycolumn,msg, yytext);
 }
