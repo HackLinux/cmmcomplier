@@ -1,4 +1,8 @@
 
+%{
+	#include "syntax.h"
+%}
+
 %option yylineno
 
 digit 		[0-9]
@@ -36,7 +40,10 @@ WHILE 		while
 
 %%
 
-{INT}		{ printf("Integer %d ", atoi(yytext)); }
+{INT}		{ 
+				yylval = atoi(yytext);
+				return INT;
+	 		}
 
 {FLOAT}		{ printf("Float %f ", atof(yytext)); }
 
@@ -70,24 +77,6 @@ WHILE 		while
 {ws}		{ ; }
 {enter}		{ printf("End of line %d\n", yylineno - 1); }
 
-
 .			{ printf("Error Type 1 at line %d: Undefined Characters \"%s\"", yylineno, yytext); }
 
 %%
-	/*copy to tail of lexical.c*/
-
-int main(int argc, char** argv){
-
-	if( argc > 1){
-		if(!(yyin = fopen(argv[1], "r"))){
-			perror(argv[1]);
-			return 1;
-		}
-	}
-
-	yylex();
-
-	printf("Scanner finished!");
-
-	return 0;
-}

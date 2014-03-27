@@ -1,8 +1,9 @@
 The 1st experiment of Compliers
 
-Lexical and Syntax analysis using Flex and Bison
+C-- lexical and syntax analysis using Flex and Bison
 
-Binary "scanner" is the lexical analyzer and "parser" is the syntax analyzer.
+Usage:
+	./parser test.cmm
 
 
 

@@ -1,16 +1,14 @@
 
+all: syntax.c lexical.c
 
-scanner: lexical.c
-	gcc lexical.c -lfl -o scanner 
+syntax.c: syntax.y
+	bison -o syntax.c -d syntax.y  
 
-lex.yy.c: lexical.l
-	flex lexical.l -o lexical.c
+lexical.c: lexical.l
+	flex -o lexical.c lexical.l 
 
-.PHONY:clean scan
+.PHONY:clean
 
 clean:
-	rm -f lexical.c scanner 
+	rm -f lexical.c syntax.c syntax.h
 	rm -f *~
-
-scan: scanner
-	./scanner test.cmm
