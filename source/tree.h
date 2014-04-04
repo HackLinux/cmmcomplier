@@ -3,8 +3,6 @@
 
 #include "bool.h"
 
-#define NODE_SIZE sizeof(struct tree_node)
-
 union value{
 	int int_value;
 	float float_value;
@@ -32,4 +30,8 @@ struct tree_node *build_a_production(int, char *, int, ...);
 /*visitors*/
 void preorder_traverse(struct tree_node *root, int level);
 void visit(struct tree_node *n, int level);
+
+/*destructors*/
+void destroy_tree(struct tree_node *);
+void destroy_node(struct tree_node *);
 #endif

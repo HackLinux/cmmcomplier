@@ -14,6 +14,6 @@ syntax.c: syntax.y
 
 .PHONY:clean
 clean:
-	rm -f lexical.c syntax.c syntax.h
+	rm -f lexical.c syntax.c syntax.h syntax.output
 	rm -f parser
 	rm -f *~

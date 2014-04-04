@@ -13,7 +13,7 @@ create_node(bool is_token, int lineno, char *unit_name){
 
 	assert(strlen(unit_name) >= 2);
 	assert(strlen(unit_name) < 20);
-	struct tree_node *node = (struct tree_node *)malloc(NODE_SIZE);
+	struct tree_node *node = (struct tree_node *)malloc(sizeof(struct tree_node));
 	node -> is_token = is_token;
 	node -> lineno = lineno;
 	node -> unit_value = NULL;
@@ -72,11 +72,12 @@ build_a_production(int lineno, char *left_name, int right_num, ...){
 	int i;
 	va_list ap;
 	struct tree_node *pnode;
+	/*create the non-terminal node on the left og the production*/
 	struct tree_node *new_node = create_node(false, lineno,left_name);	// create the left non-terminal
 	if(right_num == 0)
 		return new_node;
 
-	/*hanging up all childs*/
+	/*hanging up all childs on the right of the production*/
 	va_start(ap, right_num);
 	pnode = va_arg(ap, struct tree_node*);
 	new_node -> child = pnode;
@@ -130,4 +131,20 @@ visit(struct tree_node *n, int level){
 			break;
 		default: assert(0);
 	}
+}
+
+void
+destroy_tree(struct tree_node *root){
+	/*post order*/
+	struct tree_node *child;
+	for (child = root -> child; child != NULL; child = child -> sibling)
+		destroy_tree(child);
+	destroy_node(root);
+
+}
+
+void
+destroy_node(struct tree_node *n){
+	free(n -> unit_value);
+	free(n);
 }

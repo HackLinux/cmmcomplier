@@ -48,6 +48,7 @@
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
 										preorder_traverse($$, 0);
+										destroy_tree($$);
 									}
 ExtDefList	:	ExtDef ExtDefList	{	$$ = build_a_production(@$.first_line, "ExtDefList", 2, $1, $2);
 									}

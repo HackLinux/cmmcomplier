@@ -21,5 +21,5 @@ int main(int argc, char** argv){
 }
 
 yyerror(char *msg){
-	fprintf(stderr, "Error type 2 at line %d column %d: %s \"%s\"\n", yylineno, yycolumn,msg, yytext);
+	fprintf(stderr, "Error type 2 at line %d: %s \n", yylineno - 1,msg);
 }
