@@ -56,10 +56,10 @@ create_type_node(int lineno, char *unit_name, char* type_name){
  * use this function in syntax.y like below:
  		build_a_production(@$.start_line, "Program", 1, $1);
  		build_a_production(@$.start_line, "EXP", 3, $1, S2, S3);
- *@param lineno:		line number of the nonterminal on the left of the production
- *@param left_name:		name of the left nonterminal on the left of the production
- *@param right_num:		number of the symbols on right part of the production, no less than 0
- *@param ...:  			variable parameters, each points to a symbol on right part of the production 
+ *@param lineno:	line number of the nonterminal on the left of the production
+ *@param left_name:	name of the left nonterminal on the left of the production
+ *@param right_num:	number of the symbols on right part of the production, no less than 0
+ *@param ...:  		variable parameters, each points to a symbol on right part of the production 
  *@return : the pointer of the left non-terminal node */
 struct tree_node*
 build_a_production(int lineno, char *left_name, int right_num, ...){
@@ -101,20 +101,29 @@ preorder_traverse(struct tree_node *root, int level){
 
 void 
 visit(struct tree_node *n, int level){
-	while(level -- > 0)
-		printf("  ");
-	printf("%s", n -> unit_name);
-	if(!n -> is_token){
-		printf(" (%d)\n", n -> lineno);
+	switch(n -> is_token){
+		case true: /*terminals*/
+			while(level -- > 0)
+				printf("  ");
+			printf("%s", n -> unit_name);
+			if(strcmp(n -> unit_name, "INT") == 0)
+				printf(": %d\n", n -> v.int_value);
+			else if(strcmp(n -> unit_name, "FLOAT") == 0)
+				printf(": %f\n", n -> v.float_value);
+			else if(strcmp(n -> unit_name, "ID") == 0)
+				printf(": %s\n", n -> id_name);
+			else if(strcmp(n -> unit_name, "TYPE") == 0)
+				printf(": %s\n", n -> id_name);
+			else
+				printf("\n");
+			break;
+		case false: /*non terminals*/
+			if( n -> child == NULL) /*empty node*/
+				return;
+			while(level -- > 0)
+				printf("  ");
+			printf("%s (%d)\n", n -> unit_name, n -> lineno);
+			break;
+		default: assert(0);
 	}
-	else if(strcmp(n -> unit_name, "INT") == 0)
-		printf(": %d\n", n -> v.int_value);
-	else if(strcmp(n -> unit_name, "FLOAT") == 0)
-		printf(": %f\n", n -> v.float_value);
-	else if(strcmp(n -> unit_name, "ID") == 0)
-		printf(": %s\n", n -> id_name);
-	else if(strcmp(n -> unit_name, "TYPE") == 0)
-		printf(": %s\n", n -> id_name);
-	else
-		printf("\n");
 }
