@@ -65,7 +65,6 @@ WHILE 		while
 			}								
 {ASSIGNOP}	{ 	yylval.pnode = create_node(true, yylineno, "ASSIGNOP");
 				return ASSIGNOP; 
-			
 			}
 {RELOP}		{ 	yylval.pnode = create_node(true, yylineno, "RELOP");
 				return RELOP; 
@@ -130,7 +129,7 @@ WHILE 		while
 {WHILE}		{ 	yylval.pnode = create_node(true, yylineno, "WHILE");
 				return WHILE; 
 			}
-{ID}		{ 	if(strlen(yytext) >= 20)
+{ID}		{ 	if(strlen(yytext) >= 32)
 					 printf("Error type 1 at line %d column %d: ID '%s' too long.\n", yylineno, yycolumn, yytext); 
 				yylval.pnode = create_id_node(yylineno, "ID", yytext);
 				return ID; 

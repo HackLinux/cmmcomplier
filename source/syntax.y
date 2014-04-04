@@ -28,6 +28,11 @@
 %type <pnode> DefList Def DecList Dec
 %type <pnode> Exp Args
 
+/* priority and associativity*/
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
+
 %% 
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
@@ -106,7 +111,8 @@ Stmt 		:	Exp SEMI 					{	$$ = build_a_production(@$.first_line, "Stmt", 2, $1, $
 											}
 			|	RETURN Exp SEMI				{	$$ = build_a_production(@$.first_line, "Stmt", 3, $1, $2, $3);
 											}
-			|	IF LP Exp RP Stmt 			{	$$ = build_a_production(@$.first_line, "Stmt", 5, $1, $2, $3, $4, $5);
+			|	IF LP Exp RP Stmt 			%prec LOWER_THAN_ELSE
+											{	$$ = build_a_production(@$.first_line, "Stmt", 5, $1, $2, $3, $4, $5);
 											}
 			|	IF LP Exp RP Stmt ELSE Stmt {	$$ = build_a_production(@$.first_line, "Stmt", 7, $1, $2, $3, $4, $5, $6, $7);
 											}
