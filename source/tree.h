@@ -11,16 +11,25 @@ union value{
 };
 
 /*A node in the syntax tree.
- *Each node describes a token or a non-terminal */
+ *Each node describes a token or a non-terminal 
 struct tree_node {
-	bool is_token;				/*a token(1) or a nonterminal(0)*/
-	int lineno;					/*line number of the token*/
-	char unit_name[20];			/*name of the syntax unit*/
-	union value v;				/*int or float tokens have value*/
-	char id_name[20];			/*id tokens have id name*/
+	bool is_token;				/*a token(1) or a nonterminal(0)
+	int lineno;					/*line number of the token
+	char unit_name[20];			/*name of the syntax unit
+	union value v;				/*int or float tokens have value
+	char id_name[20];			/*id tokens have id name
 	struct tree_node *child;	
 	struct tree_node *sibling;	
 
+};*/
+
+struct tree_node {
+	bool is_token;
+	int lineno;
+	char unit_name[20];
+	void *unit_value;
+	struct tree_node *child;
+	struct tree_node *sibling;
 };
 
 /*creators*/

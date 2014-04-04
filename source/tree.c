@@ -16,7 +16,8 @@ create_node(bool is_token, int lineno, char *unit_name){
 	struct tree_node *node = (struct tree_node *)malloc(NODE_SIZE);
 	node -> is_token = is_token;
 	node -> lineno = lineno;
-	node -> child = NULL;
+	node -> unit_value = NULL;
+ 	node -> child = NULL;
 	node -> sibling = NULL;
 	strcpy(node -> unit_name, unit_name);
 	return node;
@@ -26,24 +27,27 @@ create_node(bool is_token, int lineno, char *unit_name){
 struct tree_node*
 create_int_node(int lineno, char *unit_name, int int_value){
 	struct tree_node *node = create_node(true, lineno, unit_name);
-	node -> v.int_value = int_value;
+	node -> unit_value = malloc(sizeof(int));
+	*(int *)(node -> unit_value) = int_value;
 	return node;
 }
 
 struct tree_node*
 create_float_node(int lineno, char *unit_name, float float_value){
 	struct tree_node *node = create_node(true, lineno, unit_name);
-	node -> v.float_value = float_value;
+	node -> unit_value = malloc(sizeof(float));
+	*(float *)(node -> unit_value) = float_value;
 	return node;
 }
 
 struct tree_node*
 create_id_node(int lineno, char *unit_name, char* id_name){
 	
-	assert(strlen(id_name) < 20);	/*need modify*/
+	assert(strlen(id_name) < 32);	/*need modify*/
 
 	struct tree_node *node = create_node(true, lineno, unit_name);
-	strcpy(node -> id_name, id_name);
+	node -> unit_value = malloc(strlen(id_name));
+	strcpy((char *)node -> unit_value, id_name);
 	return node;
 }
 
@@ -107,13 +111,13 @@ visit(struct tree_node *n, int level){
 				printf("  ");
 			printf("%s", n -> unit_name);
 			if(strcmp(n -> unit_name, "INT") == 0)
-				printf(": %d\n", n -> v.int_value);
+				printf(": %d\n", *(int *)n -> unit_value);
 			else if(strcmp(n -> unit_name, "FLOAT") == 0)
-				printf(": %f\n", n -> v.float_value);
+				printf(": %f\n", *(float *)n -> unit_value);
 			else if(strcmp(n -> unit_name, "ID") == 0)
-				printf(": %s\n", n -> id_name);
+				printf(": %s\n", (char *)n -> unit_value);
 			else if(strcmp(n -> unit_name, "TYPE") == 0)
-				printf(": %s\n", n -> id_name);
+				printf(": %s\n", (char *)n -> unit_value);
 			else
 				printf("\n");
 			break;

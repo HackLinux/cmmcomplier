@@ -11,7 +11,6 @@ parser: lexical.c syntax.c main.c tree.c
 	gcc syntax.c main.c tree.c -ly -lfl -o ../parser
 
 .PHONY:clean
-
 clean:
 	rm -f lexical.c syntax.c syntax.h
 	rm -f *~
