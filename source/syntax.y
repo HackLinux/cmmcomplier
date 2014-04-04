@@ -33,6 +33,17 @@
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
+%left COMMA
+%right ASSIGNOP
+%left OR
+%left AND
+%left RELOP
+%left PLUS MINUS
+%left STAR DIV
+%right NOT
+%left DOT LP RP LB RB
+
+
 %% 
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
