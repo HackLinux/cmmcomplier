@@ -2,6 +2,8 @@
 %{
 	#include <stdio.h>
 	#include "tree.h"
+
+	bool error_flag = false;
 %}
 
 /* declared types */
@@ -43,12 +45,19 @@
 %right NOT
 %left DOT LP RP LB RB
 
+/* destructors
+%destructor {	printf("destroy node %s at %d\n", $$ -> unit_name, $$ -> lineno);
+				destroy_node($$);} 
+			<pnode>*/
+
 
 %% 
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
-										preorder_traverse($$, 0);
-										destroy_tree($$);
+										if(!error_flag){
+											preorder_traverse($$, 0);
+											destroy_tree($$);
+										}
 									}
 ExtDefList	:	ExtDef ExtDefList	{	$$ = build_a_production(@$.first_line, "ExtDefList", 2, $1, $2);
 									}
@@ -61,6 +70,8 @@ ExtDef 		:	Specifier ExtDecList SEMI	{	$$ = build_a_production(@$.first_line, "E
 											}
 			|	Specifier FunDec CompSt		{	$$ = build_a_production(@$.first_line, "ExtDef", 3, $1, $2, $3);
 											}
+			| 	error SEMI 					{ 	//printf("get error ExtDef at %d\n", @1.first_line);
+												error_flag = true;}
 			;
 ExtDecList	:	VarDec						{	$$ = build_a_production(@$.first_line, "ExtDecList", 1, $1);
 											}
@@ -98,6 +109,9 @@ FunDec		:	ID LP VarList RP 			{	$$ = build_a_production(@$.first_line, "FunDec",
 											}
 			| 	ID LP RP 					{	$$ = build_a_production(@$.first_line, "FunDec", 3, $1,$2, $3);
 											}
+			| 	error RP 					{ 	//printf("get error FunDec at %d\n", @1.first_line);
+												error_flag = true;
+											}
 			;
 VarList		:	ParamDec COMMA VarList 		{	$$ = build_a_production(@$.first_line, "VarList", 3, $1,$2, $3);
 											}
@@ -110,6 +124,9 @@ ParamDec 	:	Specifier VarDec			{	$$ = build_a_production(@$.first_line, "ParamDe
 
 
 CompSt		:	LC DefList StmtList RC 		{	$$ = build_a_production(@$.first_line, "CompSt",4, $1, $2, $3, $4);
+											}
+			|	error RC					{	//printf("get error CompSt at %d\n", @1.first_line);
+												error_flag = true;
 											}
 			;
 StmtList	:	Stmt StmtList 				{	$$ = build_a_production(@$.first_line, "StmtList", 2, $1, $2);
@@ -130,6 +147,9 @@ Stmt 		:	Exp SEMI 					{	$$ = build_a_production(@$.first_line, "Stmt", 2, $1, $
 											}
 			|	WHILE LP Exp RP Stmt 		{	$$ = build_a_production(@$.first_line, "Stmt", 5, $1, $2, $3, $4, $5);
 											}
+			|	error SEMI					{	//printf("get error Stmt at %d\n", @1.first_line);
+												error_flag = true;
+											}
 			;
 
 
@@ -139,6 +159,9 @@ DefList :	Def DefList 			{	$$ = build_a_production(@$.first_line, "DefList", 2, 
 									}
 		;
 Def 	:	Specifier DecList SEMI 	{	$$ = build_a_production(@$.first_line, "Def", 3, $1, $2, $3);
+									}
+		| 	error SEMI 				{ 	//printf("get error Def at %d\n", @1.first_line);
+										error_flag = true;
 									}
 		;
 DecList :	Dec 					{	$$ = build_a_production(@$.first_line, "DecList", 1, $1);
@@ -153,41 +176,41 @@ Dec 	:	VarDec 					{	$$ = build_a_production(@$.first_line, "Dec", 1, $1);
 		;
 
 
-Exp 	:	 Exp ASSIGNOP Exp 		{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+Exp 	:	Exp ASSIGNOP Exp 		{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp AND Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp AND Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp OR Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp OR Exp 				{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp RELOP Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp RELOP Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp PLUS Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp PLUS Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp MINUS Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp MINUS Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp STAR Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp STAR Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp DIV Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp DIV Exp 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 LP Exp RP  			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	LP Exp RP  				{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 MINUS Exp 				{	$$ = build_a_production(@$.first_line, "Exp", 2, $1, $2);
+		|	MINUS Exp 				{	$$ = build_a_production(@$.first_line, "Exp", 2, $1, $2);
 									}
-		|	 NOT Exp 				{	$$ = build_a_production(@$.first_line, "Exp", 2, $1, $2);
+		|	NOT Exp 				{	$$ = build_a_production(@$.first_line, "Exp", 2, $1, $2);
 									}
-		|	 ID LP Args RP 			{	$$ = build_a_production(@$.first_line, "Exp", 4, $1, $2, $3, $4);
+		|	ID LP Args RP 			{	$$ = build_a_production(@$.first_line, "Exp", 4, $1, $2, $3, $4);
 									}
-		|	 ID LP RP 				{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	ID LP RP 				{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 Exp LB Exp RB 			{	$$ = build_a_production(@$.first_line, "Exp", 4, $1, $2, $3, $4);
+		|	Exp LB Exp RB 			{	$$ = build_a_production(@$.first_line, "Exp", 4, $1, $2, $3, $4);
 									}
-		|	 Exp DOT ID 			{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
+		|	Exp DOT ID 				{	$$ = build_a_production(@$.first_line, "Exp", 3, $1, $2, $3);
 									}
-		|	 ID 					{	$$ = build_a_production(@$.first_line, "Exp", 1, $1);
+		|	ID 						{	$$ = build_a_production(@$.first_line, "Exp", 1, $1);
 									}
-		|	 INT 					{	$$ = build_a_production(@$.first_line, "Exp", 1, $1);
+		|	INT 					{	$$ = build_a_production(@$.first_line, "Exp", 1, $1);
 									}
-		|	 FLOAT					{	$$ = build_a_production(@$.first_line, "Exp", 1, $1);
+		|	FLOAT					{	$$ = build_a_production(@$.first_line, "Exp", 1, $1);
 									}
 		;
 Args 	: 	Exp COMMA Args 			{	$$ = build_a_production(@$.first_line, "Args", 3, $1, $2, $3);

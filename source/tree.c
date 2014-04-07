@@ -123,8 +123,8 @@ visit(struct tree_node *n, int level){
 				printf("\n");
 			break;
 		case false: /*non terminals*/
-			if( n -> child == NULL) /*empty node*/
-				return;
+			//if( n -> child == NULL) /*empty node*/
+			//	return;
 			while(level -- > 0)
 				printf("  ");
 			printf("%s (%d)\n", n -> unit_name, n -> lineno);
