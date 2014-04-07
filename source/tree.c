@@ -7,6 +7,9 @@
 #include "tree.h"
 #include "bool.h"
 
+/*a global error flag for both lexical and syntax errors*/
+bool error_flag = false;
+
 /*creators*/
 struct tree_node*
 create_node(bool is_token, int lineno, char *unit_name){
@@ -123,8 +126,8 @@ visit(struct tree_node *n, int level){
 				printf("\n");
 			break;
 		case false: /*non terminals*/
-			//if( n -> child == NULL) /*empty node*/
-			//	return;
+			if( n -> child == NULL) /*empty node*/
+				return;
 			while(level -- > 0)
 				printf("  ");
 			printf("%s (%d)\n", n -> unit_name, n -> lineno);
@@ -133,6 +136,7 @@ visit(struct tree_node *n, int level){
 	}
 }
 
+/*destructors*/
 void
 destroy_tree(struct tree_node *root){
 	/*post order*/

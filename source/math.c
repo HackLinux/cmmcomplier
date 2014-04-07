@@ -10,8 +10,8 @@
  * not fully tested. especially atof_sci*/
 
 /*oct string to integer*/
-int atoi_oct(const char *s){
-
+int 
+atoi_oct(const char *s){
 	assert(s[0] == '0');
 	int value = 0;
 	s++;
@@ -24,7 +24,8 @@ int atoi_oct(const char *s){
 }
 
 /*hex string to integer*/
-int atoi_hex(const char *s){
+int 
+atoi_hex(const char *s){
 	assert(s[0] == '0');
 	assert(s[1] == 'x' || s[1] == 'X');
 	int value = 0;
@@ -44,7 +45,8 @@ int atoi_hex(const char *s){
 }
 
 /*scientific notation string to float*/
-float atof_sci(const char *s){
+float 
+atof_sci(const char *s){
 	int len = strlen(s);
 	int e_pos = -1;	//the position of e\E
 	int i;
@@ -66,11 +68,11 @@ float atof_sci(const char *s){
 	/*get base value and index value*/
 	float base_value = atof(base);
 	int index_value = atoi(index);
-	//printf("%d %s\n", len, s);
-	//printf("%d %s\n", base_len, base);
-	//printf("%d %s\n", index_len, index);
-	//printf("%f\n", base_value);
-	//printf("%d\n", index_value);
+	/*printf("%d %s\n", len, s);
+	printf("%d %s\n", base_len, base);
+	printf("%d %s\n", index_len, index);
+	printf("%f\n", base_value);
+	printf("%d\n", index_value);*/
 	
 	/*calculate*/
 	return base_value * pow(10.0, (double)index_value); 

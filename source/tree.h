@@ -3,6 +3,8 @@
 
 #include "bool.h"
 
+extern bool error_flag;
+
 union value{
 	int int_value;
 	float float_value;

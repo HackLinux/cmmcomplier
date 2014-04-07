@@ -142,15 +142,45 @@ WHILE 		while
 {WHILE}		{ 	yylval.pnode = create_node(true, yylineno, "WHILE");
 				return WHILE; 
 			}
-{ID}		{ 	if(strlen(yytext) >= 32)
-					 printf("Error type 1 at line %d column %d: ID '%s' too long.\n", yylineno, yycolumn, yytext); 
+{ID}		{ 	if(strlen(yytext) >= 32){
+					 printf("Error type 1 at line %d: ID '%s' too long.\n", yylineno, yytext);
+					 error_flag = true;
+				} 
 				yylval.pnode = create_id_node(yylineno, "ID", yytext);
 				return ID;
 			}
 {ws}		{ ; }
 {enter}		{ yycolumn = 1; }
 
-.			{ printf("Error type 1 at line %d column %d: Mysterious character '%s'\n", yylineno, yycolumn, yytext); }
+"//"		{	char c = input();
+				while(c != '\n')
+					c = input();
+
+			}
+"/*"		{	char prev;
+				char curr = input();
+				while(true){
+					prev = curr;
+					curr = input();
+					if( prev == '*' && curr == '/')
+						break;
+					if( prev == '/' && curr == '*'){
+						 printf("Error type 1 at line %d: Nested comment\n", yylineno);
+						error_flag = true;
+					}
+					if( curr == EOF ){
+						 printf("Error type 1 at line %d: Unclosed comment\n", yylineno);
+						 error_flag = true;
+						 break;
+					}
+				}
+			}
+"*/"		{	printf("Error type 1 at line %d: Mismatch comment\n", yylineno); 
+				error_flag = true;
+			}
+.			{ 	printf("Error type 1 at line %d: Mysterious character '%s'\n", yylineno, yytext); 
+				error_flag = true;
+			}
 
 %%
 

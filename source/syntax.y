@@ -3,7 +3,6 @@
 	#include <stdio.h>
 	#include "tree.h"
 
-	bool error_flag = false;
 %}
 
 /* declared types */
