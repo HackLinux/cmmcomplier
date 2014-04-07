@@ -1,6 +1,6 @@
 int main()
 {
-int i = 08;
+int i = 5e-1;
 int j = 0x3A;
 }
 

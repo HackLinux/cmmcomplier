@@ -1,5 +1,5 @@
-CFILES = syntax.c main.c tree.c
-CFLAGS = -ly -lfl #-Wall
+CFILES = syntax.c main.c tree.c math.c
+CFLAGS = -ly -lfl -lm #-Wall
 
 
 parser: lexical.c $(CFILES)

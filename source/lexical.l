@@ -4,6 +4,7 @@
 	#include "syntax.h"
 	#include "tree.h"
 	#include "bool.h"
+	#include "math.h"
 
 	int yycolumn = 1;
 
@@ -22,7 +23,10 @@ ws 			[ \t]+
 enter		[\n]+
 
 INT 		0|[1-9]{digit}*
-FLOAT 		{digit}+\.{digit}+	
+OCT			0[0-7]+
+HEX			(0x|0X)[0-9a-fA-F]+
+FLOAT 		{digit}*\.{digit}+|{digit}+\.
+SCI			({FLOAT}|{digit}+)[Ee][+-]?{digit}+	
 ID 			{letter_}({letter_}|digit)*	
 SEMI 		";"
 COMMA 		","
@@ -54,7 +58,16 @@ WHILE 		while
 {INT}		{ 	yylval.pnode = create_int_node(yylineno, "INT", atoi(yytext));
 				return INT;
 			}
+{OCT}		{	yylval.pnode = create_int_node(yylineno, "INT", atoi_oct(yytext));
+				return INT;
+			}
+{HEX}		{	yylval.pnode = create_int_node(yylineno, "INT", atoi_hex(yytext));
+				return INT;
+			}
 {FLOAT}		{ 	yylval.pnode = create_float_node(yylineno, "FLOAT", atof(yytext));
+				return FLOAT; 
+			}
+{SCI}		{	yylval.pnode = create_float_node(yylineno, "FLOAT", atof_sci(yytext));
 				return FLOAT; 
 			}
 {SEMI}		{ 	yylval.pnode = create_node(true, yylineno, "SEMI");
@@ -132,7 +145,7 @@ WHILE 		while
 {ID}		{ 	if(strlen(yytext) >= 32)
 					 printf("Error type 1 at line %d column %d: ID '%s' too long.\n", yylineno, yycolumn, yytext); 
 				yylval.pnode = create_id_node(yylineno, "ID", yytext);
-				return ID; 
+				return ID;
 			}
 {ws}		{ ; }
 {enter}		{ yycolumn = 1; }
