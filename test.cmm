@@ -1,9 +1,9 @@
-int main()
-{
-/*int i = 5e-1;
-int j = 0x3A;/**/
-int k[5,3];//123
+int main(){
+// this is a single line comment
+int i = 1; //integer
+/*
+this is a
+multiple lines comment
+*/
+float f = 1.0; //float number
 }
-
-
-

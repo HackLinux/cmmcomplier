@@ -64,7 +64,8 @@
      IF = 282,
      ELSE = 283,
      WHILE = 284,
-     LOWER_THAN_ELSE = 285
+     LOWER_THAN_ELSE = 285,
+     LOWER_THAN_ERROR = 286
    };
 #endif
 
@@ -82,7 +83,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 86 "syntax.h"
+#line 87 "syntax.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

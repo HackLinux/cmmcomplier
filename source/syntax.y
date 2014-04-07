@@ -44,11 +44,8 @@
 %right NOT
 %left DOT LP RP LB RB
 
-/* destructors
-%destructor {	printf("destroy node %s at %d\n", $$ -> unit_name, $$ -> lineno);
-				destroy_node($$);} 
-			<pnode>*/
-
+%nonassoc LOWER_THAN_ERROR
+%nonassoc error
 
 %% 
 
@@ -154,7 +151,8 @@ Stmt 		:	Exp SEMI 					{	$$ = build_a_production(@$.first_line, "Stmt", 2, $1, $
 
 DefList :	Def DefList 			{	$$ = build_a_production(@$.first_line, "DefList", 2, $1, $2);
 									}
-		|	/*empty*/				{	$$ = build_a_production(@$.first_line, "DefList", 0);
+		|	/*empty*/				%prec LOWER_THAN_ERROR
+									{	$$ = build_a_production(@$.first_line, "DefList", 0);
 									}
 		;
 Def 	:	Specifier DecList SEMI 	{	$$ = build_a_production(@$.first_line, "Def", 3, $1, $2, $3);

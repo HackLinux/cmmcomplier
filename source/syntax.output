@@ -1,7 +1,3 @@
-State 28 conflicts: 1 shift/reduce
-State 33 conflicts: 1 shift/reduce
-
-
 Grammar
 
     0 $accept: Program $end
@@ -123,55 +119,56 @@ IF (282) 32 33
 ELSE (283) 33
 WHILE (284) 34
 LOWER_THAN_ELSE (285)
+LOWER_THAN_ERROR (286)
 
 
 Nonterminals, with rules where they appear
 
-$accept (31)
+$accept (32)
     on left: 0
-Program (32)
+Program (33)
     on left: 1, on right: 0
-ExtDefList (33)
+ExtDefList (34)
     on left: 2 3, on right: 1 2
-ExtDef (34)
+ExtDef (35)
     on left: 4 5 6 7, on right: 2
-ExtDecList (35)
+ExtDecList (36)
     on left: 8 9, on right: 4 9
-Specifier (36)
+Specifier (37)
     on left: 10 11, on right: 4 5 6 24 38
-StructSpecifier (37)
+StructSpecifier (38)
     on left: 12 13, on right: 11
-OptTag (38)
+OptTag (39)
     on left: 14 15, on right: 12
-Tag (39)
+Tag (40)
     on left: 16, on right: 13
-VarDec (40)
+VarDec (41)
     on left: 17 18, on right: 8 9 18 24 42 43
-FunDec (41)
+FunDec (42)
     on left: 19 20 21, on right: 6
-VarList (42)
+VarList (43)
     on left: 22 23, on right: 19 22
-ParamDec (43)
+ParamDec (44)
     on left: 24, on right: 22 23
-CompSt (44)
+CompSt (45)
     on left: 25 26, on right: 6 30
-StmtList (45)
+StmtList (46)
     on left: 27 28, on right: 25 27
-Stmt (46)
+Stmt (47)
     on left: 29 30 31 32 33 34 35, on right: 27 32 33 34
-DefList (47)
+DefList (48)
     on left: 36 37, on right: 12 25 36
-Def (48)
+Def (49)
     on left: 38 39, on right: 36
-DecList (49)
+DecList (50)
     on left: 40 41, on right: 38 41
-Dec (50)
+Dec (51)
     on left: 42 43, on right: 40 41
-Exp (51)
+Exp (52)
     on left: 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61,
     on right: 29 31 32 33 34 43 44 45 46 47 48 49 50 51 52 53 54 57
     58 62 63
-Args (52)
+Args (53)
     on left: 62 63, on right: 55 62
 
 
@@ -446,7 +443,6 @@ state 28
     TYPE    shift, and go to state 2
     STRUCT  shift, and go to state 3
 
-    error   [reduce using rule 37 (DefList)]
     INT     reduce using rule 37 (DefList)
     FLOAT   reduce using rule 37 (DefList)
     ID      reduce using rule 37 (DefList)
@@ -505,7 +501,6 @@ state 33
     TYPE    shift, and go to state 2
     STRUCT  shift, and go to state 3
 
-    error   [reduce using rule 37 (DefList)]
     INT     reduce using rule 37 (DefList)
     FLOAT   reduce using rule 37 (DefList)
     ID      reduce using rule 37 (DefList)

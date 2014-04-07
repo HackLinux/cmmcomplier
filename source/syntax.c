@@ -128,7 +128,8 @@
      IF = 282,
      ELSE = 283,
      WHILE = 284,
-     LOWER_THAN_ELSE = 285
+     LOWER_THAN_ELSE = 285,
+     LOWER_THAN_ERROR = 286
    };
 #endif
 
@@ -146,7 +147,7 @@ typedef union YYSTYPE
 
 
 /* Line 293 of yacc.c  */
-#line 150 "syntax.c"
+#line 151 "syntax.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -171,7 +172,7 @@ typedef struct YYLTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 175 "syntax.c"
+#line 176 "syntax.c"
 
 #ifdef short
 # undef short
@@ -395,7 +396,7 @@ union yyalloc
 #define YYLAST   268
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  31
+#define YYNTOKENS  32
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  22
 /* YYNRULES -- Number of rules.  */
@@ -405,7 +406,7 @@ union yyalloc
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   285
+#define YYMAXUTOK   286
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -441,7 +442,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30
+      25,    26,    27,    28,    29,    30,    31
 };
 
 #if YYDEBUG
@@ -461,40 +462,40 @@ static const yytype_uint8 yyprhs[] =
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      32,     0,    -1,    33,    -1,    34,    33,    -1,    -1,    36,
-      35,     6,    -1,    36,     6,    -1,    36,    41,    44,    -1,
-       1,     6,    -1,    40,    -1,    40,     7,    35,    -1,    18,
-      -1,    37,    -1,    25,    38,    23,    47,    24,    -1,    25,
-      39,    -1,     5,    -1,    -1,     5,    -1,     5,    -1,    40,
-      21,     3,    22,    -1,     5,    19,    42,    20,    -1,     5,
-      19,    20,    -1,     1,    20,    -1,    43,     7,    42,    -1,
-      43,    -1,    36,    40,    -1,    23,    47,    45,    24,    -1,
-       1,    24,    -1,    46,    45,    -1,    -1,    51,     6,    -1,
-      44,    -1,    26,    51,     6,    -1,    27,    19,    51,    20,
-      46,    -1,    27,    19,    51,    20,    46,    28,    46,    -1,
-      29,    19,    51,    20,    46,    -1,     1,     6,    -1,    48,
-      47,    -1,    -1,    36,    49,     6,    -1,     1,     6,    -1,
-      50,    -1,    50,     7,    49,    -1,    40,    -1,    40,     8,
-      51,    -1,    51,     8,    51,    -1,    51,    14,    51,    -1,
-      51,    15,    51,    -1,    51,     9,    51,    -1,    51,    10,
-      51,    -1,    51,    11,    51,    -1,    51,    12,    51,    -1,
-      51,    13,    51,    -1,    19,    51,    20,    -1,    11,    51,
-      -1,    17,    51,    -1,     5,    19,    52,    20,    -1,     5,
-      19,    20,    -1,    51,    21,    51,    22,    -1,    51,    16,
-       5,    -1,     5,    -1,     3,    -1,     4,    -1,    51,     7,
-      52,    -1,    51,    -1
+      33,     0,    -1,    34,    -1,    35,    34,    -1,    -1,    37,
+      36,     6,    -1,    37,     6,    -1,    37,    42,    45,    -1,
+       1,     6,    -1,    41,    -1,    41,     7,    36,    -1,    18,
+      -1,    38,    -1,    25,    39,    23,    48,    24,    -1,    25,
+      40,    -1,     5,    -1,    -1,     5,    -1,     5,    -1,    41,
+      21,     3,    22,    -1,     5,    19,    43,    20,    -1,     5,
+      19,    20,    -1,     1,    20,    -1,    44,     7,    43,    -1,
+      44,    -1,    37,    41,    -1,    23,    48,    46,    24,    -1,
+       1,    24,    -1,    47,    46,    -1,    -1,    52,     6,    -1,
+      45,    -1,    26,    52,     6,    -1,    27,    19,    52,    20,
+      47,    -1,    27,    19,    52,    20,    47,    28,    47,    -1,
+      29,    19,    52,    20,    47,    -1,     1,     6,    -1,    49,
+      48,    -1,    -1,    37,    50,     6,    -1,     1,     6,    -1,
+      51,    -1,    51,     7,    50,    -1,    41,    -1,    41,     8,
+      52,    -1,    52,     8,    52,    -1,    52,    14,    52,    -1,
+      52,    15,    52,    -1,    52,     9,    52,    -1,    52,    10,
+      52,    -1,    52,    11,    52,    -1,    52,    12,    52,    -1,
+      52,    13,    52,    -1,    19,    52,    20,    -1,    11,    52,
+      -1,    17,    52,    -1,     5,    19,    53,    20,    -1,     5,
+      19,    20,    -1,    52,    21,    52,    22,    -1,    52,    16,
+       5,    -1,     5,    -1,     3,    -1,     4,    -1,    52,     7,
+      53,    -1,    52,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    55,    55,    61,    63,    66,    68,    70,    72,    75,
-      77,    82,    84,    87,    89,    92,    94,    97,   102,   104,
-     107,   109,   111,   115,   117,   120,   125,   127,   131,   133,
-     136,   138,   140,   142,   145,   147,   149,   155,   157,   160,
-     162,   166,   168,   171,   173,   178,   180,   182,   184,   186,
-     188,   190,   192,   194,   196,   198,   200,   202,   204,   206,
-     208,   210,   212,   215,   217
+       0,    52,    52,    58,    60,    63,    65,    67,    69,    72,
+      74,    79,    81,    84,    86,    89,    91,    94,    99,   101,
+     104,   106,   108,   112,   114,   117,   122,   124,   128,   130,
+     133,   135,   137,   139,   142,   144,   146,   152,   154,   158,
+     160,   164,   166,   169,   171,   176,   178,   180,   182,   184,
+     186,   188,   190,   192,   194,   196,   198,   200,   202,   204,
+     206,   208,   210,   213,   215
 };
 #endif
 
@@ -506,10 +507,11 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "INT", "FLOAT", "ID", "SEMI", "COMMA",
   "ASSIGNOP", "RELOP", "PLUS", "MINUS", "STAR", "DIV", "AND", "OR", "DOT",
   "NOT", "TYPE", "LP", "RP", "LB", "RB", "LC", "RC", "STRUCT", "RETURN",
-  "IF", "ELSE", "WHILE", "LOWER_THAN_ELSE", "$accept", "Program",
-  "ExtDefList", "ExtDef", "ExtDecList", "Specifier", "StructSpecifier",
-  "OptTag", "Tag", "VarDec", "FunDec", "VarList", "ParamDec", "CompSt",
-  "StmtList", "Stmt", "DefList", "Def", "DecList", "Dec", "Exp", "Args", 0
+  "IF", "ELSE", "WHILE", "LOWER_THAN_ELSE", "LOWER_THAN_ERROR", "$accept",
+  "Program", "ExtDefList", "ExtDef", "ExtDecList", "Specifier",
+  "StructSpecifier", "OptTag", "Tag", "VarDec", "FunDec", "VarList",
+  "ParamDec", "CompSt", "StmtList", "Stmt", "DefList", "Def", "DecList",
+  "Dec", "Exp", "Args", 0
 };
 #endif
 
@@ -521,20 +523,20 @@ static const yytype_uint16 yytoknum[] =
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285
+     285,   286
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    31,    32,    33,    33,    34,    34,    34,    34,    35,
-      35,    36,    36,    37,    37,    38,    38,    39,    40,    40,
-      41,    41,    41,    42,    42,    43,    44,    44,    45,    45,
-      46,    46,    46,    46,    46,    46,    46,    47,    47,    48,
-      48,    49,    49,    50,    50,    51,    51,    51,    51,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,    51,
-      51,    51,    51,    52,    52
+       0,    32,    33,    34,    34,    35,    35,    35,    35,    36,
+      36,    37,    37,    38,    38,    39,    39,    40,    41,    41,
+      42,    42,    42,    43,    43,    44,    45,    45,    46,    46,
+      47,    47,    47,    47,    47,    47,    47,    48,    48,    49,
+      49,    50,    50,    51,    51,    52,    52,    52,    52,    52,
+      52,    52,    52,    52,    52,    52,    52,    52,    52,    52,
+      52,    52,    52,    53,    53
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -681,19 +683,19 @@ static const yytype_int8 yycheck[] =
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     1,    18,    25,    32,    33,    34,    36,    37,     6,
-       5,    38,    39,     0,    33,     1,     5,     6,    35,    40,
-      41,    23,    20,    19,     6,     7,    21,     1,    23,    44,
-       1,    36,    47,    48,    20,    36,    42,    43,     5,    35,
-       3,    24,    47,     6,    40,    49,    50,    24,    47,    40,
+       0,     1,    18,    25,    33,    34,    35,    37,    38,     6,
+       5,    39,    40,     0,    34,     1,     5,     6,    36,    41,
+      42,    23,    20,    19,     6,     7,    21,     1,    23,    45,
+       1,    37,    48,    49,    20,    37,    43,    44,     5,    36,
+       3,    24,    48,     6,    41,    50,    51,    24,    48,    41,
       20,     7,    22,     1,     3,     4,     5,    11,    17,    19,
-      26,    27,    29,    44,    45,    46,    51,     8,     6,     7,
-      42,     6,    19,    51,    51,    51,    51,    19,    19,    24,
-      45,     6,     8,     9,    10,    11,    12,    13,    14,    15,
-      16,    21,    51,    49,    20,    51,    52,    20,     6,    51,
-      51,    51,    51,    51,    51,    51,    51,    51,    51,     5,
-      51,     7,    20,    20,    20,    22,    52,    46,    46,    28,
-      46
+      26,    27,    29,    45,    46,    47,    52,     8,     6,     7,
+      43,     6,    19,    52,    52,    52,    52,    19,    19,    24,
+      46,     6,     8,     9,    10,    11,    12,    13,    14,    15,
+      16,    21,    52,    50,    20,    52,    53,    20,     6,    52,
+      52,    52,    52,    52,    52,    52,    52,    52,    52,     5,
+      52,     7,    20,    20,    20,    22,    53,    47,    47,    28,
+      47
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1574,7 +1576,7 @@ yyreduce:
         case 2:
 
 /* Line 1806 of yacc.c  */
-#line 55 "syntax.y"
+#line 52 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Program", 1, (yyvsp[(1) - (1)].pnode));
 										if(!error_flag){
 											preorder_traverse((yyval.pnode), 0);
@@ -1586,7 +1588,7 @@ yyreduce:
   case 3:
 
 /* Line 1806 of yacc.c  */
-#line 61 "syntax.y"
+#line 58 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDefList", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 									}
     break;
@@ -1594,7 +1596,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 63 "syntax.y"
+#line 60 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDefList", 0);
 									}
     break;
@@ -1602,7 +1604,7 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 66 "syntax.y"
+#line 63 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDef", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 											}
     break;
@@ -1610,7 +1612,7 @@ yyreduce:
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 68 "syntax.y"
+#line 65 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDef", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 											}
     break;
@@ -1618,7 +1620,7 @@ yyreduce:
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 70 "syntax.y"
+#line 67 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDef", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 											}
     break;
@@ -1626,7 +1628,7 @@ yyreduce:
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 72 "syntax.y"
+#line 69 "syntax.y"
     { 	//printf("get error ExtDef at %d\n", @1.first_line);
 												error_flag = true;}
     break;
@@ -1634,7 +1636,7 @@ yyreduce:
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 75 "syntax.y"
+#line 72 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDecList", 1, (yyvsp[(1) - (1)].pnode));
 											}
     break;
@@ -1642,7 +1644,7 @@ yyreduce:
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 77 "syntax.y"
+#line 74 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ExtDecList", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 											}
     break;
@@ -1650,7 +1652,7 @@ yyreduce:
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 82 "syntax.y"
+#line 79 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Specifier", 1, (yyvsp[(1) - (1)].pnode));
 													}
     break;
@@ -1658,7 +1660,7 @@ yyreduce:
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 84 "syntax.y"
+#line 81 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Specifier", 1, (yyvsp[(1) - (1)].pnode));
 													}
     break;
@@ -1666,7 +1668,7 @@ yyreduce:
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 87 "syntax.y"
+#line 84 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "StructSpecifier", 5, (yyvsp[(1) - (5)].pnode), (yyvsp[(2) - (5)].pnode), (yyvsp[(3) - (5)].pnode), (yyvsp[(4) - (5)].pnode), (yyvsp[(5) - (5)].pnode));
 													}
     break;
@@ -1674,7 +1676,7 @@ yyreduce:
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 89 "syntax.y"
+#line 86 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "StructSpecifier", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 													}
     break;
@@ -1682,7 +1684,7 @@ yyreduce:
   case 15:
 
 /* Line 1806 of yacc.c  */
-#line 92 "syntax.y"
+#line 89 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "OptTag", 1, (yyvsp[(1) - (1)].pnode));
 													}
     break;
@@ -1690,7 +1692,7 @@ yyreduce:
   case 16:
 
 /* Line 1806 of yacc.c  */
-#line 94 "syntax.y"
+#line 91 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "OptTag", 0);
 													}
     break;
@@ -1698,7 +1700,7 @@ yyreduce:
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 97 "syntax.y"
+#line 94 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Tag", 1, (yyvsp[(1) - (1)].pnode));
 													}
     break;
@@ -1706,7 +1708,7 @@ yyreduce:
   case 18:
 
 /* Line 1806 of yacc.c  */
-#line 102 "syntax.y"
+#line 99 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "VarDec", 1, (yyvsp[(1) - (1)].pnode));
 											}
     break;
@@ -1714,7 +1716,7 @@ yyreduce:
   case 19:
 
 /* Line 1806 of yacc.c  */
-#line 104 "syntax.y"
+#line 101 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "VarDec", 4, (yyvsp[(1) - (4)].pnode), (yyvsp[(2) - (4)].pnode), (yyvsp[(3) - (4)].pnode), (yyvsp[(4) - (4)].pnode));
 											}
     break;
@@ -1722,7 +1724,7 @@ yyreduce:
   case 20:
 
 /* Line 1806 of yacc.c  */
-#line 107 "syntax.y"
+#line 104 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "FunDec", 4, (yyvsp[(1) - (4)].pnode), (yyvsp[(2) - (4)].pnode), (yyvsp[(3) - (4)].pnode), (yyvsp[(4) - (4)].pnode));
 											}
     break;
@@ -1730,7 +1732,7 @@ yyreduce:
   case 21:
 
 /* Line 1806 of yacc.c  */
-#line 109 "syntax.y"
+#line 106 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "FunDec", 3, (yyvsp[(1) - (3)].pnode),(yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 											}
     break;
@@ -1738,7 +1740,7 @@ yyreduce:
   case 22:
 
 /* Line 1806 of yacc.c  */
-#line 111 "syntax.y"
+#line 108 "syntax.y"
     { 	//printf("get error FunDec at %d\n", @1.first_line);
 												error_flag = true;
 											}
@@ -1747,7 +1749,7 @@ yyreduce:
   case 23:
 
 /* Line 1806 of yacc.c  */
-#line 115 "syntax.y"
+#line 112 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "VarList", 3, (yyvsp[(1) - (3)].pnode),(yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 											}
     break;
@@ -1755,7 +1757,7 @@ yyreduce:
   case 24:
 
 /* Line 1806 of yacc.c  */
-#line 117 "syntax.y"
+#line 114 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "VarList", 1, (yyvsp[(1) - (1)].pnode));
 											}
     break;
@@ -1763,7 +1765,7 @@ yyreduce:
   case 25:
 
 /* Line 1806 of yacc.c  */
-#line 120 "syntax.y"
+#line 117 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "ParamDec",2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 											}
     break;
@@ -1771,7 +1773,7 @@ yyreduce:
   case 26:
 
 /* Line 1806 of yacc.c  */
-#line 125 "syntax.y"
+#line 122 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "CompSt",4, (yyvsp[(1) - (4)].pnode), (yyvsp[(2) - (4)].pnode), (yyvsp[(3) - (4)].pnode), (yyvsp[(4) - (4)].pnode));
 											}
     break;
@@ -1779,7 +1781,7 @@ yyreduce:
   case 27:
 
 /* Line 1806 of yacc.c  */
-#line 127 "syntax.y"
+#line 124 "syntax.y"
     {	//printf("get error CompSt at %d\n", @1.first_line);
 												error_flag = true;
 											}
@@ -1788,7 +1790,7 @@ yyreduce:
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 131 "syntax.y"
+#line 128 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "StmtList", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 											}
     break;
@@ -1796,7 +1798,7 @@ yyreduce:
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 133 "syntax.y"
+#line 130 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "StmtList", 0);
 											}
     break;
@@ -1804,7 +1806,7 @@ yyreduce:
   case 30:
 
 /* Line 1806 of yacc.c  */
-#line 136 "syntax.y"
+#line 133 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Stmt", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 											}
     break;
@@ -1812,7 +1814,7 @@ yyreduce:
   case 31:
 
 /* Line 1806 of yacc.c  */
-#line 138 "syntax.y"
+#line 135 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Stmt", 1, (yyvsp[(1) - (1)].pnode));
 											}
     break;
@@ -1820,7 +1822,7 @@ yyreduce:
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 140 "syntax.y"
+#line 137 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Stmt", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 											}
     break;
@@ -1828,7 +1830,7 @@ yyreduce:
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 143 "syntax.y"
+#line 140 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Stmt", 5, (yyvsp[(1) - (5)].pnode), (yyvsp[(2) - (5)].pnode), (yyvsp[(3) - (5)].pnode), (yyvsp[(4) - (5)].pnode), (yyvsp[(5) - (5)].pnode));
 											}
     break;
@@ -1836,7 +1838,7 @@ yyreduce:
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 145 "syntax.y"
+#line 142 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Stmt", 7, (yyvsp[(1) - (7)].pnode), (yyvsp[(2) - (7)].pnode), (yyvsp[(3) - (7)].pnode), (yyvsp[(4) - (7)].pnode), (yyvsp[(5) - (7)].pnode), (yyvsp[(6) - (7)].pnode), (yyvsp[(7) - (7)].pnode));
 											}
     break;
@@ -1844,7 +1846,7 @@ yyreduce:
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 147 "syntax.y"
+#line 144 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Stmt", 5, (yyvsp[(1) - (5)].pnode), (yyvsp[(2) - (5)].pnode), (yyvsp[(3) - (5)].pnode), (yyvsp[(4) - (5)].pnode), (yyvsp[(5) - (5)].pnode));
 											}
     break;
@@ -1852,7 +1854,7 @@ yyreduce:
   case 36:
 
 /* Line 1806 of yacc.c  */
-#line 149 "syntax.y"
+#line 146 "syntax.y"
     {	//printf("get error Stmt at %d\n", @1.first_line);
 												error_flag = true;
 											}
@@ -1861,7 +1863,7 @@ yyreduce:
   case 37:
 
 /* Line 1806 of yacc.c  */
-#line 155 "syntax.y"
+#line 152 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "DefList", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 									}
     break;
@@ -1869,7 +1871,7 @@ yyreduce:
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 157 "syntax.y"
+#line 155 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "DefList", 0);
 									}
     break;
@@ -1877,7 +1879,7 @@ yyreduce:
   case 39:
 
 /* Line 1806 of yacc.c  */
-#line 160 "syntax.y"
+#line 158 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Def", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1885,7 +1887,7 @@ yyreduce:
   case 40:
 
 /* Line 1806 of yacc.c  */
-#line 162 "syntax.y"
+#line 160 "syntax.y"
     { 	//printf("get error Def at %d\n", @1.first_line);
 										error_flag = true;
 									}
@@ -1894,7 +1896,7 @@ yyreduce:
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 166 "syntax.y"
+#line 164 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "DecList", 1, (yyvsp[(1) - (1)].pnode));
 									}
     break;
@@ -1902,7 +1904,7 @@ yyreduce:
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 168 "syntax.y"
+#line 166 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "DecList", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1910,7 +1912,7 @@ yyreduce:
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 171 "syntax.y"
+#line 169 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Dec", 1, (yyvsp[(1) - (1)].pnode));
 									}
     break;
@@ -1918,7 +1920,7 @@ yyreduce:
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 173 "syntax.y"
+#line 171 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Dec", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1926,7 +1928,7 @@ yyreduce:
   case 45:
 
 /* Line 1806 of yacc.c  */
-#line 178 "syntax.y"
+#line 176 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1934,7 +1936,7 @@ yyreduce:
   case 46:
 
 /* Line 1806 of yacc.c  */
-#line 180 "syntax.y"
+#line 178 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1942,7 +1944,7 @@ yyreduce:
   case 47:
 
 /* Line 1806 of yacc.c  */
-#line 182 "syntax.y"
+#line 180 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1950,7 +1952,7 @@ yyreduce:
   case 48:
 
 /* Line 1806 of yacc.c  */
-#line 184 "syntax.y"
+#line 182 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1958,7 +1960,7 @@ yyreduce:
   case 49:
 
 /* Line 1806 of yacc.c  */
-#line 186 "syntax.y"
+#line 184 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1966,7 +1968,7 @@ yyreduce:
   case 50:
 
 /* Line 1806 of yacc.c  */
-#line 188 "syntax.y"
+#line 186 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1974,7 +1976,7 @@ yyreduce:
   case 51:
 
 /* Line 1806 of yacc.c  */
-#line 190 "syntax.y"
+#line 188 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1982,7 +1984,7 @@ yyreduce:
   case 52:
 
 /* Line 1806 of yacc.c  */
-#line 192 "syntax.y"
+#line 190 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1990,7 +1992,7 @@ yyreduce:
   case 53:
 
 /* Line 1806 of yacc.c  */
-#line 194 "syntax.y"
+#line 192 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -1998,7 +2000,7 @@ yyreduce:
   case 54:
 
 /* Line 1806 of yacc.c  */
-#line 196 "syntax.y"
+#line 194 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 									}
     break;
@@ -2006,7 +2008,7 @@ yyreduce:
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 198 "syntax.y"
+#line 196 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 2, (yyvsp[(1) - (2)].pnode), (yyvsp[(2) - (2)].pnode));
 									}
     break;
@@ -2014,7 +2016,7 @@ yyreduce:
   case 56:
 
 /* Line 1806 of yacc.c  */
-#line 200 "syntax.y"
+#line 198 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 4, (yyvsp[(1) - (4)].pnode), (yyvsp[(2) - (4)].pnode), (yyvsp[(3) - (4)].pnode), (yyvsp[(4) - (4)].pnode));
 									}
     break;
@@ -2022,7 +2024,7 @@ yyreduce:
   case 57:
 
 /* Line 1806 of yacc.c  */
-#line 202 "syntax.y"
+#line 200 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -2030,7 +2032,7 @@ yyreduce:
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 204 "syntax.y"
+#line 202 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 4, (yyvsp[(1) - (4)].pnode), (yyvsp[(2) - (4)].pnode), (yyvsp[(3) - (4)].pnode), (yyvsp[(4) - (4)].pnode));
 									}
     break;
@@ -2038,7 +2040,7 @@ yyreduce:
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 206 "syntax.y"
+#line 204 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -2046,7 +2048,7 @@ yyreduce:
   case 60:
 
 /* Line 1806 of yacc.c  */
-#line 208 "syntax.y"
+#line 206 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 1, (yyvsp[(1) - (1)].pnode));
 									}
     break;
@@ -2054,7 +2056,7 @@ yyreduce:
   case 61:
 
 /* Line 1806 of yacc.c  */
-#line 210 "syntax.y"
+#line 208 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 1, (yyvsp[(1) - (1)].pnode));
 									}
     break;
@@ -2062,7 +2064,7 @@ yyreduce:
   case 62:
 
 /* Line 1806 of yacc.c  */
-#line 212 "syntax.y"
+#line 210 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Exp", 1, (yyvsp[(1) - (1)].pnode));
 									}
     break;
@@ -2070,7 +2072,7 @@ yyreduce:
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 215 "syntax.y"
+#line 213 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Args", 3, (yyvsp[(1) - (3)].pnode), (yyvsp[(2) - (3)].pnode), (yyvsp[(3) - (3)].pnode));
 									}
     break;
@@ -2078,7 +2080,7 @@ yyreduce:
   case 64:
 
 /* Line 1806 of yacc.c  */
-#line 217 "syntax.y"
+#line 215 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Args", 1, (yyvsp[(1) - (1)].pnode));
 									}
     break;
@@ -2086,7 +2088,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 2090 "syntax.c"
+#line 2092 "syntax.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2324,6 +2326,6 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 219 "syntax.y"
+#line 217 "syntax.y"
 
 
