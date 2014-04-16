@@ -552,7 +552,7 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "lexical.l"
-#line 3 "lexical.l"
+#line 2 "lexical.l"
 	#include <string.h>
 	#include "syntax.h"
 	#include "tree.h"
@@ -752,7 +752,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 56 "lexical.l"
+#line 55 "lexical.l"
 
 
 #line 759 "lexical.c"
@@ -850,211 +850,211 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 58 "lexical.l"
+#line 57 "lexical.l"
 { 	yylval.pnode = create_int_node(yylineno, "INT", atoi(yytext));
 				return INT;
 			}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 61 "lexical.l"
+#line 60 "lexical.l"
 {	yylval.pnode = create_int_node(yylineno, "INT", atoi_oct(yytext));
 				return INT;
 			}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 64 "lexical.l"
+#line 63 "lexical.l"
 {	yylval.pnode = create_int_node(yylineno, "INT", atoi_hex(yytext));
 				return INT;
 			}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 67 "lexical.l"
+#line 66 "lexical.l"
 { 	yylval.pnode = create_float_node(yylineno, "FLOAT", atof(yytext));
 				return FLOAT; 
 			}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 70 "lexical.l"
+#line 69 "lexical.l"
 {	yylval.pnode = create_float_node(yylineno, "FLOAT", atof_sci(yytext));
 				return FLOAT; 
 			}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 73 "lexical.l"
+#line 72 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "SEMI");
 				return SEMI; 
 			}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 76 "lexical.l"
+#line 75 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "COMMA");
 				return COMMA; 
 			}								
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 79 "lexical.l"
+#line 78 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "ASSIGNOP");
 				return ASSIGNOP; 
 			}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 82 "lexical.l"
+#line 81 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "RELOP");
 				return RELOP; 
 			}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 85 "lexical.l"
+#line 84 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "PLUS");
 				return PLUS; 
 			}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 88 "lexical.l"
+#line 87 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "MINUS");
 				return MINUS; 
 			}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 91 "lexical.l"
+#line 90 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "STAR");
 				return STAR; 
 			}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 94 "lexical.l"
+#line 93 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "DIV");
 				return DIV; 
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 97 "lexical.l"
+#line 96 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "AND");
 				return AND; 
 			}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 100 "lexical.l"
+#line 99 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "OR");
 				return OR; 
 			}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 103 "lexical.l"
+#line 102 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "DOT");
 				return DOT; 
 			}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 106 "lexical.l"
+#line 105 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "NOT");
 				return NOT; 
 			}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 109 "lexical.l"
+#line 108 "lexical.l"
 { 	yylval.pnode = create_type_node(yylineno, "TYPE", yytext);
 				return TYPE; 
 			}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 112 "lexical.l"
+#line 111 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "LP");
 				return LP; 
 			}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 115 "lexical.l"
+#line 114 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "RP");
 				return RP; 
 			}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 118 "lexical.l"
+#line 117 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "LB");
 				return LB; 
 			}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 121 "lexical.l"
+#line 120 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "RB");
 				return RB; 
 			}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 124 "lexical.l"
+#line 123 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "LC");
 				return LC; 
 			}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 127 "lexical.l"
+#line 126 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "RC");
 				return RC; 
 			}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 130 "lexical.l"
+#line 129 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "STRUCT");
 				return STRUCT; 
 			}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 133 "lexical.l"
+#line 132 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "RETURN");
 				return RETURN; 
 			}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 136 "lexical.l"
+#line 135 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "IF");
 				return IF; 
 			}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 139 "lexical.l"
+#line 138 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "ELSE");
 				return ELSE; 
 			}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 142 "lexical.l"
+#line 141 "lexical.l"
 { 	yylval.pnode = create_node(true, yylineno, "WHILE");
 				return WHILE; 
 			}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 145 "lexical.l"
-{ 	if(strlen(yytext) >= 32){
+#line 144 "lexical.l"
+{ 	if(strlen(yytext) >= 20){
 					 printf("Error type 1 at line %d: ID '%s' too long.\n", yylineno, yytext);
 					 error_flag = true;
 				} 
@@ -1064,18 +1064,18 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 152 "lexical.l"
+#line 151 "lexical.l"
 { ; }
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 153 "lexical.l"
+#line 152 "lexical.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 155 "lexical.l"
+#line 154 "lexical.l"
 {	char c = input();
 				while(c != '\n')
 					c = input();
@@ -1084,7 +1084,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 160 "lexical.l"
+#line 159 "lexical.l"
 {	char prev;
 				char curr = input();
 				while(true){
@@ -1106,21 +1106,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 178 "lexical.l"
+#line 177 "lexical.l"
 {	printf("Error type 1 at line %d: Mismatch comment\n", yylineno); 
 				error_flag = true;
 			}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 181 "lexical.l"
+#line 180 "lexical.l"
 { 	printf("Error type 1 at line %d: Mysterious character '%s'\n", yylineno, yytext); 
 				error_flag = true;
 			}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 185 "lexical.l"
+#line 184 "lexical.l"
 ECHO;
 	YY_BREAK
 #line 1127 "lexical.c"
@@ -2133,7 +2133,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 185 "lexical.l"
+#line 184 "lexical.l"
 
 
 

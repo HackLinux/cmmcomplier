@@ -1,4 +1,3 @@
-
 %{
 	#include <string.h>
 	#include "syntax.h"
@@ -142,7 +141,7 @@ WHILE 		while
 {WHILE}		{ 	yylval.pnode = create_node(true, yylineno, "WHILE");
 				return WHILE; 
 			}
-{ID}		{ 	if(strlen(yytext) >= 32){
+{ID}		{ 	if(strlen(yytext) >= 20){
 					 printf("Error type 1 at line %d: ID '%s' too long.\n", yylineno, yytext);
 					 error_flag = true;
 				} 

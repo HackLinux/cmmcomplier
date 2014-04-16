@@ -6,7 +6,7 @@
 #include <math.h>
 #include "bool.h"
 
-/* some math functions.
+/* some math functions used in token analysis
  * not fully tested. especially atof_sci*/
 
 /*oct string to integer*/

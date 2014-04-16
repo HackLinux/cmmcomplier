@@ -2,6 +2,7 @@
 %{
 	#include <stdio.h>
 	#include "tree.h"
+	#include "table.h"
 
 %}
 
@@ -51,8 +52,10 @@
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
 										if(!error_flag){
-											print_syntax_tree($$, 0);
-											//printf("no syntax error\n");
+											//print_syntax_tree($$, 0);
+											printf("no syntax error\n");
+											preorder_analyze($$);
+											print_func_table(func_list_head);
 											destroy_tree($$);
 										}
 									}

@@ -49,7 +49,7 @@ create_float_node(int lineno, char *unit_name, float float_value){
 struct tree_node*
 create_id_node(int lineno, char *unit_name, char* id_name){
 	
-	assert(strlen(id_name) < 32);	/*need modify*/
+	assert(strlen(id_name) < 20);	/*need modify*/
 
 	struct tree_node *node = create_node(true, lineno, unit_name);
 	node -> unit_value = malloc(strlen(id_name));
