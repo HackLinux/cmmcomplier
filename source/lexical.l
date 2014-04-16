@@ -69,76 +69,76 @@ WHILE 		while
 {SCI}		{	yylval.pnode = create_float_node(yylineno, "FLOAT", atof_sci(yytext));
 				return FLOAT; 
 			}
-{SEMI}		{ 	yylval.pnode = create_node(true, yylineno, "SEMI");
+{SEMI}		{ 	yylval.pnode = create_node(yylineno, "SEMI");
 				return SEMI; 
 			}
-{COMMA}		{ 	yylval.pnode = create_node(true, yylineno, "COMMA");
+{COMMA}		{ 	yylval.pnode = create_node(yylineno, "COMMA");
 				return COMMA; 
 			}								
-{ASSIGNOP}	{ 	yylval.pnode = create_node(true, yylineno, "ASSIGNOP");
+{ASSIGNOP}	{ 	yylval.pnode = create_node(yylineno, "ASSIGNOP");
 				return ASSIGNOP; 
 			}
-{RELOP}		{ 	yylval.pnode = create_node(true, yylineno, "RELOP");
+{RELOP}		{ 	yylval.pnode = create_node(yylineno, "RELOP");
 				return RELOP; 
 			}
-{PLUS}		{ 	yylval.pnode = create_node(true, yylineno, "PLUS");
+{PLUS}		{ 	yylval.pnode = create_node(yylineno, "PLUS");
 				return PLUS; 
 			}
-{MINUS}		{ 	yylval.pnode = create_node(true, yylineno, "MINUS");
+{MINUS}		{ 	yylval.pnode = create_node(yylineno, "MINUS");
 				return MINUS; 
 			}
-{STAR}		{ 	yylval.pnode = create_node(true, yylineno, "STAR");
+{STAR}		{ 	yylval.pnode = create_node(yylineno, "STAR");
 				return STAR; 
 			}
-{DIV}		{ 	yylval.pnode = create_node(true, yylineno, "DIV");
+{DIV}		{ 	yylval.pnode = create_node(yylineno, "DIV");
 				return DIV; 
 			}
-{AND}		{ 	yylval.pnode = create_node(true, yylineno, "AND");
+{AND}		{ 	yylval.pnode = create_node(yylineno, "AND");
 				return AND; 
 			}
-{OR}		{ 	yylval.pnode = create_node(true, yylineno, "OR");
+{OR}		{ 	yylval.pnode = create_node(yylineno, "OR");
 				return OR; 
 			}
-{DOT}		{ 	yylval.pnode = create_node(true, yylineno, "DOT");
+{DOT}		{ 	yylval.pnode = create_node(yylineno, "DOT");
 				return DOT; 
 			}
-{NOT}		{ 	yylval.pnode = create_node(true, yylineno, "NOT");
+{NOT}		{ 	yylval.pnode = create_node(yylineno, "NOT");
 				return NOT; 
 			}
 {TYPE}		{ 	yylval.pnode = create_type_node(yylineno, "TYPE", yytext);
 				return TYPE; 
 			}
-{LP}		{ 	yylval.pnode = create_node(true, yylineno, "LP");
+{LP}		{ 	yylval.pnode = create_node(yylineno, "LP");
 				return LP; 
 			}
-{RP}		{ 	yylval.pnode = create_node(true, yylineno, "RP");
+{RP}		{ 	yylval.pnode = create_node(yylineno, "RP");
 				return RP; 
 			}
-{LB}		{ 	yylval.pnode = create_node(true, yylineno, "LB");
+{LB}		{ 	yylval.pnode = create_node(yylineno, "LB");
 				return LB; 
 			}
-{RB}		{ 	yylval.pnode = create_node(true, yylineno, "RB");
+{RB}		{ 	yylval.pnode = create_node(yylineno, "RB");
 				return RB; 
 			}
-{LC}		{ 	yylval.pnode = create_node(true, yylineno, "LC");
+{LC}		{ 	yylval.pnode = create_node(yylineno, "LC");
 				return LC; 
 			}
-{RC}		{ 	yylval.pnode = create_node(true, yylineno, "RC");
+{RC}		{ 	yylval.pnode = create_node(yylineno, "RC");
 				return RC; 
 			}
-{STRUCT}	{ 	yylval.pnode = create_node(true, yylineno, "STRUCT");
+{STRUCT}	{ 	yylval.pnode = create_node(yylineno, "STRUCT");
 				return STRUCT; 
 			}
-{RETURN}	{ 	yylval.pnode = create_node(true, yylineno, "RETURN");
+{RETURN}	{ 	yylval.pnode = create_node(yylineno, "RETURN");
 				return RETURN; 
 			}
-{IF}		{ 	yylval.pnode = create_node(true, yylineno, "IF");
+{IF}		{ 	yylval.pnode = create_node(yylineno, "IF");
 				return IF; 
 			}
-{ELSE}		{ 	yylval.pnode = create_node(true, yylineno, "ELSE");
+{ELSE}		{ 	yylval.pnode = create_node(yylineno, "ELSE");
 				return ELSE; 
 			}
-{WHILE}		{ 	yylval.pnode = create_node(true, yylineno, "WHILE");
+{WHILE}		{ 	yylval.pnode = create_node(yylineno, "WHILE");
 				return WHILE; 
 			}
 {ID}		{ 	if(strlen(yytext) >= 20){

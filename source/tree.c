@@ -9,18 +9,20 @@
 
 #include "tree.h"
 #include "bool.h"
+#include "tokenset.h"
 
 /*a global error flag for both lexical and syntax errors*/
 bool error_flag = false;
 
 /*creators*/
 struct tree_node*
-create_node(bool is_token, int lineno, char *unit_name){
+create_node(int lineno, char *unit_name){
 
 	assert(strlen(unit_name) >= 2);
 	assert(strlen(unit_name) < 20);
 	struct tree_node *node = (struct tree_node *)malloc(sizeof(struct tree_node));
-	node -> is_token = is_token;
+	node -> unit_code = token_stoc(unit_name);
+	node -> is_token = is_terminal(node -> unit_code);
 	node -> lineno = lineno;
 	node -> unit_value = NULL;
  	node -> child = NULL;
@@ -32,7 +34,7 @@ create_node(bool is_token, int lineno, char *unit_name){
 
 struct tree_node*
 create_int_node(int lineno, char *unit_name, int int_value){
-	struct tree_node *node = create_node(true, lineno, unit_name);
+	struct tree_node *node = create_node(lineno, unit_name);
 	node -> unit_value = malloc(sizeof(int));
 	*(int *)(node -> unit_value) = int_value;
 	return node;
@@ -40,7 +42,7 @@ create_int_node(int lineno, char *unit_name, int int_value){
 
 struct tree_node*
 create_float_node(int lineno, char *unit_name, float float_value){
-	struct tree_node *node = create_node(true, lineno, unit_name);
+	struct tree_node *node = create_node(lineno, unit_name);
 	node -> unit_value = malloc(sizeof(float));
 	*(float *)(node -> unit_value) = float_value;
 	return node;
@@ -51,7 +53,7 @@ create_id_node(int lineno, char *unit_name, char* id_name){
 	
 	assert(strlen(id_name) < 20);	/*need modify*/
 
-	struct tree_node *node = create_node(true, lineno, unit_name);
+	struct tree_node *node = create_node(lineno, unit_name);
 	node -> unit_value = malloc(strlen(id_name));
 	strcpy((char *)node -> unit_value, id_name);
 	return node;
@@ -79,7 +81,7 @@ build_a_production(int lineno, char *left_name, int right_num, ...){
 	va_list ap;
 	struct tree_node *pnode;
 	/*create the non-terminal node on the left og the production*/
-	struct tree_node *new_node = create_node(false, lineno,left_name);	// create the left non-terminal
+	struct tree_node *new_node = create_node(lineno,left_name);	// create the left non-terminal
 	if(right_num == 0)
 		return new_node;
 

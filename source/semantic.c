@@ -26,8 +26,23 @@ preorder_analyze(struct tree_node *root){
 void
 analyze_node(struct tree_node *n){
 
-	if(strcmp(n -> unit_name, "ExtDef") == 0){
-		if(strcmp(n -> child -> sibling -> unit_name, "FunDec") == 0){
+
+	/*
+	switch	node_type
+
+		case external def
+			case fundef
+			case global var def
+			case struct def
+
+		case local def
+
+		case exp
+
+	*/
+	if(strcmp(n -> unit_name, "ExtDef") == 0){	//external definitions
+
+		if(strcmp(n -> child -> sibling -> unit_name, "FunDec") == 0){	//func define
 
 			struct tree_node* specifier_node = n -> child -> child;
 			struct tree_node* fundec_node = n -> child -> sibling;
@@ -49,8 +64,21 @@ analyze_node(struct tree_node *n){
 			}
 			struct func_symbol* new_func_symbol = create_func_symbol(func_name, return_type, param_num);
 			insert_into_func_list(new_func_symbol);
+		} else if(strcmp(n -> child -> sibling -> unit_name, "ExtDecList") == 0){	//global var definitions
+
+		} else{	// structure definitions
+			assert(strcmp(n -> child -> sibling -> unit_name, "SEMI") == 0);
+
 		}
 		
+	}
+
+	if(strcmp(n -> unit_name, "Def") == 0){		//local definitions
+
+	}
+
+	if(strcmp(n -> unit_name, "Exp") == 0){		//expressions
+
 	}
 
 }

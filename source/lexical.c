@@ -886,84 +886,84 @@ YY_RULE_SETUP
 case 6:
 YY_RULE_SETUP
 #line 72 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "SEMI");
+{ 	yylval.pnode = create_node(yylineno, "SEMI");
 				return SEMI; 
 			}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 75 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "COMMA");
+{ 	yylval.pnode = create_node(yylineno, "COMMA");
 				return COMMA; 
 			}								
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 78 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "ASSIGNOP");
+{ 	yylval.pnode = create_node(yylineno, "ASSIGNOP");
 				return ASSIGNOP; 
 			}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 81 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "RELOP");
+{ 	yylval.pnode = create_node(yylineno, "RELOP");
 				return RELOP; 
 			}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 84 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "PLUS");
+{ 	yylval.pnode = create_node(yylineno, "PLUS");
 				return PLUS; 
 			}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 87 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "MINUS");
+{ 	yylval.pnode = create_node(yylineno, "MINUS");
 				return MINUS; 
 			}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 90 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "STAR");
+{ 	yylval.pnode = create_node(yylineno, "STAR");
 				return STAR; 
 			}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 93 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "DIV");
+{ 	yylval.pnode = create_node(yylineno, "DIV");
 				return DIV; 
 			}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 96 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "AND");
+{ 	yylval.pnode = create_node(yylineno, "AND");
 				return AND; 
 			}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 99 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "OR");
+{ 	yylval.pnode = create_node(yylineno, "OR");
 				return OR; 
 			}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 102 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "DOT");
+{ 	yylval.pnode = create_node(yylineno, "DOT");
 				return DOT; 
 			}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 105 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "NOT");
+{ 	yylval.pnode = create_node(yylineno, "NOT");
 				return NOT; 
 			}
 	YY_BREAK
@@ -977,77 +977,77 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 111 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "LP");
+{ 	yylval.pnode = create_node(yylineno, "LP");
 				return LP; 
 			}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 114 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "RP");
+{ 	yylval.pnode = create_node(yylineno, "RP");
 				return RP; 
 			}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 117 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "LB");
+{ 	yylval.pnode = create_node(yylineno, "LB");
 				return LB; 
 			}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 120 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "RB");
+{ 	yylval.pnode = create_node(yylineno, "RB");
 				return RB; 
 			}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 123 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "LC");
+{ 	yylval.pnode = create_node(yylineno, "LC");
 				return LC; 
 			}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 126 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "RC");
+{ 	yylval.pnode = create_node(yylineno, "RC");
 				return RC; 
 			}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 129 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "STRUCT");
+{ 	yylval.pnode = create_node(yylineno, "STRUCT");
 				return STRUCT; 
 			}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 132 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "RETURN");
+{ 	yylval.pnode = create_node(yylineno, "RETURN");
 				return RETURN; 
 			}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 135 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "IF");
+{ 	yylval.pnode = create_node(yylineno, "IF");
 				return IF; 
 			}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 138 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "ELSE");
+{ 	yylval.pnode = create_node(yylineno, "ELSE");
 				return ELSE; 
 			}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 141 "lexical.l"
-{ 	yylval.pnode = create_node(true, yylineno, "WHILE");
+{ 	yylval.pnode = create_node(yylineno, "WHILE");
 				return WHILE; 
 			}
 	YY_BREAK

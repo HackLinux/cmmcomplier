@@ -1,7 +1,4 @@
-int main(int a){
-	
-}
-
-int test(int b){
-	
+int test(){
+	struct node n;
+	n.a = 0;
 }

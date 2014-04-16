@@ -1580,10 +1580,10 @@ yyreduce:
 #line 53 "syntax.y"
     {	(yyval.pnode) = build_a_production((yyloc).first_line, "Program", 1, (yyvsp[(1) - (1)].pnode));
 										if(!error_flag){
-											//print_syntax_tree($$, 0);
-											printf("no syntax error\n");
-											preorder_analyze((yyval.pnode));
-											print_func_table(func_list_head);
+											print_syntax_tree((yyval.pnode), 0);
+											//printf("no syntax error\n");
+											//preorder_analyze($$);
+											//print_func_table(func_list_head);
 											destroy_tree((yyval.pnode));
 										}
 									}
