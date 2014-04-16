@@ -1,0 +1,1 @@
+/*symbol table related functions used in semantic analysis*/

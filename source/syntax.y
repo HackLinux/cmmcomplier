@@ -51,7 +51,8 @@
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
 										if(!error_flag){
-											preorder_traverse($$, 0);
+											print_syntax_tree($$, 0);
+											//printf("no syntax error\n");
 											destroy_tree($$);
 										}
 									}

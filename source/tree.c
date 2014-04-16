@@ -1,3 +1,6 @@
+/*syntax tree related functions used in syntax analysis*/
+/*a multi tree will be build after syntax analysis*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -97,13 +100,13 @@ build_a_production(int lineno, char *left_name, int right_num, ...){
 
 /*visitors*/
 void
-preorder_traverse(struct tree_node *root, int level){
+print_syntax_tree(struct tree_node *root, int level){
 	assert(root != NULL);
 	visit(root, level);
 	level++;
 	struct tree_node *child;
 	for (child = root -> child; child != NULL; child = child -> sibling){
-		preorder_traverse(child, level);
+		print_syntax_tree(child, level);
 	}
 }
 

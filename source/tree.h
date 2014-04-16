@@ -30,7 +30,7 @@ struct tree_node *create_type_node(int, char*, char*);
 struct tree_node *build_a_production(int, char *, int, ...);
 
 /*visitors*/
-void preorder_traverse(struct tree_node *root, int level);
+void print_syntax_tree(struct tree_node *root, int level);
 void visit(struct tree_node *n, int level);
 
 /*destructors*/
