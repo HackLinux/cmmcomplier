@@ -33,6 +33,7 @@ struct func_descriptor*
 create_func_descriptor(char *func_name, int return_type, int param_num){
 
 	assert(strlen(func_name) < 20);
+	assert(return_type <= TYPE_FLOAT);	//return type must be basic
 
 	struct func_descriptor *new_func_descriptor = (struct func_descriptor *)malloc(sizeof(struct func_descriptor));
 	strcpy(new_func_descriptor -> func_name, func_name);
@@ -99,6 +100,8 @@ create_struct_descriptor(char* struct_name, struct tree_node* deflist){
 	while(deflist -> child != NULL){
 		member_num ++;
 		deflist = deflist -> child -> sibling;	//deflist -> def deflist
+		//todo : make member variables list and check initialization
+		//return null when error(member initialization when structure definition)
 	}
 
 	new_struct_descriptor -> member_num = member_num;
@@ -129,7 +132,7 @@ print_struct_table(struct struct_descriptor* head){
 	int i = 0;
 	struct struct_descriptor* p;
 	printf("structure table :\n");
-	printf("+============================================================+\n");
+	printf("+=============================================+\n");
 	printf("%29s", "structure name");
 	printf("%17s", "menber numbers");
 	for ( p = head -> next; p != NULL; p = p -> next){
@@ -137,7 +140,7 @@ print_struct_table(struct struct_descriptor* head){
 		printf("%20s", p -> struct_name);
 		printf("%17d", p -> member_num);
 	}
-	printf("\n+============================================================+\n");
+	printf("\n+=============================================+\n");
 }
 
 /******************************functions for var_table******************************/
