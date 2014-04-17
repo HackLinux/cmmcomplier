@@ -22,7 +22,7 @@ create_node(int lineno, char *unit_name){
 	assert(strlen(unit_name) < 20);
 	struct tree_node *node = (struct tree_node *)malloc(sizeof(struct tree_node));
 	node -> unit_code = token_stoc(unit_name);
-	node -> is_token = is_terminal(node -> unit_code);
+	node -> is_terminal = is_terminal(node -> unit_code);
 	node -> lineno = lineno;
 	node -> unit_value = NULL;
  	node -> child = NULL;
@@ -114,7 +114,7 @@ print_syntax_tree(struct tree_node *root, int level){
 
 void 
 visit(struct tree_node *n, int level){
-	switch(n -> is_token){
+	switch(n -> is_terminal){
 		case true: /*terminals*/
 			while(level -- > 0)
 				printf("  ");

@@ -1,4 +1,8 @@
-int test(){
-	struct node n;
-	n.a = 0;
+/*struct node{
+	int a[5];
+};*/
+
+int main(){
+	//struct node n;
+	n.a[0] = 0;
 }

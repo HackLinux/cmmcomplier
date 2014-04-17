@@ -10,6 +10,7 @@
 #include "tree.h"		
 #include "table.h"
 #include "semantic.h"
+#include "tokenset.h"
 
 /*preorder transeverse the syntax tree to do semantic analysis*/
 void
@@ -26,59 +27,72 @@ preorder_analyze(struct tree_node *root){
 void
 analyze_node(struct tree_node *n){
 
-
 	/*
 	switch	node_type
 
 		case external def
-			case fundef
-			case global var def
-			case struct def
+
+			switch
+				case fundef
+
+				case global var def
+				
+				case struct def
 
 		case local def
 
 		case exp
 
 	*/
-	if(strcmp(n -> unit_name, "ExtDef") == 0){	//external definitions
+	switch(n -> unit_code){
+		case ExtDef:{	//external definitions
 
-		if(strcmp(n -> child -> sibling -> unit_name, "FunDec") == 0){	//func define
+			switch(n -> child -> sibling -> unit_code){
+				case FunDec:{	//func def
+					struct tree_node* specifier_node = n -> child -> child;
+					struct tree_node* fundec_node = n -> child -> sibling;
+					if(specifier_node -> unit_code == StructSpecifier){
+						printf("Error type 100 at line %d: Function return a struct type\n", specifier_node -> lineno);
+				 		return;
+					}
+					assert(specifier_node -> unit_code == TYPE);
+					char *func_name = fundec_node -> child -> unit_value;
 
-			struct tree_node* specifier_node = n -> child -> child;
-			struct tree_node* fundec_node = n -> child -> sibling;
-			if(strcmp(specifier_node -> unit_name, "StructSpecifier") == 0){
-				 printf("Error type 100 at line %d: the function return a struct type\n", specifier_node -> lineno);
-				 return;
-			}
-			assert(strcmp(specifier_node -> unit_name, "TYPE") == 0);
-			char *func_name = fundec_node -> child -> unit_value;
-			int return_type = (strcmp(specifier_node -> unit_value, "int") == 0) ? TYPE_INT : TYPE_FLOAT;
-			int param_num = 0;
-			if(strcmp(fundec_node -> child -> sibling -> sibling -> unit_name, "VarList") == 0){
-				struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
-				param_num ++ ;
-				while(varlist_node -> child -> sibling != NULL){
-					varlist_node = varlist_node -> child -> sibling -> sibling;
-					param_num ++;
+					/*check func name repeat. this makes func name cannot overload*/
+					if(find_func(func_table_head, func_name) != NULL){
+						printf("Error type 4 at line %d: Function redifinition\n", fundec_node -> lineno);
+						return ;
+					}
+					int return_type = (strcmp(specifier_node -> unit_value, "int") == 0) ? TYPE_INT : TYPE_FLOAT;
+					int param_num = 0;
+					if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
+						struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
+						param_num ++ ;
+						while(varlist_node -> child -> sibling != NULL){
+							varlist_node = varlist_node -> child -> sibling -> sibling;
+							param_num ++;
+							//todo : treate params as global vars 
+						}
+					}
+					struct func_descriptor* new_func_descriptor = create_func_descriptor(func_name, return_type, param_num);
+					add_func(func_table_head, new_func_descriptor);
+					break;
 				}
+				case ExtDecList:{	//global var def
+					break;
+				}
+				case SEMI:{		// struct def
+					break;
+				}
+				default: assert(0);break;
 			}
-			struct func_symbol* new_func_symbol = create_func_symbol(func_name, return_type, param_num);
-			insert_into_func_list(new_func_symbol);
-		} else if(strcmp(n -> child -> sibling -> unit_name, "ExtDecList") == 0){	//global var definitions
-
-		} else{	// structure definitions
-			assert(strcmp(n -> child -> sibling -> unit_name, "SEMI") == 0);
-
 		}
-		
+		case Def:{
+			break;
+		}
+		case Exp :{
+			break;
+		}
+		default: break;
 	}
-
-	if(strcmp(n -> unit_name, "Def") == 0){		//local definitions
-
-	}
-
-	if(strcmp(n -> unit_name, "Exp") == 0){		//expressions
-
-	}
-
 }

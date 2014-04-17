@@ -1583,7 +1583,7 @@ yyreduce:
 											print_syntax_tree((yyval.pnode), 0);
 											//printf("no syntax error\n");
 											//preorder_analyze($$);
-											//print_func_table(func_list_head);
+											//print_func_table(func_table_head);
 											destroy_tree((yyval.pnode));
 										}
 									}

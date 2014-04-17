@@ -31,4 +31,8 @@
 #define Exp 1020
 #define Args 1021
 
+bool is_terminal(int token_code);
+int token_stoc(char *token_string);
+char* token_ctos(int token_code);
+
 #endif

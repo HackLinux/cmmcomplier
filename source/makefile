@@ -9,7 +9,7 @@ lexical.c: lexical.l
 	flex -o lexical.c lexical.l 
 
 syntax.c: syntax.y
-	bison -o syntax.c -d -v syntax.y 
+	bison -o syntax.c -d syntax.y 
 
 
 .PHONY:clean

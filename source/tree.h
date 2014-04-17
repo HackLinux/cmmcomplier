@@ -12,9 +12,11 @@ union value{
 
 
 struct tree_node {
-	int unit_code;				/*the code of the token or terminal, defined in tokenset.h*/
-	bool is_token;				/*a token(1) or a nonterminal(0)*/
+	
+	bool is_terminal;			/*a token(1) or a nonterminal(0)*/
 	int lineno;					/*line number of the token*/
+
+	int unit_code;				/*the code of the token or terminal, defined in tokenset.h*/
 	char unit_name[20];			/*name of the syntax unit*/
 	void *unit_value;			/*value of the syntax unit. so called lexeme.
 								 *INT node has an integer, ID node has a string and son on*/
