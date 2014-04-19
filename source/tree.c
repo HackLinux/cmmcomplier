@@ -8,8 +8,8 @@
 #include <stdarg.h>		//variable parameters
 
 #include "tree.h"
-#include "bool.h"
-#include "tokenset.h"
+#include "common/bool.h"
+#include "common/tokenset.h"
 
 /*a global error flag for both lexical and syntax errors*/
 bool error_flag = false;

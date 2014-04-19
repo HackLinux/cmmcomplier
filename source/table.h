@@ -2,12 +2,7 @@
 #define __TABLE_H__
 
 #include "tree.h"
-
-#define TYPE_INT 1
-#define TYPE_FLOAT 2
-#define TYPE_STRUCT 3
-#define TYPE_ARRAY 4
-#define TYPE_STRUCT_ARRAY 5
+#include "type.h"
 
 struct func_descriptor{
 	char func_name[20];
@@ -28,16 +23,10 @@ struct struct_descriptor{
 struct var_descriptor{
 	int type_code;
 	char var_name[20];
-	struct struct_descriptor* sd;	//struct variables have this and sd -> next is null
+	struct struct_descriptor* sd;	//struct variables have this
 	struct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
 									//struct array have both
 	struct var_descriptor* next;
-};
-
-struct array_type{
-	int size;
-	int final_type_code;	// when subtype = null , this field is used
-	struct array_type *subtype;
 };
 
 /*heads of three tables*/
@@ -47,23 +36,25 @@ extern struct var_descriptor* var_table_head;
 
 /*func table related functions*/
 struct func_descriptor* create_func_descriptor(char*, int, int);
-
 struct func_descriptor* find_func(struct func_descriptor*, char *);
-
 void add_func(struct func_descriptor*, struct func_descriptor* );
-
 void print_func_table(struct func_descriptor* );
 
 
 /*struct table related functions*/
 struct struct_descriptor* create_struct_descriptor(char* , struct tree_node*);
-
 struct struct_descriptor* find_struct(struct struct_descriptor*, char*);
-
 void add_struct(struct struct_descriptor*, struct struct_descriptor*);
-
 void print_struct_table(struct struct_descriptor*);
 
 /*var table related functions*/
+struct var_descriptor* create_basic_var_desciiptor(int, char*);
+struct var_descriptor* create_struct_var_desciiptor(char*, struct struct_descriptor*);
+struct var_descriptor* create_array_var_desciiptor(char*, struct array_type*);
+struct var_descriptor* create_struct_array_var_desciiptor(char*, struct struct_descriptor*, struct array_type*);
+struct var_descriptor* find_var(struct var_descriptor*, char*);
+void add_var(struct var_descriptor*, struct var_descriptor*);
+void print_var_table(struct var_descriptor*);
+
 
 #endif

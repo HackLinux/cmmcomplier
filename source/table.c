@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "table.h"
 #include "tree.h"
+#include "type.h"
 
 /* three tables will be build in semantic analysis
  * 1. func def table
@@ -33,7 +34,7 @@ struct func_descriptor*
 create_func_descriptor(char *func_name, int return_type, int param_num){
 
 	assert(strlen(func_name) < 20);
-	assert(return_type <= TYPE_FLOAT);	//return type must be basic
+	assert(return_type <= TYPE_STRUCT);	//return type must be basic
 
 	struct func_descriptor *new_func_descriptor = (struct func_descriptor *)malloc(sizeof(struct func_descriptor));
 	strcpy(new_func_descriptor -> func_name, func_name);
@@ -70,15 +71,14 @@ void
 print_func_table(struct func_descriptor* head){
 	int i = 0;
 	struct func_descriptor* p;
-	printf("function table :\n");
-	printf("+============================================================+\n");
+	printf("+======================function table========================+\n");
 	printf("%29s", "function name");
 	printf("%15s", "return type");
 	printf("%17s", "param numbers");
 	for ( p = head -> next; p != NULL; p = p -> next){
 		printf("\n %d\t ", i++);
 		printf("%20s", p -> func_name);
-		printf("%15s", (p -> return_type == TYPE_INT)? "int" : "float");
+		printf("%15s", type_ctos(p -> return_type));
 		printf("%17d", p -> param_num);
 	}
 	printf("\n+============================================================+\n");
@@ -131,8 +131,7 @@ void
 print_struct_table(struct struct_descriptor* head){
 	int i = 0;
 	struct struct_descriptor* p;
-	printf("structure table :\n");
-	printf("+=============================================+\n");
+	printf("\n+==============structure table================+\n");
 	printf("%29s", "structure name");
 	printf("%17s", "menber numbers");
 	for ( p = head -> next; p != NULL; p = p -> next){
@@ -144,3 +143,90 @@ print_struct_table(struct struct_descriptor* head){
 }
 
 /******************************functions for var_table******************************/
+
+/*int float struct and array
+struct var_descriptor{
+	int type_code;
+	char var_name[20];
+	struct struct_descriptor* sd;	//struct variables have this
+	struct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
+									//struct array have both
+	struct var_descriptor* next;
+};
+
+struct array_type{
+	int size;
+	int final_type_code;	// when subtype = null , this field is used
+	struct array_type *subtype;
+};*/
+
+struct var_descriptor*
+create_basic_var_desciiptor(int type_code, char* var_name){
+	//assert(type_code == TYPE_INT || type_code == TYPE_FLOAT);
+	assert(strlen(var_name) < 20);
+	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
+	new_var_descriptor -> type_code = type_code;
+	strcpy(new_var_descriptor -> var_name, var_name);
+	new_var_descriptor -> sd = NULL;
+	new_var_descriptor -> at = NULL;
+	new_var_descriptor -> next = NULL;
+	return new_var_descriptor;
+}
+
+struct var_descriptor*
+create_struct_var_desciiptor(char* var_name, struct struct_descriptor* sd){
+	assert(strlen(var_name) < 20);
+	struct var_descriptor* new_var_descriptor = create_basic_var_desciiptor(TYPE_STRUCT, var_name);
+	new_var_descriptor -> sd = sd;
+	return new_var_descriptor;
+}
+
+struct var_descriptor*
+create_array_var_desciiptor(char* var_name, struct array_type* at){
+	struct var_descriptor* new_var_descriptor = create_basic_var_desciiptor(TYPE_ARRAY, var_name);
+	new_var_descriptor -> at = at;
+	return new_var_descriptor;
+}
+
+struct var_descriptor*
+create_struct_array_var_desciiptor(char* var_name, struct struct_descriptor* sd, struct array_type* at){
+	struct var_descriptor* new_var_descriptor = create_basic_var_desciiptor(TYPE_STRUCT_ARRAY, var_name);
+	new_var_descriptor -> sd = sd;
+	new_var_descriptor -> at = at;
+	return new_var_descriptor;
+}
+
+struct var_descriptor*
+find_var(struct var_descriptor* head, char* var_name){
+	assert(strlen(var_name) < 20);
+	struct var_descriptor* p;
+	for ( p = head -> next; p != NULL; p = p -> next){
+		if(strcmp(p -> var_name, var_name) == 0)
+			break;
+	}
+	return p;
+}
+
+void
+add_var(struct var_descriptor* head, struct var_descriptor* new_var){
+	assert(head != NULL);
+	assert(new_var != NULL);
+	new_var -> next = head -> next;
+	head -> next = new_var;
+}
+
+void
+print_var_table(struct var_descriptor* head){
+	int i = 0;
+	struct var_descriptor* p;
+	printf(" :\n");
+	printf("+=================variables table=============+\n");
+	printf("%29s", "variable name");
+	printf("%17s", "variable type");
+	for ( p = head -> next; p != NULL; p = p -> next){
+		printf("\n %d\t ", i++);
+		printf("%20s", p -> var_name);
+		printf("%17d", p -> type_code);
+	}
+	printf("\n+=============================================+\n");
+}

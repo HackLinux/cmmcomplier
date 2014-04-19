@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "bool.h"
-#include "syntax.h"
 #include "tokenset.h"
 
 /*tokens and terminals related functions*/

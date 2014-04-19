@@ -556,7 +556,7 @@ char *yytext;
 	#include <string.h>
 	#include "syntax.h"
 	#include "tree.h"
-	#include "bool.h"
+	#include "common/bool.h"
 	#include "math.h"
 
 	int yycolumn = 1;

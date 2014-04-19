@@ -1,7 +1,7 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 
-#include "bool.h"
+#include "common/bool.h"
 
 extern bool error_flag;
 

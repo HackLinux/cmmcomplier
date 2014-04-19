@@ -1,11 +1,9 @@
 struct node{
 	int a[5];
 };
-struct {
-	
-};
 
-int main(){
+
+struct node main(){
 	//struct node n;
 	n.a[0] = 0;
 }

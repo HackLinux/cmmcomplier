@@ -1,4 +1,4 @@
-CFILES = syntax.c main.c tree.c math.c semantic.c table.c tokenset.c
+CFILES = syntax.c main.c tree.c semantic.c table.c type.c common/math.c common/tokenset.c 
 CFLAGS = -ly -lfl -lm #-Wall
 
 

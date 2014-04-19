@@ -1,4 +1,4 @@
-/*function definitions for semantic analysis, which	*
+/*functions for semantic analysis, which	*
  *will be carrried out after building the syntax tree*/
 
 
@@ -10,7 +10,9 @@
 #include "tree.h"		
 #include "table.h"
 #include "semantic.h"
-#include "tokenset.h"
+#include "type.h"
+#include "common/tokenset.h"
+
 
 /*preorder transeverse the syntax tree to do semantic analysis*/
 void
@@ -49,25 +51,22 @@ analyze_node(struct tree_node *n){
 
 			switch(n -> child -> sibling -> unit_code){
 				case FunDec:{	//func def
-
+					
 					//ExtDef -> Specifier FunDec CompSt
 					//Specifier -> TYPE
-					struct tree_node* type_node = n -> child -> child;
+					struct tree_node* specifier_node = n -> child;
 					struct tree_node* fundec_node = n -> child -> sibling;
-					if(type_node -> unit_code == StructSpecifier){
-						printf("Error type 100 at line %d: Function return a struct type\n", type_node -> lineno);
-				 		return;
-					}
-					assert(type_node -> unit_code == TYPE);
+					assert(specifier_node -> unit_code == Specifier);
 					assert(fundec_node -> unit_code == FunDec);
 					char *func_name = fundec_node -> child -> unit_value;
 
-					/*check func name repeat. this makes func name cannot overload*/
+					//check func name repeat. this makes func name cannot overload
 					if(find_func(func_table_head, func_name) != NULL){
 						printf("Error type 4 at line %d: Function redifinition\n", fundec_node -> lineno);
 						return ;
 					}
-					int return_type = (strcmp(type_node -> unit_value, "int") == 0) ? TYPE_INT : TYPE_FLOAT;
+					int return_type = get_type_code_from_specifier(specifier_node);
+
 					int param_num = 0;
 					if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
 						struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;

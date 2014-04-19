@@ -1,7 +1,35 @@
 #ifndef __TOKEN_H__
 #define __TOKEN_H__
 
-#include "syntax.h"	//terminals
+
+//terminals
+#define INT 258
+#define FLOAT 259
+#define ID 260
+#define SEMI 261
+#define COMMA 262
+#define ASSIGNOP 263
+#define RELOP 264
+#define PLUS 265
+#define MINUS 266
+#define STAR 267
+#define DIV 268
+#define AND 269
+#define OR 270
+#define DOT 271
+#define NOT 272
+#define TYPE 273
+#define LP 274
+#define RP 275
+#define LB 276
+#define RB 277
+#define LC 278
+#define RC 279
+#define STRUCT 280
+#define RETURN 281
+#define IF 282
+#define ELSE 283
+#define WHILE 284
 
 //non-terminals
 #define Program 1001
