@@ -1,4 +1,4 @@
-/*functions for semantic analysis, which	*
+/*functions for semantic analysis, which    *
  *will be carrried out after building the syntax tree*/
 
 
@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "tree.h"		
+#include "tree.h"       
 #include "table.h"
 #include "semantic.h"
 #include "type.h"
@@ -30,7 +30,7 @@ void
 analyze_node(struct tree_node *n){
 
 	/*
-	switch	node_type
+	switch  node_type
 
 		case external def
 
@@ -47,10 +47,10 @@ analyze_node(struct tree_node *n){
 
 	*/
 	switch(n -> unit_code){
-		case ExtDef:{	//external definitions
+		case ExtDef:{   //external definitions
 
 			switch(n -> child -> sibling -> unit_code){
-				case FunDec:{	//func def
+				case FunDec:{   //func def
 					
 					//ExtDef -> Specifier FunDec CompSt
 					//Specifier -> TYPE
@@ -81,24 +81,43 @@ analyze_node(struct tree_node *n){
 					add_func(func_table_head, new_func_descriptor);
 					break;
 				}
-				case ExtDecList:{	//global var def
-					
+				case ExtDecList:{   //global var def
+
+					//ExtDef -> Specifier ExtDecList SEMI
+					struct tree_node* specifier_node = n -> child;
+					struct tree_node* extdeclist_node  = n -> child -> sibling;
+
+					int type_code = get_type_code_from_specifier(specifier_node);
+
+					assert(type_code == TYPE_INT);
+					char* var_name = extdeclist_node -> child -> child ->unit_value;
+					struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(type_code, var_name);
+					add_var(var_table_head, new_var_descriptor);
+					while(extdeclist_node -> child -> sibling != NULL){
+						extdeclist_node = extdeclist_node -> child -> sibling -> sibling;
+						var_name = extdeclist_node -> child -> child ->unit_value;
+						new_var_descriptor = create_basic_var_descriptor(type_code, var_name);
+						add_var(var_table_head, new_var_descriptor);
+					}
+
 					//todo : anonymous structure definition
 					break;
 				}
-				case SEMI:{		// struct def
+				case SEMI:{     // struct def
 
 					//Extdef -> Specifier SEMI;
 					//Specifier -> StructSpecifier
 					//StructSpecifer -> STRUCT OptTag LC DefList RC
-					struct tree_node* struct_specifier_node = n -> child -> child;	
-					struct tree_node* opttag_node = struct_specifier_node -> child -> sibling;
-					if(struct_specifier_node -> unit_code == TYPE || opttag_node -> unit_code == Tag){
-						//source code like below will be caught and report error here
+					struct tree_node* struct_specifier_node = n -> child -> child;
+					if(struct_specifier_node -> unit_code == TYPE){
 						//(global)int ;
-						//(global)struct some_struct ;
-						printf("Error type 100 at line %d: Empty external definition\n", struct_specifier_node -> lineno);
-				 		return;
+						printf("Error type 100 at line %d: Empty global variable definition\n", struct_specifier_node -> lineno);
+						return;
+					}
+					struct tree_node* opttag_node = struct_specifier_node -> child -> sibling;
+					if(opttag_node -> unit_code == Tag){
+						printf("Error type 100 at line %d: Empty structure definition\n", struct_specifier_node -> lineno);
+						return;  
 					}
 					struct tree_node* deflist_node = opttag_node -> sibling -> sibling;
 
@@ -108,10 +127,10 @@ analyze_node(struct tree_node *n){
 					if(opttag_node -> child == NULL){
 						//anonymous structure def
 						printf("Error type 100 at line %d: Anonymous structure definition without variables\n", struct_specifier_node -> lineno);
-				 		return;
+						return;
 					}
 
-					char* struct_name = opttag_node -> child -> unit_value;	//ID node has a value
+					char* struct_name = opttag_node -> child -> unit_value; //ID node has a value
 
 					/*check struct name repeat*/
 					if(find_struct(struct_table_head, struct_name) != NULL){

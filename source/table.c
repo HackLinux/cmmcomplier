@@ -161,7 +161,7 @@ struct array_type{
 };*/
 
 struct var_descriptor*
-create_basic_var_desciiptor(int type_code, char* var_name){
+create_basic_var_descriptor(int type_code, char* var_name){
 	//assert(type_code == TYPE_INT || type_code == TYPE_FLOAT);
 	assert(strlen(var_name) < 20);
 	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
@@ -174,23 +174,23 @@ create_basic_var_desciiptor(int type_code, char* var_name){
 }
 
 struct var_descriptor*
-create_struct_var_desciiptor(char* var_name, struct struct_descriptor* sd){
+create_struct_var_descriptor(char* var_name, struct struct_descriptor* sd){
 	assert(strlen(var_name) < 20);
-	struct var_descriptor* new_var_descriptor = create_basic_var_desciiptor(TYPE_STRUCT, var_name);
+	struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(TYPE_STRUCT, var_name);
 	new_var_descriptor -> sd = sd;
 	return new_var_descriptor;
 }
 
 struct var_descriptor*
-create_array_var_desciiptor(char* var_name, struct array_type* at){
-	struct var_descriptor* new_var_descriptor = create_basic_var_desciiptor(TYPE_ARRAY, var_name);
+create_array_var_descriptor(char* var_name, struct array_type* at){
+	struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(TYPE_ARRAY, var_name);
 	new_var_descriptor -> at = at;
 	return new_var_descriptor;
 }
 
 struct var_descriptor*
-create_struct_array_var_desciiptor(char* var_name, struct struct_descriptor* sd, struct array_type* at){
-	struct var_descriptor* new_var_descriptor = create_basic_var_desciiptor(TYPE_STRUCT_ARRAY, var_name);
+create_struct_array_var_descriptor(char* var_name, struct struct_descriptor* sd, struct array_type* at){
+	struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(TYPE_STRUCT_ARRAY, var_name);
 	new_var_descriptor -> sd = sd;
 	new_var_descriptor -> at = at;
 	return new_var_descriptor;
@@ -219,8 +219,7 @@ void
 print_var_table(struct var_descriptor* head){
 	int i = 0;
 	struct var_descriptor* p;
-	printf(" :\n");
-	printf("+=================variables table=============+\n");
+	printf("\n+=================variables table=============+\n");
 	printf("%29s", "variable name");
 	printf("%17s", "variable type");
 	for ( p = head -> next; p != NULL; p = p -> next){

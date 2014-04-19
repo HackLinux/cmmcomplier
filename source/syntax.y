@@ -57,6 +57,7 @@ Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $
 											preorder_analyze($$);
 											print_func_table(func_table_head);
 											print_struct_table(struct_table_head);
+											print_var_table(var_table_head);
 											destroy_tree($$);
 										}
 									}

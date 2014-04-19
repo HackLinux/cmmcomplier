@@ -48,10 +48,10 @@ void add_struct(struct struct_descriptor*, struct struct_descriptor*);
 void print_struct_table(struct struct_descriptor*);
 
 /*var table related functions*/
-struct var_descriptor* create_basic_var_desciiptor(int, char*);
-struct var_descriptor* create_struct_var_desciiptor(char*, struct struct_descriptor*);
-struct var_descriptor* create_array_var_desciiptor(char*, struct array_type*);
-struct var_descriptor* create_struct_array_var_desciiptor(char*, struct struct_descriptor*, struct array_type*);
+struct var_descriptor* create_basic_var_descriptor(int, char*);
+struct var_descriptor* create_struct_var_descriptor(char*, struct struct_descriptor*);
+struct var_descriptor* create_array_var_descriptor(char*, struct array_type*);
+struct var_descriptor* create_struct_array_var_descriptor(char*, struct struct_descriptor*, struct array_type*);
 struct var_descriptor* find_var(struct var_descriptor*, char*);
 void add_var(struct var_descriptor*, struct var_descriptor*);
 void print_var_table(struct var_descriptor*);
