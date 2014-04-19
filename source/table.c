@@ -7,6 +7,7 @@
 #include "table.h"
 #include "tree.h"
 #include "type.h"
+#include "common/tokenset.h"
 
 /* three tables will be build in semantic analysis
  * 1. func def table
@@ -108,6 +109,22 @@ create_struct_descriptor(char* struct_name, struct tree_node* deflist){
 	return new_struct_descriptor;
 }
 
+
+struct struct_descriptor*
+create_struct_descriptor_by_structspecifier(struct tree_node *structspecifier_node){
+	assert(structspecifier_node -> unit_code == StructSpecifier);
+	assert(structspecifier_node -> child -> sibling -> unit_code == OptTag);
+	struct tree_node* opttag_node = structspecifier_node -> child -> sibling;
+	char* struct_name;
+	if(opttag_node -> child == NULL)//anonymous structure def
+		struct_name = "";
+	else
+		struct_name = opttag_node -> child -> unit_value;
+	//todo : check name repeat???
+	return create_struct_descriptor(struct_name, opttag_node -> sibling -> sibling);
+
+}
+
 struct struct_descriptor*
 find_struct(struct struct_descriptor* head, char* struct_name){
 	assert(strlen(struct_name) < 20);
@@ -144,12 +161,25 @@ print_struct_table(struct struct_descriptor* head){
 
 /******************************functions for var_table******************************/
 
+/*
 struct var_descriptor*
 create_basic_var_descriptor(int type_code, char* var_name){
 	assert(strlen(var_name) < 20);
 	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
 	strcpy(new_var_descriptor -> var_name, var_name);
-	new_var_descriptor -> var_type = create_type_descriptor(type_code, NULL, NULL);
+	new_var_descriptor -> var_type = create_type_descriptor(type_code, NULL);
+	new_var_descriptor -> next = NULL;
+	
+	return new_var_descriptor;
+}*/
+
+struct var_descriptor*
+create_var_descriptor(char* var_name, struct type_descriptor *var_type, struct array_descriptor *var_array){
+	assert(strlen(var_name) < 20);
+	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
+	strcpy(new_var_descriptor -> var_name, var_name);
+	new_var_descriptor -> var_type = var_type;
+	new_var_descriptor -> var_array = var_array;
 	new_var_descriptor -> next = NULL;
 	
 	return new_var_descriptor;

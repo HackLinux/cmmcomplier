@@ -1,6 +1,7 @@
-int a, b;
+struct {
+	int a1;
+	int b;
+} n1;
 
-struct node main(int a, int b){
-	//struct node n;
-	n.a[0] = 0;
+int main(int a, int b){
 }

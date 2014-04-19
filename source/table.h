@@ -23,7 +23,9 @@ struct struct_descriptor{
 struct var_descriptor{
 	//int type_code;
 	char var_name[20];
-	struct type_descriptor *var_type;
+	struct type_descriptor *var_type;	//the type of a variable can be int\float\struct (cannot be null)
+	struct array_descriptor *var_array;	//the array of the variable likes [10][20][30]...	(may be null)
+
 	//struct struct_descriptor* sd;	//struct variables have this
 	//sstruct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
 									//struct array have both
@@ -44,15 +46,16 @@ void print_func_table(struct func_descriptor* );
 
 /*struct table related functions*/
 struct struct_descriptor* create_struct_descriptor(char* , struct tree_node*);
+struct struct_descriptor* create_struct_descriptor_by_structspecifier(struct tree_node*);
 struct struct_descriptor* find_struct(struct struct_descriptor*, char*);
 void add_struct(struct struct_descriptor*, struct struct_descriptor*);
 void print_struct_table(struct struct_descriptor*);
 
 /*var table related functions*/
-struct var_descriptor* create_basic_var_descriptor(int, char*);
-struct var_descriptor* create_struct_var_descriptor(char*, struct struct_descriptor*);
-struct var_descriptor* create_array_var_descriptor(char*, struct array_type*);
-struct var_descriptor* create_struct_array_var_descriptor(char*, struct struct_descriptor*, struct array_type*);
+struct var_descriptor* create_var_descriptor(char*, struct type_descriptor*, struct array_descriptor*);
+//struct var_descriptor* create_struct_var_descriptor(char*, struct struct_descriptor*);
+//struct var_descriptor* create_array_var_descriptor(char*, struct array_type*);
+//struct var_descriptor* create_struct_array_var_descriptor(char*, struct struct_descriptor*, struct array_type*);
 struct var_descriptor* find_var(struct var_descriptor*, char*);
 void add_var(struct var_descriptor*, struct var_descriptor*);
 void print_var_table(struct var_descriptor*);

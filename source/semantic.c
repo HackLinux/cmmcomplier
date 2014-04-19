@@ -87,21 +87,22 @@ analyze_node(struct tree_node *n){
 					struct tree_node* specifier_node = n -> child;
 					struct tree_node* extdeclist_node  = n -> child -> sibling;
 
-					int type_code = get_type_code_from_specifier(specifier_node);
+					//int type_code = get_type_code_from_specifier(specifier_node);
 
-					assert(type_code == TYPE_INT);
+					//assert(type_code == TYPE_INT);
+					struct type_descriptor* var_type = create_type_descriptor_by_specifier(specifier_node);
 					char* var_name = extdeclist_node -> child -> child ->unit_value;
-					struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(type_code, var_name);
+					struct var_descriptor* new_var_descriptor = create_var_descriptor(var_name, var_type, NULL);
 					add_var(var_table_head, new_var_descriptor);
 					while(extdeclist_node -> child -> sibling != NULL){
 						extdeclist_node = extdeclist_node -> child -> sibling -> sibling;
 						var_name = extdeclist_node -> child -> child ->unit_value;
-						new_var_descriptor = create_basic_var_descriptor(type_code, var_name);
+						new_var_descriptor = create_var_descriptor(var_name, var_type, NULL);
 						add_var(var_table_head, new_var_descriptor);
 					}
 
 					//todo : struct var array var ...
-					
+
 					//todo : anonymous structure definition
 					break;
 				}
@@ -139,7 +140,6 @@ analyze_node(struct tree_node *n){
 						printf("Error type 4 at line %d: Structure redifinition\n", struct_specifier_node -> lineno);
 						return ;
 					}
-
 					//todo: check struct name repeat with variables
 
 					struct struct_descriptor* new_struct_descriptor = create_struct_descriptor(struct_name, deflist_node);

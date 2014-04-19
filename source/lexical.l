@@ -26,7 +26,7 @@ OCT			0[0-7]+
 HEX			(0x|0X)[0-9a-fA-F]+
 FLOAT 		{digit}*\.{digit}+|{digit}+\.
 SCI			({FLOAT}|{digit}+)[Ee][+-]?{digit}+	
-ID 			{letter_}({letter_}|digit)*	
+ID 			{letter_}({letter_}|{digit})*	
 SEMI 		";"
 COMMA 		","
 ASSIGNOP 	"="
@@ -144,7 +144,7 @@ WHILE 		while
 {ID}		{ 	if(strlen(yytext) >= 20){
 					 printf("Error type 1 at line %d: ID '%s' too long.\n", yylineno, yytext);
 					 error_flag = true;
-				} 
+				}
 				yylval.pnode = create_id_node(yylineno, "ID", yytext);
 				return ID;
 			}

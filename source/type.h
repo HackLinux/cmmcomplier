@@ -4,27 +4,25 @@
 #define TYPE_INT 1
 #define TYPE_FLOAT 2
 #define TYPE_STRUCT 3
-#define TYPE_ARRAY 4
-#define TYPE_STRUCT_ARRAY 5
+//#define TYPE_ARRAY 4
+//#define TYPE_STRUCT_ARRAY 5
 
-//todo type descriptor ????
 
-struct array_type{
+struct array_descriptor{
 	int size;
-	int final_type_code;	// when subtype = null , this field is used
-	struct array_type *subtype;
+	struct array_descriptor *subarray;
 };
 
 struct type_descriptor{
 	int type_code;
-	struct array_type* at;
-	struct struct_descriptor* sd;
+	struct struct_descriptor* sd;	//when type_code = STRUCT, this field become effective
 };
 
 #include "tree.h"
 //#include "table.h"	// this cannot move upside
 
-struct type_descriptor* create_type_descriptor(int, struct array_type *, struct struct_descriptor *);
+struct type_descriptor* create_type_descriptor(int, struct struct_descriptor *);
+struct type_descriptor* create_type_descriptor_by_specifier(struct tree_node*);
 int get_type_code_from_specifier(struct tree_node*);
 char* type_ctos(int);
 
