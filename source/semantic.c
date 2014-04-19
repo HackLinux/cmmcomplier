@@ -100,6 +100,8 @@ analyze_node(struct tree_node *n){
 						add_var(var_table_head, new_var_descriptor);
 					}
 
+					//todo : struct var array var ...
+					
 					//todo : anonymous structure definition
 					break;
 				}

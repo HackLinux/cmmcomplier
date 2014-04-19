@@ -1,8 +1,6 @@
 #ifndef __TYPE_H__
 #define __TYPE_H__
 
-#include "tree.h"
-
 #define TYPE_INT 1
 #define TYPE_FLOAT 2
 #define TYPE_STRUCT 3
@@ -17,6 +15,16 @@ struct array_type{
 	struct array_type *subtype;
 };
 
+struct type_descriptor{
+	int type_code;
+	struct array_type* at;
+	struct struct_descriptor* sd;
+};
+
+#include "tree.h"
+//#include "table.h"	// this cannot move upside
+
+struct type_descriptor* create_type_descriptor(int, struct array_type *, struct struct_descriptor *);
 int get_type_code_from_specifier(struct tree_node*);
 char* type_ctos(int);
 

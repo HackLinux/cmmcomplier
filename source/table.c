@@ -144,34 +144,18 @@ print_struct_table(struct struct_descriptor* head){
 
 /******************************functions for var_table******************************/
 
-/*int float struct and array
-struct var_descriptor{
-	int type_code;
-	char var_name[20];
-	struct struct_descriptor* sd;	//struct variables have this
-	struct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
-									//struct array have both
-	struct var_descriptor* next;
-};
-
-struct array_type{
-	int size;
-	int final_type_code;	// when subtype = null , this field is used
-	struct array_type *subtype;
-};*/
-
 struct var_descriptor*
 create_basic_var_descriptor(int type_code, char* var_name){
-	//assert(type_code == TYPE_INT || type_code == TYPE_FLOAT);
 	assert(strlen(var_name) < 20);
 	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
-	new_var_descriptor -> type_code = type_code;
 	strcpy(new_var_descriptor -> var_name, var_name);
-	new_var_descriptor -> sd = NULL;
-	new_var_descriptor -> at = NULL;
+	new_var_descriptor -> var_type = create_type_descriptor(type_code, NULL, NULL);
 	new_var_descriptor -> next = NULL;
+	
 	return new_var_descriptor;
 }
+
+/*
 
 struct var_descriptor*
 create_struct_var_descriptor(char* var_name, struct struct_descriptor* sd){
@@ -195,6 +179,7 @@ create_struct_array_var_descriptor(char* var_name, struct struct_descriptor* sd,
 	new_var_descriptor -> at = at;
 	return new_var_descriptor;
 }
+*/
 
 struct var_descriptor*
 find_var(struct var_descriptor* head, char* var_name){
@@ -225,7 +210,7 @@ print_var_table(struct var_descriptor* head){
 	for ( p = head -> next; p != NULL; p = p -> next){
 		printf("\n %d\t ", i++);
 		printf("%20s", p -> var_name);
-		printf("%17d", p -> type_code);
+		printf("%17d", p -> var_type -> type_code);
 	}
 	printf("\n+=============================================+\n");
 }

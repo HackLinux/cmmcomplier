@@ -1,8 +1,8 @@
 #ifndef __TABLE_H__
 #define __TABLE_H__
 
-#include "tree.h"
 #include "type.h"
+#include "tree.h"
 
 struct func_descriptor{
 	char func_name[20];
@@ -21,10 +21,11 @@ struct struct_descriptor{
 
 /*int float struct and array*/
 struct var_descriptor{
-	int type_code;
+	//int type_code;
 	char var_name[20];
-	struct struct_descriptor* sd;	//struct variables have this
-	struct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
+	struct type_descriptor *var_type;
+	//struct struct_descriptor* sd;	//struct variables have this
+	//sstruct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
 									//struct array have both
 	struct var_descriptor* next;
 };

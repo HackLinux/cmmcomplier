@@ -1,8 +1,19 @@
 #include <assert.h>
+#include <stdlib.h>
 
-#include "type.h"
 #include "tree.h"
+#include "table.h"
 #include "common/tokenset.h"
+#include "type.h"
+
+struct type_descriptor*
+create_type_descriptor(int type_code, struct array_type *at, struct struct_descriptor *sd){
+	struct type_descriptor* new_type = (struct type_descriptor*)malloc(sizeof(struct type_descriptor));
+	new_type -> type_code = type_code;
+	new_type -> at = at;
+	new_type -> sd = sd;
+}
+
 
 int 
 get_type_code_from_specifier(struct tree_node* node){
