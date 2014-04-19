@@ -6,7 +6,8 @@
 
 struct func_descriptor{
 	char func_name[20];
-	int return_type;	//functions can only return basic type
+	//int return_type;	//functions can only return basic type
+	struct type_descriptor* return_type;
 	int param_num;
 	//struct var_descriptor* param_list_head;	//params will be treated as global variables
 	struct func_descriptor* next;
@@ -26,9 +27,6 @@ struct var_descriptor{
 	struct type_descriptor *var_type;	//the type of a variable can be int\float\struct (cannot be null)
 	struct array_descriptor *var_array;	//the array of the variable likes [10][20][30]...	(may be null)
 
-	//struct struct_descriptor* sd;	//struct variables have this
-	//sstruct array_type* at;			//array variables have this. it is a list as long as the dimension of the array
-									//struct array have both
 	struct var_descriptor* next;
 };
 
@@ -38,7 +36,7 @@ extern struct struct_descriptor* struct_table_head;
 extern struct var_descriptor* var_table_head;
 
 /*func table related functions*/
-struct func_descriptor* create_func_descriptor(char*, int, int);
+struct func_descriptor* create_func_descriptor(char*, struct type_descriptor*, int);
 struct func_descriptor* find_func(struct func_descriptor*, char *);
 void add_func(struct func_descriptor*, struct func_descriptor* );
 void print_func_table(struct func_descriptor* );

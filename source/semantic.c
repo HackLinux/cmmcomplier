@@ -50,23 +50,23 @@ analyze_node(struct tree_node *n){
 		case ExtDef:{   //external definitions
 
 			switch(n -> child -> sibling -> unit_code){
-				case FunDec:{   //func def
+				case FunDec:{  //func def
 					
 					//ExtDef -> Specifier FunDec CompSt
 					//Specifier -> TYPE
 					struct tree_node* specifier_node = n -> child;
 					struct tree_node* fundec_node = n -> child -> sibling;
-					assert(specifier_node -> unit_code == Specifier);
-					assert(fundec_node -> unit_code == FunDec);
-					char *func_name = fundec_node -> child -> unit_value;
+					char* func_name = fundec_node -> child -> unit_value;
 
-					//check func name repeat. this makes func name cannot overload
 					if(find_func(func_table_head, func_name) != NULL){
 						printf("Error type 4 at line %d: Function redifinition\n", fundec_node -> lineno);
 						return ;
 					}
-					int return_type = get_type_code_from_specifier(specifier_node);
+					if(is_struct_type(specifier_node) && is_struct_definition(specifier_node -> child)){
+						printf("Warnning: struct defined inside function return field\n");
+					}
 
+					struct type_descriptor* return_type = create_type_descriptor_by_specifier(specifier_node);
 					int param_num = 0;
 					if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
 						struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
@@ -86,24 +86,23 @@ analyze_node(struct tree_node *n){
 					//ExtDef -> Specifier ExtDecList SEMI
 					struct tree_node* specifier_node = n -> child;
 					struct tree_node* extdeclist_node  = n -> child -> sibling;
+					struct tree_node* vardec_node = extdeclist_node -> child;
 
-					//int type_code = get_type_code_from_specifier(specifier_node);
-
-					//assert(type_code == TYPE_INT);
 					struct type_descriptor* var_type = create_type_descriptor_by_specifier(specifier_node);
-					char* var_name = extdeclist_node -> child -> child ->unit_value;
-					struct var_descriptor* new_var_descriptor = create_var_descriptor(var_name, var_type, NULL);
+					char* var_name = find_id_node_in_vardec(vardec_node) -> unit_value;
+					struct array_descriptor* var_array = create_array_descriptor_by_vardec(vardec_node);
+					struct var_descriptor* new_var_descriptor = create_var_descriptor(var_name, var_type, var_array);
 					add_var(var_table_head, new_var_descriptor);
 					while(extdeclist_node -> child -> sibling != NULL){
+						
 						extdeclist_node = extdeclist_node -> child -> sibling -> sibling;
-						var_name = extdeclist_node -> child -> child ->unit_value;
-						new_var_descriptor = create_var_descriptor(var_name, var_type, NULL);
+						vardec_node = extdeclist_node -> child;
+						var_name = find_id_node_in_vardec(vardec_node) -> unit_value;
+						var_array = create_array_descriptor_by_vardec(vardec_node);
+						new_var_descriptor = create_var_descriptor(var_name, var_type, var_array);
 						add_var(var_table_head, new_var_descriptor);
 					}
-
-					//todo : struct var array var ...
-
-					//todo : anonymous structure definition
+					//todo : array var ...
 					break;
 				}
 				case SEMI:{     // struct def
@@ -128,7 +127,6 @@ analyze_node(struct tree_node *n){
 					assert(opttag_node -> unit_code == OptTag);
 					assert(deflist_node -> unit_code == DefList);
 					if(opttag_node -> child == NULL){
-						//anonymous structure def
 						printf("Error type 100 at line %d: Anonymous structure definition without variables\n", struct_specifier_node -> lineno);
 						return;
 					}
@@ -141,6 +139,8 @@ analyze_node(struct tree_node *n){
 						return ;
 					}
 					//todo: check struct name repeat with variables
+					//todo: member variables
+
 
 					struct struct_descriptor* new_struct_descriptor = create_struct_descriptor(struct_name, deflist_node);
 					if(new_struct_descriptor != NULL){

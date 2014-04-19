@@ -32,11 +32,9 @@ struct var_descriptor* var_table_head = &var_head;
 /*create a new func symbol to represent a function definition
  *each new func symbol will be add into func table*/
 struct func_descriptor*
-create_func_descriptor(char *func_name, int return_type, int param_num){
-
+create_func_descriptor(char *func_name, struct type_descriptor* return_type, int param_num){
+	
 	assert(strlen(func_name) < 20);
-	assert(return_type <= TYPE_STRUCT);	//return type must be basic
-
 	struct func_descriptor *new_func_descriptor = (struct func_descriptor *)malloc(sizeof(struct func_descriptor));
 	strcpy(new_func_descriptor -> func_name, func_name);
 	new_func_descriptor -> return_type = return_type;
@@ -79,7 +77,7 @@ print_func_table(struct func_descriptor* head){
 	for ( p = head -> next; p != NULL; p = p -> next){
 		printf("\n %d\t ", i++);
 		printf("%20s", p -> func_name);
-		printf("%15s", type_ctos(p -> return_type));
+		printf("%15s", type_ctos(p -> return_type -> type_code));
 		printf("%17d", p -> param_num);
 	}
 	printf("\n+============================================================+\n");
@@ -175,7 +173,7 @@ create_basic_var_descriptor(int type_code, char* var_name){
 
 struct var_descriptor*
 create_var_descriptor(char* var_name, struct type_descriptor *var_type, struct array_descriptor *var_array){
-	assert(strlen(var_name) < 20);
+	assert(strlen(var_name) > 0 && strlen(var_name) < 20);
 	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
 	strcpy(new_var_descriptor -> var_name, var_name);
 	new_var_descriptor -> var_type = var_type;
