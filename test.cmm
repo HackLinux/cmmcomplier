@@ -1,7 +1,10 @@
-int main(){
-	return n;
-}
+struct point{
+	int x;
+	int y;	
+};
 
-int main(int x, int y){
-	int a;
+
+int main(){
+	struct x p[5];
+	p[0].x[0];
 }

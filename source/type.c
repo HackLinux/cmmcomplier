@@ -19,30 +19,6 @@ create_type_descriptor(int type_code, struct struct_descriptor *sd){
 	return new_type;
 }
 
-struct type_descriptor*
-create_type_descriptor_by_specifier(struct tree_node* specifier_node){
-	
-	int type_code = get_type_code_from_specifier(specifier_node);
-	struct struct_descriptor* sd;
-
-	if(type_code == TYPE_INT || type_code == TYPE_FLOAT){ //Specifier -> TYPE
-		sd = NULL;
-	}
-	if(type_code == TYPE_STRUCT){ //Specifier -> StructSpecifier
-
-		struct tree_node* structspecifier_node = specifier_node -> child;
-		if(structspecifier_node -> child -> sibling -> unit_code == Tag){	//exist struct
-			char *struct_name = structspecifier_node -> child -> sibling -> child -> unit_value;
-			sd = find_struct(struct_table_head, struct_name);
-			if(sd == NULL)
-				printf("Error Type 17 at line %d : undefined struct %s\n", specifier_node -> lineno, struct_name );
-		} else{	//new struct
-			sd = create_structure(structspecifier_node);
-		}
-	}
-	return create_type_descriptor(type_code, sd);
-}
-
 int 
 get_type_code_from_specifier(struct tree_node* node){
 	assert(node -> unit_code == Specifier);

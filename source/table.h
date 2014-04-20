@@ -25,6 +25,8 @@ struct var_descriptor{
 	struct type_descriptor *var_type;	//the type of a variable can be int\float\struct (cannot be null)
 	struct array_descriptor *var_array;	//the array of the variable likes [10][20][30]...	(may be null)
 
+	bool is_lvalue;
+
 	struct var_descriptor* next;
 };
 

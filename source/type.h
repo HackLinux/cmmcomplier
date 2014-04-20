@@ -20,7 +20,6 @@ struct type_descriptor{
 };
 
 struct type_descriptor* create_type_descriptor(int, struct struct_descriptor *);
-struct type_descriptor* create_type_descriptor_by_specifier(struct tree_node*);
 int get_type_code_from_specifier(struct tree_node*);
 
 bool is_struct_definition(struct tree_node*);

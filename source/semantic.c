@@ -32,116 +32,9 @@ semantic_analyze(struct tree_node *root){
 void
 analyze_extdef_node(struct tree_node* extdef_node){
 
-	/*
-	switch  node_type
-
-		case external def
-
-			switch
-				case fundef
-
-				case global var def
-				
-				case struct def
-
-		case local def (in compst)
-
-		case stmt
-
-	*/
-	/*
-	switch(n -> unit_code){
-		case ExtDef:{   //external definitions
-
-			switch(n -> child -> sibling -> unit_code){
-				case FunDec:{  //func def
-					
-					//ExtDef -> Specifier FunDec CompSt
-					struct tree_node* specifier_node = n -> child;
-					struct tree_node* fundec_node = n -> child -> sibling;
-					struct tree_node* compst_node = fundec_node -> sibling;
-					create_function(specifier_node, fundec_node, compst_node);
-
-					break;
-				}
-				case ExtDecList:{   //global var def
-
-					//ExtDef -> Specifier ExtDecList SEMI
-					struct tree_node* specifier_node = n -> child;
-					struct tree_node* extdeclist_node  = n -> child -> sibling;
-					while(true){
-						//ExtDecList -> VarDec
-						//ExtDecList -> VarDec COMMA ExtDecList
-						struct tree_node* vardec_node = extdeclist_node -> child;
-						create_variable(specifier_node, vardec_node, var_table_head);
-						if(extdeclist_node -> child -> sibling != NULL)
-							extdeclist_node = extdeclist_node -> child -> sibling -> sibling;
-						else
-							break;
-					}
-					break;
-				}
-				case SEMI:{     // struct def
-
-					//Extdef -> Specifier SEMI;
-					//Specifier -> StructSpecifier
-					struct tree_node* specifier_node = n -> child;
-					struct tree_node* structspecifier_node = specifier_node -> child;
-					if(specifier_node -> child -> unit_code == TYPE){	//Specifier -> TYPE
-						printf("Error type 100 at line %d: Empty variable definition\n", specifier_node -> lineno);
-						return;
-					}
-					if(structspecifier_node -> child -> sibling -> unit_code == Tag){	//StructSpecifier -> STRUCT Tag
-						printf("Error type 100 at line %d: Empty structure definition\n", structspecifier_node -> lineno);
-						return ;  
-					}
-					if(structspecifier_node -> child -> sibling -> child == NULL){	//OptTag -> empty
-						printf("Error type 100 at line %d: Anonymous structure definition without variables\n", structspecifier_node -> lineno);
-						return ;
-					}
-					create_structure(structspecifier_node);
-					break;
-				}
-				default: assert(0);break;
-			}
-			break;	//break of case ExtDef
-		}
-		case CompSt:{	
-
-			//CompSt -> LC DefList StmtList RC
-			struct tree_node* deflist_node = n -> child -> sibling;
-			
-			//handle each local def
-			while(deflist_node -> child != NULL){
-		
-				struct tree_node* specifier_node = deflist_node -> child -> child;
-				struct tree_node* declist_node = specifier_node -> sibling;
-				while(true){
-					struct tree_node* vardec_node = declist_node -> child -> child;
-					if(vardec_node -> sibling != NULL){
-						//todo: ASSIGNOP
-					}
-					create_variable(specifier_node, vardec_node, var_table_head);
-					if(declist_node -> child -> sibling != NULL)
-						declist_node = declist_node -> child -> sibling -> sibling;	
-					else
-						break;
-				}
-				deflist_node = deflist_node -> child -> sibling;
-			}
-			break;
-		}
-		case Stmt:{
-			//find expressions in statements and check their validation
-			check_stmt_valid(n);
-
-		}
-		default: break;
-	}*/
-
 	assert( extdef_node -> unit_code == ExtDef );
 	
-	/*switch extdef
+	/*switch
 
 		case fundef
 
@@ -155,8 +48,6 @@ analyze_extdef_node(struct tree_node* extdef_node){
 		case ExtDecList: {	//ExtDef -> Specifier ExtDecList SEMI
 			struct tree_node* extdeclist_node  = second_child;
 			while(true){
-				//ExtDecList -> VarDec
-				//ExtDecList -> VarDec COMMA ExtDecList
 				struct tree_node* vardec_node = extdeclist_node -> child;
 				create_variable(specifier_node, vardec_node, var_table_head);
 				if(extdeclist_node -> child -> sibling != NULL)
@@ -200,15 +91,16 @@ analyze_extdef_node(struct tree_node* extdef_node){
 void 
 analyze_function_node(struct tree_node* specifier_node, struct tree_node* fundec_node, struct tree_node* compst_node){
 	struct func_descriptor* new_func = create_function(specifier_node, fundec_node);
-	analyze_compst_node(new_func, compst_node);
+	
+	if(new_func!= NULL){	//create success
+		analyze_compst_node(new_func, compst_node);
+	}
 }
 
 /*analyze the func body*/
 void
 analyze_compst_node(struct func_descriptor* belongs_func, struct tree_node* compst_node){
-	//todo local def
-	//todo stmt check
-	//todo return type check
+
 	assert(compst_node -> unit_code == CompSt);
 
 	struct tree_node* deflist_node = compst_node -> child -> sibling;
@@ -222,11 +114,13 @@ analyze_compst_node(struct func_descriptor* belongs_func, struct tree_node* comp
 		struct tree_node* declist_node = specifier_node -> sibling;
 		while(true){
 			struct tree_node* vardec_node = declist_node -> child -> child;
+			//todo(choose) local var field
+			struct var_descriptor* new_var = create_variable(specifier_node, vardec_node, var_table_head);
 			if(vardec_node -> sibling != NULL){
-				//todo: ASSIGNOP
+				struct var_descriptor* init_exp_var = check_exp_valid(vardec_node -> sibling -> sibling);
+				if(!(init_exp_var != NULL && var_type_equal(new_var , init_exp_var)))
+					printf("Error type 5 at line %d: Type mismatch between assignment operator\n", vardec_node -> lineno);
 			}
-			//todo local var field
-			create_variable(specifier_node, vardec_node, var_table_head);
 			if(declist_node -> child -> sibling != NULL)
 				declist_node = declist_node -> child -> sibling -> sibling;	
 			else
@@ -237,10 +131,9 @@ analyze_compst_node(struct func_descriptor* belongs_func, struct tree_node* comp
 
 	//stmts
 	while(stmtlist_node -> child  != NULL){
-		check_stmt_valid(stmtlist_node -> child);
+		check_stmt_valid(belongs_func, stmtlist_node -> child);
 		stmtlist_node = stmtlist_node -> child -> sibling;
 	}
-
 }
 
 
@@ -252,7 +145,7 @@ create_function(struct tree_node* specifier_node, struct tree_node* fundec_node)
 	char* func_name = fundec_node -> child -> unit_value;
 
 	if(find_func(func_table_head, func_name) != NULL){
-		printf("Error type 4 at line %d: Function \'%s\'redifinition\n", fundec_node -> lineno, func_name);
+		printf("Error type 4 at line %d: Function \'%s\'redifine\n", fundec_node -> lineno, func_name);
 		return NULL;
 	}
 	if(is_struct_type(specifier_node) && is_struct_definition(specifier_node -> child)){
@@ -260,7 +153,7 @@ create_function(struct tree_node* specifier_node, struct tree_node* fundec_node)
 	}
 
 	/*handle return type*/
-	struct type_descriptor* return_type = create_type_descriptor_by_specifier(specifier_node);
+	struct type_descriptor* return_type = create_type(specifier_node);
 
 	/*create func descriptor and add into list*/
 	struct func_descriptor* new_func_descriptor = create_func_descriptor(func_name, return_type, 0);
@@ -280,7 +173,11 @@ create_function(struct tree_node* specifier_node, struct tree_node* fundec_node)
  *var defined by the specifier and vardec nodes in syntax tree*/
 struct var_descriptor*
 create_variable(struct tree_node* specifier_node, struct tree_node* vardec_node, struct var_descriptor* head){
-	struct type_descriptor* var_type = create_type_descriptor_by_specifier(specifier_node);
+	
+
+	struct type_descriptor* var_type = create_type(specifier_node);
+	if(var_type == NULL)
+		return NULL;
 	char* var_name = find_id_node_in_vardec(vardec_node) -> unit_value;
 	struct array_descriptor* var_array = create_array_descriptor_by_vardec(vardec_node);
 	struct var_descriptor* new_var =  create_var_descriptor(var_name, var_type, var_array);
@@ -309,7 +206,7 @@ create_structure(struct tree_node* structspecifier_node){
 		/*check struct name repeat*/
 		if((find_struct(struct_table_head, struct_name) != NULL) ||
 			(find_var(var_table_head, struct_name) != NULL)){
-			printf("Error type 15 at line %d: Structure redefine\n", structspecifier_node -> lineno);
+			printf("Error type 16 at line %d: Struct name redefine\n", structspecifier_node -> lineno);
 			return NULL;
 		}
 	}
@@ -324,6 +221,37 @@ create_structure(struct tree_node* structspecifier_node){
 	return new_struct_descriptor;
 }
 
+
+/*create type of a variable*/
+struct type_descriptor*
+create_type(struct tree_node* specifier_node){
+
+	assert(specifier_node -> unit_code == Specifier);
+
+	int type_code = get_type_code_from_specifier(specifier_node);
+	struct struct_descriptor* sd;
+	
+	if(type_code == TYPE_INT || type_code == TYPE_FLOAT){
+		sd = NULL;
+	}
+	if(type_code == TYPE_STRUCT){ 
+
+		//Specifier -> StructSpecifier
+		struct tree_node* structspecifier_node = specifier_node -> child;
+		if(structspecifier_node -> child -> sibling -> unit_code == Tag){	//exist struct
+			char *struct_name = structspecifier_node -> child -> sibling -> child -> unit_value;
+			sd = find_struct(struct_table_head, struct_name);
+			if(sd == NULL){
+				printf("Error Type 17 at line %d : Undefined struct %s\n", specifier_node -> lineno, struct_name );
+	 			return NULL;
+			}
+		}
+		else{	//new struct
+			sd = create_structure(structspecifier_node);
+		}
+	}
+	return create_type_descriptor(type_code, sd);
+}
 
 /*add vars defined in the deflist of a structure into the structure's member list
  *return member var number*/
@@ -398,30 +326,213 @@ init_param_list(struct var_descriptor* param_list_head, struct tree_node* varlis
 
 
 void
-check_stmt_valid(struct tree_node* stmt_node){
+check_stmt_valid(struct func_descriptor* belongs_func, struct tree_node* stmt_node){
 
 
 	assert(stmt_node -> unit_code == Stmt);
+
 	struct tree_node* first_child = stmt_node -> child;
 	if(first_child -> unit_code == Exp){
 		check_exp_valid(first_child);
 	} 
+	else if(first_child -> unit_code == CompSt){
+		analyze_compst_node(belongs_func, first_child);
+	}
 	else if(first_child -> unit_code == RETURN){
-		check_exp_valid(first_child -> sibling);
-		//todo return type consistent
+		struct var_descriptor* return_var = check_exp_valid(first_child -> sibling);
+		
+		if(return_var != NULL && type_equal(return_var -> var_type, belongs_func -> return_type))
+			;
+		else
+			printf("Error type 8 at line %d: Return type mismatch in function \'%s\'\n", first_child -> lineno, belongs_func -> func_name);
 	}
 	else if(first_child -> unit_code == IF){
 		check_exp_valid(first_child -> sibling -> sibling);
 		//todo exp type in if
+
+		struct tree_node* stmt_node_in_if = first_child -> sibling -> sibling -> sibling -> sibling;
+		check_stmt_valid(belongs_func, stmt_node_in_if);
+		if(stmt_node_in_if -> sibling != NULL){
+			check_stmt_valid(belongs_func, stmt_node_in_if -> sibling -> sibling);
+		}
 	}
 	else if(first_child -> unit_code == WHILE){
 		check_exp_valid(first_child -> sibling -> sibling);
 		//todo exp type in while
+		check_stmt_valid(belongs_func, first_child -> sibling -> sibling -> sibling -> sibling);
 	}
 }
 
 /*treate an expression as a variable to do nested check*/
 struct var_descriptor*
 check_exp_valid(struct tree_node* exp_node){
+	
+	assert(exp_node -> unit_code == Exp);
 	struct tree_node* first_child = exp_node -> child;
+	struct tree_node* second_child = first_child -> sibling;
+
+	if(first_child -> unit_code == ID && second_child == NULL){	
+		char* var_name = first_child -> unit_value;
+		struct var_descriptor* the_var = find_var(var_table_head, var_name);
+		if(the_var == NULL)
+			printf("Error type 1 at line %d: Undefined variable \'%s\'\n", first_child -> lineno, var_name);
+		return the_var;
+	} 
+	else if(first_child -> unit_code == INT && second_child == NULL) {
+		struct type_descriptor* int_type = create_type_descriptor(TYPE_INT, NULL);
+		struct var_descriptor* temp_var = create_var_descriptor("", int_type, NULL);	//memory leak
+		temp_var -> is_lvalue = false;
+		return temp_var;
+	}
+	else if(first_child -> unit_code == FLOAT && second_child == NULL) {
+		struct type_descriptor* float_type = create_type_descriptor(TYPE_FLOAT, NULL);
+		struct var_descriptor* temp_var = create_var_descriptor("", float_type, NULL); //memory leak
+		temp_var -> is_lvalue = false;
+		return temp_var;
+	}
+	else if(first_child -> unit_code == Exp && second_child -> unit_code == ASSIGNOP) {	// assignments
+		struct var_descriptor* left_var = check_exp_valid(first_child);
+		struct var_descriptor* right_var = check_exp_valid(second_child -> sibling);
+		
+		if(left_var == NULL || right_var == NULL)//errors happen in check sub expression
+			return NULL;
+
+		if(!left_var -> is_lvalue){
+			printf("Error type 6 at line %d: lvalue required as left operand of assignment\n", first_child -> lineno);
+			return NULL;
+		}
+		if(!var_type_equal(left_var, right_var)){
+			printf("Error type 5 at line %d: Type mismatch between assignment operator\n", first_child -> lineno);
+			return NULL;
+		}
+		return left_var;	//doubt it
+	}
+	else if(first_child -> unit_code == Exp && (second_child -> unit_code == AND ||
+												second_child -> unit_code == OR ||
+												second_child -> unit_code == RELOP ||
+												second_child -> unit_code == PLUS ||
+												second_child -> unit_code == MINUS ||
+												second_child -> unit_code == STAR ||
+												second_child -> unit_code == DIV)) {	// 2-operand operator expressions
+		struct var_descriptor* left_var = check_exp_valid(first_child);
+		struct var_descriptor* right_var = check_exp_valid(second_child -> sibling);
+		
+		if(left_var == NULL || right_var == NULL)//errors happen in check sub expression
+			return NULL;
+		
+		// other 2-operand operators
+		if(!var_type_equal(left_var, right_var)){
+			printf("Error type 7 at line %d: Type mismatch between \'%s\' operator\n", first_child -> lineno, second_child -> unit_name);
+			return NULL;
+		}
+		// operators except assignment have a r-value result  
+		left_var = create_var_descriptor("", right_var -> var_type, right_var -> var_array);
+		left_var -> is_lvalue = false;
+		return left_var;	//doubt
+	}
+	else if(second_child -> unit_code == Exp) {
+		//1-operand operators
+		//including "LP RP" "MINUS" "NOT"
+		struct var_descriptor* op_var = check_exp_valid(second_child);
+		struct var_descriptor* temp_var = create_var_descriptor("", op_var -> var_type, op_var -> var_array);	//memory leak
+		temp_var -> is_lvalue = false;
+		return temp_var;
+	}
+	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
+		//func call
+		char* func_name = first_child  -> unit_value;
+		struct func_descriptor* the_func = find_func(func_table_head, func_name);
+		if(the_func == NULL){
+			if(find_var(var_table_head, func_name))
+				printf("Error type 11 at line %d: Use variable \'%s\' as a function \n", first_child -> lineno, func_name);
+			else
+				printf("Error type 2 at line %d: Undefined function \'%s\'\n", first_child -> lineno, func_name);
+			return NULL;
+		}
+		//params check
+		struct tree_node* args_node = (second_child -> sibling -> unit_code == Args) ? second_child -> sibling : NULL;
+		if(!check_params_valid(the_func -> param_list_head, args_node)){
+			printf("Error type 9 at line %d: Parameters mismatch using function \'%s\'\n", first_child -> lineno, func_name);
+		}
+
+		struct var_descriptor* temp_var = create_var_descriptor("", the_func -> return_type, NULL);	//memory leak
+		temp_var -> is_lvalue = false;
+		return temp_var;
+	}
+	else if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
+		//array call
+		struct var_descriptor* array_var = check_exp_valid(first_child);
+		struct var_descriptor* sub_var = check_exp_valid(second_child -> sibling);
+		if(array_var == NULL)
+			return NULL;
+		if(sub_var == NULL || sub_var -> var_type -> type_code != TYPE_INT){
+			printf("Error type 12 at line %d: Array subscript is not an integer\n", first_child -> lineno);
+		}
+		if(array_var -> var_array == NULL){
+			printf("Error type 10 at line %d: Use non-array variable as an array\n", first_child -> lineno);
+			return NULL;
+		}
+		return create_var_descriptor(array_var -> var_name, array_var -> var_type, array_var -> var_array -> subarray);
+	}
+	else if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
+		//struct member call
+		
+		struct var_descriptor* struct_var = check_exp_valid(first_child);
+		char* member_var_name = second_child -> sibling -> unit_value;
+		if(struct_var == NULL)
+			return NULL;
+		struct struct_descriptor* the_struct = struct_var -> var_type -> sd;
+		if(the_struct == NULL){
+			printf("Error type 13 at line %d: Use member access operator \'.\' for non-struct variable \'%s\'\n", first_child -> lineno, struct_var -> var_name);
+			return NULL;
+		}
+		struct var_descriptor* member_var = find_var(the_struct -> member_list_head, member_var_name);
+		if(member_var == NULL){
+			printf("Error type 14 at line %d: Undefined field \'%s\' in struct \'%s\'\n", first_child -> lineno, member_var_name, the_struct -> struct_name);
+			return NULL;
+		}
+		return  member_var;
+	}
+
+	assert(0);//all situations should be checked and returned
+}
+
+bool
+check_params_valid(struct var_descriptor* param_list_head, struct tree_node* args_node){
+	struct var_descriptor* expect_param = param_list_head -> next;
+	if(args_node == NULL && expect_param == NULL)
+		return true;
+	if(args_node == NULL || expect_param == NULL)
+		return false;
+	
+	while(true){
+
+		struct var_descriptor* real_param = check_exp_valid(args_node -> child);
+		
+		if(real_param == NULL)	//errors happen in check sub expression
+			return false;
+		if(!var_type_equal(expect_param, real_param));
+			return false;
+		if(args_node -> child -> sibling != NULL && expect_param -> next != NULL){	//both have next
+			args_node = args_node -> child -> sibling -> sibling;
+			expect_param = expect_param -> next;
+		}
+		else
+			break;
+	}
+	if(args_node != NULL || expect_param != NULL)
+		return false;
+	return true;
+}
+
+
+/*type compare and array compare*/
+bool
+var_type_equal(struct var_descriptor* v1, struct var_descriptor* v2){
+	assert(v1 != NULL && v2 != NULL);
+	if(!type_equal(v1 -> var_type, v2 -> var_type))
+		return false;
+	if(!array_equal(v1 -> var_array, v2 -> var_array))
+		return false;
+	return true;
 }

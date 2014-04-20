@@ -144,6 +144,7 @@ create_var_descriptor(char* var_name, struct type_descriptor *var_type, struct a
 	strcpy(new_var_descriptor -> var_name, var_name);
 	new_var_descriptor -> var_type = var_type;
 	new_var_descriptor -> var_array = var_array;
+	new_var_descriptor -> is_lvalue = true;	//maybe not good.
 	new_var_descriptor -> next = NULL;
 	
 	return new_var_descriptor;

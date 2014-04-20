@@ -18,13 +18,23 @@ struct var_descriptor* create_variable(struct tree_node*, struct tree_node*, str
 
 struct struct_descriptor* create_structure(struct tree_node*);
 
+struct type_descriptor* create_type(struct tree_node*);
+
 int init_member_list(struct var_descriptor*, struct tree_node*);
 
 int init_param_list(struct var_descriptor*, struct tree_node*);
 
-void check_stmt_valid(struct tree_node*);
+void check_stmt_valid(struct func_descriptor*, struct tree_node*);
 
 struct var_descriptor* check_exp_valid(struct tree_node*);
+
+
+
+bool check_params_valid(struct var_descriptor* params_list_head, struct tree_node* args_node);
+
+bool var_type_equal(struct var_descriptor* v1, struct var_descriptor* v2);
+
+//bool is_lvalue(struct tree_node*);
 
 
 #endif
