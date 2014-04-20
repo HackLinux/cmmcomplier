@@ -64,8 +64,10 @@ ExtDef 		:	Specifier ExtDecList SEMI	{	$$ = build_a_production(@$.first_line, "E
 											}
 			|	Specifier FunDec CompSt		{	$$ = build_a_production(@$.first_line, "ExtDef", 3, $1, $2, $3);
 											}
-			| 	error SEMI 					{ 	//printf("get error ExtDef at %d\n", @1.first_line);
-												error_flag = true;}
+			|	Specifier FunDec error SEMI	{ 	error_flag = true;
+											}
+			| 	error SEMI 					{ 	error_flag = true;
+											}
 			;
 ExtDecList	:	VarDec						{	$$ = build_a_production(@$.first_line, "ExtDecList", 1, $1);
 											}
