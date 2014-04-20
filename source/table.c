@@ -88,22 +88,13 @@ print_func_table(struct func_descriptor* head){
 /******************************functions for struct_table******************************/
 
 struct struct_descriptor*
-create_struct_descriptor(char* struct_name, struct tree_node* deflist){
+create_struct_descriptor(char* struct_name/*, struct tree_node* deflist*/){
 	assert(strlen(struct_name) < 20);
 	struct struct_descriptor* new_struct_descriptor = (struct struct_descriptor*)malloc(sizeof(struct struct_descriptor));
 	strcpy(new_struct_descriptor -> struct_name, struct_name);
-	new_struct_descriptor -> member_list_head = (struct var_descriptor*)malloc(sizeof(struct var_descriptor));//empty head
+	new_struct_descriptor -> member_list_head = create_var_descriptor("", NULL, NULL);//empty head
 	new_struct_descriptor -> next = NULL;
-
-	int member_num = 0;
-	while(deflist -> child != NULL){
-		member_num ++;
-		deflist = deflist -> child -> sibling;	//deflist -> def deflist
-		//todo : make member variables list and check initialization
-		//return null when error(member initialization when structure definition)
-	}
-
-	new_struct_descriptor -> member_num = member_num;
+	new_struct_descriptor -> member_num = -1;
 	return new_struct_descriptor;
 }
 
@@ -119,9 +110,11 @@ create_struct_descriptor_by_structspecifier(struct tree_node *structspecifier_no
 	else
 		struct_name = opttag_node -> child -> unit_value;
 	//todo : check name repeat???
-	return create_struct_descriptor(struct_name, opttag_node -> sibling -> sibling);
+	//todo : member list
+	return create_struct_descriptor(struct_name);
 
 }
+
 
 struct struct_descriptor*
 find_struct(struct struct_descriptor* head, char* struct_name){
@@ -159,21 +152,9 @@ print_struct_table(struct struct_descriptor* head){
 
 /******************************functions for var_table******************************/
 
-/*
-struct var_descriptor*
-create_basic_var_descriptor(int type_code, char* var_name){
-	assert(strlen(var_name) < 20);
-	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
-	strcpy(new_var_descriptor -> var_name, var_name);
-	new_var_descriptor -> var_type = create_type_descriptor(type_code, NULL);
-	new_var_descriptor -> next = NULL;
-	
-	return new_var_descriptor;
-}*/
-
 struct var_descriptor*
 create_var_descriptor(char* var_name, struct type_descriptor *var_type, struct array_descriptor *var_array){
-	assert(strlen(var_name) > 0 && strlen(var_name) < 20);
+	assert(strlen(var_name) < 20);
 	struct var_descriptor* new_var_descriptor = (struct var_descriptor* )malloc(sizeof(struct var_descriptor));
 	strcpy(new_var_descriptor -> var_name, var_name);
 	new_var_descriptor -> var_type = var_type;
@@ -182,32 +163,6 @@ create_var_descriptor(char* var_name, struct type_descriptor *var_type, struct a
 	
 	return new_var_descriptor;
 }
-
-/*
-
-struct var_descriptor*
-create_struct_var_descriptor(char* var_name, struct struct_descriptor* sd){
-	assert(strlen(var_name) < 20);
-	struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(TYPE_STRUCT, var_name);
-	new_var_descriptor -> sd = sd;
-	return new_var_descriptor;
-}
-
-struct var_descriptor*
-create_array_var_descriptor(char* var_name, struct array_type* at){
-	struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(TYPE_ARRAY, var_name);
-	new_var_descriptor -> at = at;
-	return new_var_descriptor;
-}
-
-struct var_descriptor*
-create_struct_array_var_descriptor(char* var_name, struct struct_descriptor* sd, struct array_type* at){
-	struct var_descriptor* new_var_descriptor = create_basic_var_descriptor(TYPE_STRUCT_ARRAY, var_name);
-	new_var_descriptor -> sd = sd;
-	new_var_descriptor -> at = at;
-	return new_var_descriptor;
-}
-*/
 
 struct var_descriptor*
 find_var(struct var_descriptor* head, char* var_name){

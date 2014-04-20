@@ -39,4 +39,8 @@ void visit(struct tree_node *n, int level);
 /*destructors*/
 void destroy_tree(struct tree_node *);
 void destroy_node(struct tree_node *);
+
+/*additional funcs*/
+struct tree_node* find_id_node_in_vardec(struct tree_node*);
+
 #endif

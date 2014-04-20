@@ -6,10 +6,9 @@
 
 struct func_descriptor{
 	char func_name[20];
-	//int return_type;	//functions can only return basic type
 	struct type_descriptor* return_type;
 	int param_num;
-	//struct var_descriptor* param_list_head;	//params will be treated as global variables
+	struct var_descriptor* param_list_head;	//params will be treated as global variables
 	struct func_descriptor* next;
 };
 
@@ -43,7 +42,7 @@ void print_func_table(struct func_descriptor* );
 
 
 /*struct table related functions*/
-struct struct_descriptor* create_struct_descriptor(char* , struct tree_node*);
+struct struct_descriptor* create_struct_descriptor(char*);
 struct struct_descriptor* create_struct_descriptor_by_structspecifier(struct tree_node*);
 struct struct_descriptor* find_struct(struct struct_descriptor*, char*);
 void add_struct(struct struct_descriptor*, struct struct_descriptor*);
@@ -51,9 +50,6 @@ void print_struct_table(struct struct_descriptor*);
 
 /*var table related functions*/
 struct var_descriptor* create_var_descriptor(char*, struct type_descriptor*, struct array_descriptor*);
-//struct var_descriptor* create_struct_var_descriptor(char*, struct struct_descriptor*);
-//struct var_descriptor* create_array_var_descriptor(char*, struct array_type*);
-//struct var_descriptor* create_struct_array_var_descriptor(char*, struct struct_descriptor*, struct array_type*);
 struct var_descriptor* find_var(struct var_descriptor*, char*);
 void add_var(struct var_descriptor*, struct var_descriptor*);
 void print_var_table(struct var_descriptor*);

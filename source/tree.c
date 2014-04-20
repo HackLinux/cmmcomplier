@@ -157,3 +157,14 @@ destroy_node(struct tree_node *n){
 	free(n -> unit_value);
 	free(n);
 }
+
+
+/*some additional functions*/
+struct tree_node*
+find_id_node_in_vardec(struct tree_node *vardec_node){
+	assert(vardec_node -> unit_code == VarDec);
+	struct tree_node* p = vardec_node -> child;
+	while(p -> unit_code != ID)
+		p = p -> child;
+	return p;
+}

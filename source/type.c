@@ -7,7 +7,7 @@
 #include "common/tokenset.h"
 #include "type.h"
 
-/*********************************functions about type***************************************/
+/******************************functions about type(int\float\struct)***********************************/
 struct type_descriptor*
 create_type_descriptor(int type_code, struct struct_descriptor *sd){
 	struct type_descriptor* new_type = (struct type_descriptor*)malloc(sizeof(struct type_descriptor));
@@ -28,14 +28,13 @@ create_type_descriptor_by_specifier(struct tree_node* specifier_node){
 	if(type_code == TYPE_STRUCT){ //Specifier -> StructSpecifier
 
 		struct tree_node* structspecifier_node = specifier_node -> child;
-		if(structspecifier_node -> child -> sibling -> unit_code == Tag){
-			//StructSpecifier -> Struct Tag (exist struct)
+		if(structspecifier_node -> child -> sibling -> unit_code == Tag){	//exist struct
 			char *struct_name = structspecifier_node -> child -> sibling -> child -> unit_value;
 			sd = find_struct(struct_table_head, struct_name);
 			assert(sd != NULL);	//if sd == null then error: no such struct
-		} else{
-			//StructSpecifier -> Struct OptTag LC DefList RC(new struct)
+		} else{	//new struct
 			sd = create_struct_descriptor_by_structspecifier(structspecifier_node);
+			//todo : remove this func
 			//todo : create failed by name repeat or assignop
 			add_struct(struct_table_head, sd);
 		}
@@ -109,21 +108,13 @@ create_array_descriptor_by_vardec(struct tree_node* vardec_node){
 		head -> subarray = new_array;
 	}
 	struct array_descriptor* p = head -> subarray;
-	while(p != NULL){
+	/*while(p != NULL){
 		printf("[%d]", p -> size);
 		p = p -> subarray; 
-	} printf("\n");
+	} printf("\n");*/
 	return head -> subarray;
 }
 
-struct tree_node*
-find_id_node_in_vardec(struct tree_node *vardec_node){
-	assert(vardec_node -> unit_code == VarDec);
-	struct tree_node* p = vardec_node -> child;
-	while(p -> unit_code != ID)
-		p = p -> child;
-	return p;
-}
 /*
 void
 array_to_string(struct array_descriptor *array){

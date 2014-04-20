@@ -30,7 +30,4 @@ char* type_ctos(int);
 struct array_descriptor* create_array_descriptor(int, struct array_descriptor*);
 struct array_descriptor* create_array_descriptor_by_vardec(struct tree_node*);
 
-
-struct tree_node* find_id_node_in_vardec(struct tree_node*);
-
 #endif

@@ -1,7 +1,10 @@
 struct n{
-	int a1;
+	float a1[5][3], c;
 	int b;
-} n1[5][10], m2[2][3];
+};
+
+int x1, x2;
+float a1;
 
 struct n main(int a, int b){
 }
