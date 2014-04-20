@@ -13,20 +13,24 @@
 #include "type.h"
 #include "common/tokenset.h"
 
-/*preorder transeverse the syntax tree to do semantic analysis*/
+/*find all extdef node in tree to do semantic analysis*/
 void
 semantic_analyze(struct tree_node *root){
-	assert(root != NULL);
-	analyze_node(root);
-	struct tree_node *child;
-	for (child = root -> child; child != NULL; child = child -> sibling){
-		semantic_analyze(child);
+	
+	assert(root -> unit_code == Program);
+
+	struct tree_node* extdeflist_node = root -> child;
+
+	while(extdeflist_node -> child != NULL){
+		analyze_extdef_node(extdeflist_node -> child);
+		extdeflist_node = extdeflist_node -> child -> sibling;
 	}
+
 }
 
-/*analyze a tree node*/
+/*analyze an extdef node*/
 void
-analyze_node(struct tree_node *n){
+analyze_extdef_node(struct tree_node* extdef_node){
 
 	/*
 	switch  node_type
@@ -45,6 +49,7 @@ analyze_node(struct tree_node *n){
 		case stmt
 
 	*/
+	/*
 	switch(n -> unit_code){
 		case ExtDef:{   //external definitions
 
@@ -132,20 +137,123 @@ analyze_node(struct tree_node *n){
 
 		}
 		default: break;
+	}*/
+
+	assert( extdef_node -> unit_code == ExtDef );
+	
+	/*switch extdef
+
+		case fundef
+
+		case global var def
+				
+		case struct def
+	*/
+	struct tree_node* specifier_node = extdef_node -> child;
+	struct tree_node* second_child = extdef_node -> child -> sibling;
+	switch(second_child -> unit_code){
+		case ExtDecList: {	//ExtDef -> Specifier ExtDecList SEMI
+			struct tree_node* extdeclist_node  = second_child;
+			while(true){
+				//ExtDecList -> VarDec
+				//ExtDecList -> VarDec COMMA ExtDecList
+				struct tree_node* vardec_node = extdeclist_node -> child;
+				create_variable(specifier_node, vardec_node, var_table_head);
+				if(extdeclist_node -> child -> sibling != NULL)
+					extdeclist_node = extdeclist_node -> child -> sibling -> sibling;
+				else
+					break;
+			}
+			break;
+		}
+		case FunDec: {		//ExtDef -> Specifier FunDec CompSt
+			struct tree_node* fundec_node = second_child;
+			struct tree_node* compst_node = fundec_node -> sibling;
+			analyze_function_node(specifier_node, fundec_node, compst_node);
+			break;
+		}
+		case SEMI : {		//Extdef -> Specifier SEMI;
+			
+			if(specifier_node -> child -> unit_code == TYPE){	//Specifier -> TYPE
+				printf("Error type 100 at line %d: Empty variable definition\n", specifier_node -> lineno);
+				return;
+			}
+			//Specifier -> StructSpecifier
+			struct tree_node* structspecifier_node = specifier_node -> child;
+			if(structspecifier_node -> child -> sibling -> unit_code == Tag){	//StructSpecifier -> STRUCT Tag
+				printf("Error type 100 at line %d: Empty structure definition\n", structspecifier_node -> lineno);
+				return ;  
+			}
+			if(structspecifier_node -> child -> sibling -> child == NULL){	//OptTag -> empty
+				printf("Error type 100 at line %d: Anonymous structure definition without variables\n", structspecifier_node -> lineno);
+				return ;
+			}
+			create_structure(structspecifier_node);
+			break;
+		}
+		default: assert(0);
 	}
+
+}
+
+/*create func by func head and analyze func body*/
+void 
+analyze_function_node(struct tree_node* specifier_node, struct tree_node* fundec_node, struct tree_node* compst_node){
+	struct func_descriptor* new_func = create_function(specifier_node, fundec_node);
+	analyze_compst_node(new_func, compst_node);
+}
+
+/*analyze the func body*/
+void
+analyze_compst_node(struct func_descriptor* belongs_func, struct tree_node* compst_node){
+	//todo local def
+	//todo stmt check
+	//todo return type check
+	assert(compst_node -> unit_code == CompSt);
+
+	struct tree_node* deflist_node = compst_node -> child -> sibling;
+	struct tree_node* stmtlist_node = deflist_node -> sibling;
+
+
+	//local defs
+	while(deflist_node -> child != NULL){
+		
+		struct tree_node* specifier_node = deflist_node -> child -> child;
+		struct tree_node* declist_node = specifier_node -> sibling;
+		while(true){
+			struct tree_node* vardec_node = declist_node -> child -> child;
+			if(vardec_node -> sibling != NULL){
+				//todo: ASSIGNOP
+			}
+			//todo local var field
+			create_variable(specifier_node, vardec_node, var_table_head);
+			if(declist_node -> child -> sibling != NULL)
+				declist_node = declist_node -> child -> sibling -> sibling;	
+			else
+				break;
+		}
+		deflist_node = deflist_node -> child -> sibling;
+	}
+
+	//stmts
+	while(stmtlist_node -> child  != NULL){
+		check_stmt_valid(stmtlist_node -> child);
+		stmtlist_node = stmtlist_node -> child -> sibling;
+	}
+
 }
 
 
 /*create a function and add it into function list
  *the function is defined by an extdef node in syntax tree*/
-void
-create_function(struct tree_node* specifier_node, struct tree_node* fundec_node, struct tree_node* compst_node){
+struct func_descriptor*
+create_function(struct tree_node* specifier_node, struct tree_node* fundec_node){
 				
 	char* func_name = fundec_node -> child -> unit_value;
 
 	if(find_func(func_table_head, func_name) != NULL){
 		printf("Error type 4 at line %d: Function \'%s\'redifinition\n", fundec_node -> lineno, func_name);
-		return ;
+		return NULL;
 	}
 	if(is_struct_type(specifier_node) && is_struct_definition(specifier_node -> child)){
 		printf("Warnning: struct defined inside return field of function \'%s\'\n", func_name);
@@ -153,19 +261,6 @@ create_function(struct tree_node* specifier_node, struct tree_node* fundec_node,
 
 	/*handle return type*/
 	struct type_descriptor* return_type = create_type_descriptor_by_specifier(specifier_node);
-	/*struct tree_node* stmtlist_node = compst_node -> child -> sibling -> sibling;
-	struct tree_node* return_stmt_node = NULL;
-	while(stmtlist_node -> child != NULL){
-		return_stmt_node = stmtlist_node -> child;
-		stmtlist_node = stmtlist_node -> child -> sibling;
-	}
-	if(return_stmt_node == NULL){
-		printf("Warnning: control reaches end of non-void function \'%s\'\n", func_name);
-	} else{
-		assert(return_stmt_node -> child -> unit_code == RETURN);
-		struct tree_node* return_exp_node = return_stmt_node -> child -> sibling;
-		//todo : determine return type consistent
-	}*/
 
 	/*create func descriptor and add into list*/
 	struct func_descriptor* new_func_descriptor = create_func_descriptor(func_name, return_type, 0);
@@ -175,8 +270,9 @@ create_function(struct tree_node* specifier_node, struct tree_node* fundec_node,
 	if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
 		struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
 		new_func_descriptor -> param_num = init_param_list(new_func_descriptor -> param_list_head, varlist_node);
-		
 	}
+
+	return new_func_descriptor;
 }
 
 

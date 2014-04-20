@@ -2,12 +2,17 @@
 #define __SEMANTIC_H__
 
 #include "tree.h"
+#include "table.h"
 
 void semantic_analyze(struct tree_node *);
-void analyze_node(struct tree_node *);
 
+void analyze_extdef_node(struct tree_node *);
 
-void create_function(struct tree_node*, struct tree_node*, struct tree_node*);
+void analyze_function_node(struct tree_node*, struct tree_node*, struct tree_node*);
+
+void analyze_compst_node(struct func_descriptor*, struct tree_node*);
+
+struct func_descriptor* create_function(struct tree_node*, struct tree_node*);
 
 struct var_descriptor* create_variable(struct tree_node*, struct tree_node*, struct var_descriptor*);
 
