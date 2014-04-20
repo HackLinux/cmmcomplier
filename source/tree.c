@@ -14,6 +14,10 @@
 /*a global error flag for both lexical and syntax errors*/
 bool error_flag = false;
 
+/*"Program" node of the syntax tree (also root node)
+ * become valid after syntax analysis*/
+struct tree_node* program_node;	
+
 /*creators*/
 struct tree_node*
 create_node(int lineno, char *unit_name){

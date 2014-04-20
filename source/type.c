@@ -1,11 +1,14 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
+#include "common/bool.h"
 #include "tree.h"
 #include "table.h"
 #include "common/tokenset.h"
 #include "type.h"
+#include "semantic.h"
 
 /******************************functions about type(int\float\struct)***********************************/
 struct type_descriptor*
@@ -31,12 +34,10 @@ create_type_descriptor_by_specifier(struct tree_node* specifier_node){
 		if(structspecifier_node -> child -> sibling -> unit_code == Tag){	//exist struct
 			char *struct_name = structspecifier_node -> child -> sibling -> child -> unit_value;
 			sd = find_struct(struct_table_head, struct_name);
-			assert(sd != NULL);	//if sd == null then error: no such struct
+			if(sd == NULL)
+				printf("Error Type 17 at line %d : undefined struct %s\n", specifier_node -> lineno, struct_name );
 		} else{	//new struct
-			sd = create_struct_descriptor_by_structspecifier(structspecifier_node);
-			//todo : remove this func
-			//todo : create failed by name repeat or assignop
-			add_struct(struct_table_head, sd);
+			sd = create_structure(structspecifier_node);
 		}
 	}
 	return create_type_descriptor(type_code, sd);
@@ -81,11 +82,24 @@ type_ctos(int type_code){
 		case TYPE_INT: return "int";
 		case TYPE_FLOAT: return "float";
 		case TYPE_STRUCT: return "struct";
-		//case TYPE_ARRAY: return "array";
-		//case TYPE_STRUCT_ARRAY: return "struct array";
 		default: break;
 	}
 	assert(0);
+}
+
+/*determine two types equal or not*/
+bool
+type_equal(struct type_descriptor* t1, struct type_descriptor* t2){
+	assert(t1 != NULL && t2 != NULL);
+	if(t1 -> type_code != t2 -> type_code)
+		return false;
+	if(t1 -> type_code == TYPE_STRUCT){
+		char* struct1_name = t1 -> sd -> struct_name;
+		char* strcuct2_name = t2 -> sd -> struct_name;
+		//todo : field equal ??
+		return ((strcmp(struct1_name, strcuct2_name) == 0) ? true : false);
+	}
+	return true;
 }
 
 
@@ -108,15 +122,26 @@ create_array_descriptor_by_vardec(struct tree_node* vardec_node){
 		head -> subarray = new_array;
 	}
 	struct array_descriptor* p = head -> subarray;
-	/*while(p != NULL){
-		printf("[%d]", p -> size);
-		p = p -> subarray; 
-	} printf("\n");*/
+	
 	return head -> subarray;
+}
+
+bool
+array_equal(struct array_descriptor* a1, struct array_descriptor* a2){
+	if(a1 == NULL && a2 == NULL)
+		return true;
+	if(a1 == NULL || a2 == NULL)
+		return false;
+	return array_equal(a1 -> subarray, a2 -> subarray);
 }
 
 /*
 void
 array_to_string(struct array_descriptor *array){
+	
+	while(array != NULL){
+		printf("[%d]", array -> size);
+		array = array -> subarray; 
+	} printf("\n");
 
 }*/

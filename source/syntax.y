@@ -2,7 +2,7 @@
 %{
 	#include <stdio.h>
 	#include "tree.h"
-	#include "table.h"
+	//#include "table.h"
 
 %}
 
@@ -51,15 +51,7 @@
 %% 
 
 Program		:	ExtDefList			{	$$ = build_a_production(@$.first_line, "Program", 1, $1);
-										if(!error_flag){
-											//print_syntax_tree($$, 0);
-											printf("no syntax error\n");
-											preorder_analyze($$);
-											print_func_table(func_table_head);
-											print_struct_table(struct_table_head);
-											print_var_table(var_table_head);
-											destroy_tree($$);
-										}
+										program_node = $$;
 									}
 ExtDefList	:	ExtDef ExtDefList	{	$$ = build_a_production(@$.first_line, "ExtDefList", 2, $1, $2);
 									}

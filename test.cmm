@@ -1,10 +1,7 @@
-struct n{
-	float a1[5][3], c;
-	int b;
-};
+int main(){
+	return n;
+}
 
-int x1, x2;
-float a1;
-
-struct n main(int a, int b){
+int main(int x, int y){
+	int a;
 }

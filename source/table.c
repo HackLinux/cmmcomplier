@@ -12,9 +12,7 @@
 /* three tables will be build in semantic analysis
  * 1. func def table
  * 2. struct def table
- * 3. var def table 
- * a structure definition will be insert into struct def table
- * a structure variable definition will be insert into var def table
+ * 3. var def table
  */
 
 struct func_descriptor func_head;	//empty head
@@ -39,6 +37,7 @@ create_func_descriptor(char *func_name, struct type_descriptor* return_type, int
 	strcpy(new_func_descriptor -> func_name, func_name);
 	new_func_descriptor -> return_type = return_type;
 	new_func_descriptor -> param_num = param_num;
+	new_func_descriptor -> param_list_head = create_var_descriptor("", NULL, NULL);//empty head
 	new_func_descriptor -> next = NULL;
 
 	return new_func_descriptor;
@@ -87,32 +86,17 @@ print_func_table(struct func_descriptor* head){
 
 /******************************functions for struct_table******************************/
 
+
 struct struct_descriptor*
-create_struct_descriptor(char* struct_name/*, struct tree_node* deflist*/){
+create_struct_descriptor(char* struct_name){
 	assert(strlen(struct_name) < 20);
 	struct struct_descriptor* new_struct_descriptor = (struct struct_descriptor*)malloc(sizeof(struct struct_descriptor));
 	strcpy(new_struct_descriptor -> struct_name, struct_name);
 	new_struct_descriptor -> member_list_head = create_var_descriptor("", NULL, NULL);//empty head
+		//attention : no member var added into this struct
 	new_struct_descriptor -> next = NULL;
 	new_struct_descriptor -> member_num = -1;
 	return new_struct_descriptor;
-}
-
-
-struct struct_descriptor*
-create_struct_descriptor_by_structspecifier(struct tree_node *structspecifier_node){
-	assert(structspecifier_node -> unit_code == StructSpecifier);
-	assert(structspecifier_node -> child -> sibling -> unit_code == OptTag);
-	struct tree_node* opttag_node = structspecifier_node -> child -> sibling;
-	char* struct_name;
-	if(opttag_node -> child == NULL)//anonymous structure def
-		struct_name = "";
-	else
-		struct_name = opttag_node -> child -> unit_value;
-	//todo : check name repeat???
-	//todo : member list
-	return create_struct_descriptor(struct_name);
-
 }
 
 
@@ -150,6 +134,7 @@ print_struct_table(struct struct_descriptor* head){
 	printf("\n+=============================================+\n");
 }
 
+
 /******************************functions for var_table******************************/
 
 struct var_descriptor*
@@ -182,6 +167,7 @@ add_var(struct var_descriptor* head, struct var_descriptor* new_var){
 	new_var -> next = head -> next;
 	head -> next = new_var;
 }
+
 
 void
 print_var_table(struct var_descriptor* head){

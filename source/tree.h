@@ -4,6 +4,7 @@
 #include "common/bool.h"
 
 extern bool error_flag;
+extern struct tree_node* program_node;
 
 union value{
 	int int_value;

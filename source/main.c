@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "lexical.c"
 
+#include "tree.h"
+#include "table.h"
+
 int main(int argc, char** argv){
 
 	if(argc != 2){
@@ -16,6 +19,20 @@ int main(int argc, char** argv){
 	
 	yyrestart(f);
 	yyparse();
+
+	if(!error_flag){
+
+		//print_syntax_tree($$, 0);	
+		printf("no syntax error\n");
+		
+		semantic_analyze(program_node);
+		
+		print_func_table(func_table_head);
+		print_struct_table(struct_table_head);
+		print_var_table(var_table_head);
+		
+		destroy_tree(program_node);
+	}
 
 	return 0;
 }
