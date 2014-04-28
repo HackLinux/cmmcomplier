@@ -30,6 +30,7 @@
 %type <pnode> DefList Def DecList Dec
 %type <pnode> Exp Args
 
+
 /* priority and associativity*/
 
 %nonassoc LOWER_THAN_ELSE
@@ -47,6 +48,7 @@
 
 %nonassoc LOWER_THAN_ERROR
 %nonassoc error
+
 
 %% 
 

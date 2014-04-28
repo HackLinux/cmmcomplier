@@ -14,7 +14,7 @@ void analyze_compst_node(struct func_descriptor*, struct tree_node*);
 
 struct func_descriptor* create_function(struct tree_node*, struct tree_node*);
 
-struct var_descriptor* create_variable(struct tree_node*, struct tree_node*, struct var_descriptor*);
+struct var_descriptor* create_variable(struct tree_node*, struct tree_node*, struct var_descriptor*, bool);
 
 struct struct_descriptor* create_structure(struct tree_node*);
 
@@ -34,7 +34,6 @@ bool check_params_valid(struct var_descriptor* params_list_head, struct tree_nod
 
 bool var_type_equal(struct var_descriptor* v1, struct var_descriptor* v2);
 
-//bool is_lvalue(struct tree_node*);
 
 
 #endif

@@ -28,8 +28,8 @@ int main(int argc, char** argv){
 		semantic_analyze(program_node);
 		
 		print_func_table(func_table_head);
-		print_struct_table(struct_table_head);
-		print_var_table(var_table_head);
+		//print_struct_table(struct_table_head);
+		//print_var_table(var_table_head);
 		
 		destroy_tree(program_node);
 	}
@@ -38,5 +38,7 @@ int main(int argc, char** argv){
 }
 
 yyerror(char *msg){
+	
+	error_flag = true;
 	fprintf(stderr, "Error type 2 at line %d: %s \n", yylineno ,msg);
 }
