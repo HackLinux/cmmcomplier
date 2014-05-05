@@ -181,7 +181,7 @@ create_variable(struct tree_node* specifier_node, struct tree_node* vardec_node,
 	char* var_name = find_id_node_in_vardec(vardec_node) -> unit_value;
 	struct array_descriptor* var_array = create_array_descriptor_by_vardec(vardec_node);
 	struct var_descriptor* new_var =  create_var_descriptor(var_name, var_type, var_array);
-	if(find_var(head, var_name) == NULL){
+	if(find_var(head, var_name) == NULL && find_struct(struct_table_head, var_name) == NULL){
 		add_var(head, new_var);
 		return new_var;
 	}
@@ -271,14 +271,17 @@ init_member_list(struct var_descriptor* member_list_head, struct tree_node* defl
 		struct tree_node* declist_node = specifier_node -> sibling;
 		
 		while(true){
+
 			struct tree_node* vardec_node = declist_node -> child -> child;
+			
 			if(vardec_node -> sibling != NULL){
 				printf("Error type 15 at line %d: struct member initialized\n", vardec_node -> lineno);
-				break;
 			}
-			if(create_variable(specifier_node, vardec_node, member_list_head, true) != NULL){
-				num ++;
+			else{
+				if(create_variable(specifier_node, vardec_node, member_list_head, true) != NULL)
+					num ++;
 			}
+			
 			if(declist_node -> child -> sibling != NULL)
 				declist_node = declist_node -> child -> sibling -> sibling;
 			else
@@ -286,7 +289,6 @@ init_member_list(struct var_descriptor* member_list_head, struct tree_node* defl
 		}
 		deflist_node = deflist_node -> child -> sibling;
 	}
-	//print_var_table(member_list_head);
 	return num;
 }
 
@@ -515,6 +517,8 @@ check_params_valid(struct var_descriptor* param_list_head, struct tree_node* arg
 	//one NULL, one not
 	if(args_node == NULL || expect_param == NULL)
 		return false;
+
+	
 	
 	//both not null
 	while(true){
@@ -523,8 +527,10 @@ check_params_valid(struct var_descriptor* param_list_head, struct tree_node* arg
 		
 		if(real_param == NULL)	//errors happen in check sub expression
 			return false;
-		if(!var_type_equal(expect_param, real_param));
+
+		if(!var_type_equal(expect_param, real_param))
 			return false;
+
 		if(args_node -> child -> sibling != NULL && expect_param -> next != NULL){	//both have next
 			args_node = args_node -> child -> sibling -> sibling;
 			expect_param = expect_param -> next;
@@ -532,10 +538,11 @@ check_params_valid(struct var_descriptor* param_list_head, struct tree_node* arg
 		else
 			break;
 	}
+
 	//left one null, one not
-	if(args_node != NULL || expect_param != NULL)
+	if(args_node -> child -> sibling != NULL || expect_param -> next != NULL)
 		return false;
-	
+
 	return true;
 }
 
@@ -544,9 +551,12 @@ check_params_valid(struct var_descriptor* param_list_head, struct tree_node* arg
 bool
 var_type_equal(struct var_descriptor* v1, struct var_descriptor* v2){
 	assert(v1 != NULL && v2 != NULL);
+
 	if(!type_equal(v1 -> var_type, v2 -> var_type))
 		return false;
 	if(!array_equal(v1 -> var_array, v2 -> var_array))
 		return false;
+
+	//printf("equal\n");
 	return true;
 }

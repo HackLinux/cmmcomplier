@@ -25,8 +25,6 @@ int main(int argc, char** argv){
 	if(!error_flag){
 
 		//print_syntax_tree($$, 0);	
-
-		printf("no syntax error\n");
 		
 		semantic_analyze(program_node);
 		
@@ -36,18 +34,14 @@ int main(int argc, char** argv){
 		
 		destroy_tree(program_node);
 	
-		//destroy_func_table(func_table_head);
-		//destroy_struct_table(struct_table_head);
-		//destroy_var_table(var_table_head);
+		//destroy_table();	//all 3 tables
 	}
 
 	return 0;
 }
 
 yyerror(char *msg){
-	
+
 	error_flag = true;
-	fprintf(stderr, "Error type 2 at line %d: %s \n", yylineno ,msg);
-
-
+	fprintf(stderr, "%s at line%d\n",msg, yylineno);
 }
