@@ -3,7 +3,7 @@
 	#include "syntax.h"
 	#include "tree.h"
 	#include "common/bool.h"
-	#include "math.h"
+	#include "common/math.h"
 
 	int yycolumn = 1;
 

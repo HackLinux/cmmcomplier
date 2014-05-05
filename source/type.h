@@ -29,4 +29,7 @@ char* type_ctos(int);
 struct array_descriptor* create_array_descriptor(int, struct array_descriptor*);
 struct array_descriptor* create_array_descriptor_by_vardec(struct tree_node*);
 
+bool type_equal(struct type_descriptor*, struct type_descriptor*);
+bool array_equal(struct array_descriptor*, struct array_descriptor*);
+
 #endif

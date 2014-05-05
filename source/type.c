@@ -97,7 +97,6 @@ create_array_descriptor_by_vardec(struct tree_node* vardec_node){
 		struct array_descriptor* new_array = create_array_descriptor(size, head -> subarray);
 		head -> subarray = new_array;
 	}
-	struct array_descriptor* p = head -> subarray;
 	
 	return head -> subarray;
 }
@@ -110,14 +109,3 @@ array_equal(struct array_descriptor* a1, struct array_descriptor* a2){
 		return false;
 	return array_equal(a1 -> subarray, a2 -> subarray);
 }
-
-/*
-void
-array_to_string(struct array_descriptor *array){
-	
-	while(array != NULL){
-		printf("[%d]", array -> size);
-		array = array -> subarray; 
-	} printf("\n");
-
-}*/

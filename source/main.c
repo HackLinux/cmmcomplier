@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexical.c"
-
 #include "tree.h"
 #include "table.h"
+#include "semantic.h"
+#include "syntax.h"
+
+#include "lexical.c"
 
 int main(int argc, char** argv){
 
@@ -23,15 +25,20 @@ int main(int argc, char** argv){
 	if(!error_flag){
 
 		//print_syntax_tree($$, 0);	
+
 		printf("no syntax error\n");
 		
 		semantic_analyze(program_node);
 		
-		print_func_table(func_table_head);
+		//print_func_table(func_table_head);
 		//print_struct_table(struct_table_head);
 		//print_var_table(var_table_head);
 		
 		destroy_tree(program_node);
+	
+		//destroy_func_table(func_table_head);
+		//destroy_struct_table(struct_table_head);
+		//destroy_var_table(var_table_head);
 	}
 
 	return 0;
@@ -41,4 +48,6 @@ yyerror(char *msg){
 	
 	error_flag = true;
 	fprintf(stderr, "Error type 2 at line %d: %s \n", yylineno ,msg);
+
+
 }

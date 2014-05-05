@@ -1,4 +1,8 @@
-struct a {
-	int x;
-	int x = 1;	
-};
+int main(){
+int i;
+int k;
+i = j;
+if(1){
+int j = k;
+}
+}
