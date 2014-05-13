@@ -1,7 +1,7 @@
 
 %{
 	#include <stdio.h>
-	#include "tree.h"
+	#include "../common/tree.h"
 %}
 
 /* declared types */

@@ -8,10 +8,10 @@
 #include <string.h>
 
 #include "semantic.h"
-#include "tree.h"       
-#include "table.h"
-#include "type.h"
-#include "common/tokenset.h"
+#include "../common/tree.h"       
+#include "../common/table.h"
+#include "../common/type.h"
+#include "../common/tokenset.h"
 
 /*find all extdef node in tree to do semantic analysis*/
 void

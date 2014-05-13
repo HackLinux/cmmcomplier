@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "common/bool.h"
+#include "bool.h"
 #include "tree.h"
 #include "table.h"
-#include "common/tokenset.h"
+#include "tokenset.h"
 #include "type.h"
-#include "semantic.h"
+#include "../semantic/semantic.h"
 
 /******************************functions about type(int\float\struct)***********************************/
 struct type_descriptor*

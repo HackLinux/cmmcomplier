@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+
 #include "table.h"
 #include "tree.h"
 #include "type.h"
-#include "common/tokenset.h"
+#include "tokenset.h"
 
 /* three tables will be build in semantic analysis
  * 1. func def table

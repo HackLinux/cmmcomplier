@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tree.h"
-#include "table.h"
-#include "semantic.h"
-#include "syntax.h"
+#include "common/tree.h"
+#include "common/table.h"
+#include "syntax/syntax.h"
+#include "semantic/semantic.h"
 
-#include "lexical.c"
+#include "syntax/lexical.c"
 
 int main(int argc, char** argv){
 

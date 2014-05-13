@@ -1,19 +1,20 @@
-CFILES = syntax.c main.c tree.c semantic.c table.c type.c common/math.c common/tokenset.c 
+CFILES = main.c syntax/syntax.c semantic/semantic.c \
+		 common/*.c
+		 #common/tree.c common/table.c common/type.c common/math.c common/tokenset.c  
 CFLAGS = -ly -lfl -lm #-Wall
 
 
-parser: lexical.c $(CFILES)
+parser: syntax/lexical.c $(CFILES)
 	gcc $(CFILES) $(CFLAGS) -o parser
 
-lexical.c: lexical.l
-	flex -o lexical.c lexical.l 
+syntax/lexical.c: syntax/lexical.l
+	flex -o syntax/lexical.c syntax/lexical.l 
 
-syntax.c: syntax.y
-	bison -o syntax.c -d syntax.y 
+syntax/syntax.c: syntax/syntax.y
+	bison -o syntax/syntax.c -d syntax/syntax.y 
 
 
 .PHONY:clean
 clean:
-	rm -f lexical.c syntax.c syntax.h syntax.output
+	rm -f syntax/lexical.c syntax/syntax.c syntax/syntax.h
 	rm -f parser
-	rm -f *~

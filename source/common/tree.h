@@ -1,7 +1,7 @@
 #ifndef __TREE_H__
 #define __TREE_H__
 
-#include "common/bool.h"
+#include "bool.h"
 
 extern bool error_flag;
 extern struct tree_node* program_node;

@@ -1,9 +1,9 @@
 %{
 	#include <string.h>
 	#include "syntax.h"
-	#include "tree.h"
-	#include "common/bool.h"
-	#include "common/math.h"
+	#include "../common/tree.h"
+	#include "../common/bool.h"
+	#include "../common/math.h"
 
 	int yycolumn = 1;
 

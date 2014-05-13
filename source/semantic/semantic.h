@@ -1,8 +1,8 @@
 #ifndef __SEMANTIC_H__
 #define __SEMANTIC_H__
 
-#include "tree.h"
-#include "table.h"
+#include "../common/tree.h"
+#include "../common/table.h"
 
 void semantic_analyze(struct tree_node *);
 

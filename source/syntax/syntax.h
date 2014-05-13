@@ -76,14 +76,14 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 8 "syntax.y"
+#line 8 "syntax/syntax.y"
 
 	struct tree_node* pnode;
 
 
 
 /* Line 2068 of yacc.c  */
-#line 87 "syntax.h"
+#line 87 "syntax/syntax.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
