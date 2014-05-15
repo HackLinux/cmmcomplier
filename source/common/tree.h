@@ -6,12 +6,6 @@
 extern bool error_flag;
 extern struct tree_node* program_node;
 
-union value{
-	int int_value;
-	float float_value;
-};
-
-
 struct tree_node {
 	
 	bool is_terminal;			/*a token(1) or a nonterminal(0)*/

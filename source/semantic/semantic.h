@@ -4,7 +4,7 @@
 #include "../common/tree.h"
 #include "../common/table.h"
 
-void semantic_analyze(struct tree_node *);
+bool semantic_analyze(struct tree_node *);
 
 void analyze_extdef_node(struct tree_node *);
 

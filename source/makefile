@@ -1,8 +1,7 @@
 CFILES = main.c syntax/syntax.c semantic/semantic.c \
-		 common/*.c
-		 #common/tree.c common/table.c common/type.c common/math.c common/tokenset.c  
-CFLAGS = -ly -lfl -lm #-Wall
+		 translate/translate.c common/*.c
 
+CFLAGS = -ly -lfl -lm #-Wall
 
 parser: syntax/lexical.c $(CFILES)
 	gcc $(CFILES) $(CFLAGS) -o parser

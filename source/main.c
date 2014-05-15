@@ -4,6 +4,7 @@
 #include "common/table.h"
 #include "syntax/syntax.h"
 #include "semantic/semantic.h"
+#include "translate/translate.h"
 
 #include "syntax/lexical.c"
 
@@ -22,21 +23,16 @@ int main(int argc, char** argv){
 	yyrestart(f);
 	yyparse();
 
-	if(!error_flag){
+	if(error_flag)
+		return 1;//lex or syntax error	
 
-		//print_syntax_tree($$, 0);	
-		
-		semantic_analyze(program_node);
-		
-		//print_func_table(func_table_head);
-		//print_struct_table(struct_table_head);
-		//print_var_table(var_table_head);
-		
-		destroy_tree(program_node);
+	if(semantic_analyze(program_node))
+		return 1;	//semantic error
+
+	intermediate_generate(program_node);
 	
-		//destroy_table();	//all 3 tables
-	}
-
+	destroy_tree(program_node);
+	
 	return 0;
 }
 

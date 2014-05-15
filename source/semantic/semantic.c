@@ -1,7 +1,6 @@
 /*functions for semantic analysis, which    *
  *will be carrried out after building the syntax tree*/
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -13,8 +12,10 @@
 #include "../common/type.h"
 #include "../common/tokenset.h"
 
+bool semantic_error_flag = false;
+
 /*find all extdef node in tree to do semantic analysis*/
-void
+bool
 semantic_analyze(struct tree_node *root){
 	
 	assert(root -> unit_code == Program);
@@ -25,6 +26,8 @@ semantic_analyze(struct tree_node *root){
 		analyze_extdef_node(extdeflist_node -> child);
 		extdeflist_node = extdeflist_node -> child -> sibling;
 	}
+
+	return semantic_error_flag;
 
 }
 
@@ -118,8 +121,10 @@ analyze_compst_node(struct func_descriptor* belongs_func, struct tree_node* comp
 			if(vardec_node -> sibling != NULL){
 				struct var_descriptor* init_exp_var = check_exp_valid(vardec_node -> sibling -> sibling);
 				if(new_var != NULL && init_exp_var != NULL)
-					if(!var_type_equal(new_var , init_exp_var))
+					if(!var_type_equal(new_var , init_exp_var)){
 						printf("Error type 5 at line %d: Type mismatch between assignment operator\n", vardec_node -> lineno);
+						semantic_error_flag = true;
+					}
 			}
 			if(declist_node -> child -> sibling != NULL)
 				declist_node = declist_node -> child -> sibling -> sibling;	
@@ -146,6 +151,7 @@ create_function(struct tree_node* specifier_node, struct tree_node* fundec_node)
 
 	if(find_func(func_table_head, func_name) != NULL){
 		printf("Error type 4 at line %d: Function \'%s\'redifine\n", fundec_node -> lineno, func_name);
+		semantic_error_flag = true;
 		return NULL;
 	}
 	if(is_struct_type(specifier_node) && is_struct_definition(specifier_node -> child)){
@@ -190,6 +196,7 @@ create_variable(struct tree_node* specifier_node, struct tree_node* vardec_node,
 			printf("Error type 15 at line %d: member variable \'%s\' redefine\n", vardec_node -> lineno, var_name);
 		else
 			printf("Error type 3 at line %d: variable \'%s\' redefine\n", vardec_node -> lineno, var_name);
+		semantic_error_flag = true;
 		return NULL;
 	}
 }
@@ -209,6 +216,7 @@ create_structure(struct tree_node* structspecifier_node){
 		if((find_struct(struct_table_head, struct_name) != NULL) ||
 			(find_var(var_table_head, struct_name) != NULL)){
 			printf("Error type 16 at line %d: Struct name redefine\n", structspecifier_node -> lineno);
+			semantic_error_flag = true;
 			return NULL;
 		}
 	}
@@ -245,6 +253,7 @@ create_type(struct tree_node* specifier_node){
 			sd = find_struct(struct_table_head, struct_name);
 			if(sd == NULL){
 				printf("Error Type 17 at line %d : Undefined struct %s\n", specifier_node -> lineno, struct_name );
+	 			semantic_error_flag = true;
 	 			return NULL;
 			}
 		}
@@ -276,6 +285,7 @@ init_member_list(struct var_descriptor* member_list_head, struct tree_node* defl
 			
 			if(vardec_node -> sibling != NULL){
 				printf("Error type 15 at line %d: struct member initialized\n", vardec_node -> lineno);
+				semantic_error_flag = true;
 			}
 			else{
 				if(create_variable(specifier_node, vardec_node, member_list_head, true) != NULL)
@@ -347,8 +357,10 @@ check_stmt_valid(struct func_descriptor* belongs_func, struct tree_node* stmt_no
 		
 		if(return_var != NULL && type_equal(return_var -> var_type, belongs_func -> return_type))
 			;
-		else
+		else{
 			printf("Error type 8 at line %d: Return type mismatch in function \'%s\'\n", first_child -> lineno, belongs_func -> func_name);
+			semantic_error_flag = true;
+		}
 	}
 	else if(first_child -> unit_code == IF){
 		check_exp_valid(first_child -> sibling -> sibling);
@@ -379,8 +391,10 @@ check_exp_valid(struct tree_node* exp_node){
 	if(first_child -> unit_code == ID && second_child == NULL){	
 		char* var_name = first_child -> unit_value;
 		struct var_descriptor* the_var = find_var(var_table_head, var_name);
-		if(the_var == NULL)
+		if(the_var == NULL){
 			printf("Error type 1 at line %d: Undefined variable \'%s\'\n", first_child -> lineno, var_name);
+			semantic_error_flag = true;
+		}
 		return the_var;
 	}
 	//Exp -> INT 
@@ -407,10 +421,12 @@ check_exp_valid(struct tree_node* exp_node){
 
 		if(!left_var -> is_lvalue){
 			printf("Error type 6 at line %d: lvalue required as left operand of assignment\n", first_child -> lineno);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		if(!var_type_equal(left_var, right_var)){
 			printf("Error type 5 at line %d: Type mismatch between assignment operator\n", first_child -> lineno);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		return left_var;	//doubt it
@@ -431,6 +447,7 @@ check_exp_valid(struct tree_node* exp_node){
 		
 		if(!var_type_equal(left_var, right_var)){
 			printf("Error type 7 at line %d: Type mismatch between \'%s\' operator\n", first_child -> lineno, second_child -> unit_name);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		left_var = create_var_descriptor("", right_var -> var_type, right_var -> var_array);
@@ -455,12 +472,14 @@ check_exp_valid(struct tree_node* exp_node){
 				printf("Error type 11 at line %d: Use variable \'%s\' as a function \n", first_child -> lineno, func_name);
 			else
 				printf("Error type 2 at line %d: Undefined function \'%s\'\n", first_child -> lineno, func_name);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		//params check
 		struct tree_node* args_node = (second_child -> sibling -> unit_code == Args) ? second_child -> sibling : NULL;
 		if(!check_params_valid(the_func -> param_list_head, args_node)){
 			printf("Error type 9 at line %d: Argument mismatch in function \'%s\'\n", first_child -> lineno, func_name);
+			semantic_error_flag = true;
 		}
 
 		struct var_descriptor* temp_var = create_var_descriptor("", the_func -> return_type, NULL);	//memory leak
@@ -476,9 +495,11 @@ check_exp_valid(struct tree_node* exp_node){
 			return NULL;
 		if(sub_var == NULL || sub_var -> var_type -> type_code != TYPE_INT){
 			printf("Error type 12 at line %d: Array subscript is not an integer\n", first_child -> lineno);
+			semantic_error_flag = true;
 		}
 		if(array_var -> var_array == NULL){
 			printf("Error type 10 at line %d: Use non-array variable as an array\n", first_child -> lineno);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		return create_var_descriptor(array_var -> var_name, array_var -> var_type, array_var -> var_array -> subarray);
@@ -493,11 +514,13 @@ check_exp_valid(struct tree_node* exp_node){
 		struct struct_descriptor* the_struct = struct_var -> var_type -> sd;
 		if(the_struct == NULL){
 			printf("Error type 13 at line %d: Use member access operator \'.\' for non-struct variable \'%s\'\n", first_child -> lineno, struct_var -> var_name);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		struct var_descriptor* member_var = find_var(the_struct -> member_list_head, member_var_name);
 		if(member_var == NULL){
 			printf("Error type 14 at line %d: Undefined field \'%s\' in struct \'%s\'\n", first_child -> lineno, member_var_name, the_struct -> struct_name);
+			semantic_error_flag = true;
 			return NULL;
 		}
 		return  member_var;

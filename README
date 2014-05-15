@@ -1,8 +1,12 @@
 The experiment of Compliers
 
-C-- lexical and syntax analysis using Flex and Bison
+1st: C-- lexical and syntax analysis
+
+2nd: semantic analysis	
+
+3rd: intermediate representation	
 
 Usage:
-	./parser test.cmm
+	./parser test.cmml
 
 

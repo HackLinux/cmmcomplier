@@ -6,8 +6,6 @@
 #define TYPE_INT 1
 #define TYPE_FLOAT 2
 #define TYPE_STRUCT 3
-//#define TYPE_ARRAY 4
-//#define TYPE_STRUCT_ARRAY 5
 
 struct array_descriptor{
 	int size;
