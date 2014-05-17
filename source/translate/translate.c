@@ -1,6 +1,7 @@
 /*translate syntax tree into intermediate representation*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #include "translate.h"
@@ -76,8 +77,10 @@ translate_stmt(struct tree_node* stmt_node){
 		}
 	}
 	else if(first_child -> unit_code == RETURN){
-		translate_exp(first_child -> sibling);
-		printf("RETURN ~~\n");
+		struct operand *op = translate_exp(first_child -> sibling);
+		char op_buf[10];
+		operand_to_string(op_buf, op);
+		printf("RETURN %s\n", op_buf);
 	}
 	else if(first_child -> unit_code == IF){
 		
@@ -93,9 +96,6 @@ struct operand*
 translate_exp(struct tree_node* exp_node){
 
 	assert(exp_node -> unit_code == Exp);
-
-	//printf("hint exp\n");
-
 	struct tree_node* first_child = exp_node -> child;
 	struct tree_node* second_child = first_child -> sibling;
 
@@ -126,29 +126,54 @@ translate_exp(struct tree_node* exp_node){
 		char left_op_buf[10], right_op_buf[10];
 		operand_to_string(left_op_buf, left_op);
 		operand_to_string(right_op_buf, right_op);
-
+		
 		printf("%s := %s\n", left_op_buf, right_op_buf);
+		return left_op;
 
 	}
 	//Exp -> Exp plus/minus/star/div Exp
-	else if(first_child -> unit_code == Exp && (/*second_child -> unit_code == AND ||
-												second_child -> unit_code == OR ||
-												second_child -> unit_code == RELOP ||*/
-												second_child -> unit_code == PLUS ||
+	else if(first_child -> unit_code == Exp && (second_child -> unit_code == PLUS ||
 												second_child -> unit_code == MINUS ||
 												second_child -> unit_code == STAR ||
-												second_child -> unit_code == DIV)) {	// 2-operand operator expressions
-		
+												second_child -> unit_code == DIV)) {
+
+		struct operand *left_op = translate_exp(first_child);
+		struct operand *right_op = translate_exp(second_child -> sibling);
+		struct operand* result_op = create_operand(OP_TEMP);
+		result_op -> value = used_temp_num++;
+
+		char left_op_buf[10], right_op_buf[10], result_op_buf[10];;
+		operand_to_string(left_op_buf, left_op);
+		operand_to_string(right_op_buf, right_op);
+		operand_to_string(result_op_buf, result_op);
+
+		char operator[2];
+		if(second_child -> unit_code == PLUS)
+			strcpy(operator, "+");
+		else if(second_child -> unit_code == MINUS)
+			strcpy(operator, "-");
+		else if(second_child -> unit_code == STAR)
+			strcpy(operator, "*");
+		else if(second_child -> unit_code == DIV)
+			strcpy(operator, "/");
+
+		printf("%s := %s %s %s\n", result_op_buf, left_op_buf, operator, right_op_buf);
+		return result_op;
 	}
-	//1-operand operators
-	//including "LP RP" "MINUS" "NOT"
-	else if(second_child -> unit_code == Exp) {
-		
+	//conditions
+	else if(first_child -> unit_code == Exp && (second_child -> unit_code == AND ||
+												second_child -> unit_code == OR ||
+												second_child -> unit_code == RELOP)){
+
+	}
+	//LP EXP RP
+	else if(first_child -> unit_code == LP && second_child -> unit_code == Exp) {
+		return translate_exp(second_child);
 	}
 	//func call
 	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
 		
-		//todo args
+		//todo args & read write
 
 		struct operand* op = create_operand(OP_TEMP);
 		op -> value = used_temp_num++;
@@ -167,8 +192,6 @@ translate_exp(struct tree_node* exp_node){
 	else if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
 		
 	}
-
-
 }
 
 

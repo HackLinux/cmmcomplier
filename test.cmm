@@ -4,9 +4,7 @@ int test(){
 }
 
 int main(int a, int b){
-	int c ;
-	{
-		c = 1;
-		c = test();
-	}
+	int c;
+	int d;
+	c = write(d, e);
 }

@@ -20,15 +20,21 @@ semantic_analyze(struct tree_node *root){
 	
 	assert(root -> unit_code == Program);
 
+	//add read() and write() func for intercode generator
+	struct type_descriptor* int_type = create_type_descriptor(TYPE_INT, NULL);
+	struct func_descriptor* read_func = create_func_descriptor("read", int_type, 0);
+	struct func_descriptor* write_func_ = create_func_descriptor("write", int_type, 1);
+	write_func_ -> param_list_head -> next = create_var_descriptor("", int_type, NULL);
+	add_func(func_table_head, read_func);
+	add_func(func_table_head, write_func_);
+	
+	//start analyze
 	struct tree_node* extdeflist_node = root -> child;
-
 	while(extdeflist_node -> child != NULL){
 		analyze_extdef_node(extdeflist_node -> child);
 		extdeflist_node = extdeflist_node -> child -> sibling;
 	}
-
 	return semantic_error_flag;
-
 }
 
 /*analyze an extdef node*/
@@ -541,8 +547,6 @@ check_params_valid(struct var_descriptor* param_list_head, struct tree_node* arg
 	if(args_node == NULL || expect_param == NULL)
 		return false;
 
-	
-	
 	//both not null
 	while(true){
 
@@ -564,7 +568,7 @@ check_params_valid(struct var_descriptor* param_list_head, struct tree_node* arg
 
 	//left one null, one not
 	if(args_node -> child -> sibling != NULL || expect_param -> next != NULL)
-		return false;
+		return false;	//bug remains here: args not null , params null, then the exp of arg will not be checked
 
 	return true;
 }
