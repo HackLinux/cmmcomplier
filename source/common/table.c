@@ -162,6 +162,19 @@ find_var(struct var_descriptor* head, char* var_name){
 	return p;
 }
 
+int
+find_var_seq(struct var_descriptor* head, char* var_name){
+	int seq = 0;
+	struct var_descriptor* p;
+	for ( p = head -> next; p != NULL; p = p -> next){
+		if(strcmp(p -> var_name, var_name) == 0){
+			return seq;
+		}
+		seq ++;
+	}
+	return -1;
+}
+
 void
 add_var(struct var_descriptor* head, struct var_descriptor* new_var){
 	assert(head != NULL);

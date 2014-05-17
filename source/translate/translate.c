@@ -4,8 +4,12 @@
 #include <assert.h>
 
 #include "translate.h"
+#include "intercode.h"
+#include "../common/table.h"
 #include "../common/tree.h"
 #include "../common/tokenset.h"
+
+int used_temp_num = 0;
 
 void 
 intermediate_generate(struct tree_node* program_node){
@@ -72,7 +76,8 @@ translate_stmt(struct tree_node* stmt_node){
 		}
 	}
 	else if(first_child -> unit_code == RETURN){
-		
+		translate_exp(first_child -> sibling);
+		printf("RETURN ~~\n");
 	}
 	else if(first_child -> unit_code == IF){
 		
@@ -84,12 +89,85 @@ translate_stmt(struct tree_node* stmt_node){
 		assert(0);
 }
 
-void
+struct operand*
 translate_exp(struct tree_node* exp_node){
 
 	assert(exp_node -> unit_code == Exp);
 
-	printf("hint exp\n");
+	//printf("hint exp\n");
+
+	struct tree_node* first_child = exp_node -> child;
+	struct tree_node* second_child = first_child -> sibling;
+
+	//Exp -> ID
+	if(first_child -> unit_code == ID && second_child == NULL){	
+		char* var_name = first_child -> unit_value;
+		struct operand* op = create_operand(OP_VARIABLE);
+		op -> value = find_var_seq(var_table_head, var_name);
+		return op;
+	}
+	//Exp -> INT 
+	else if(first_child -> unit_code == INT && second_child == NULL) {
+		struct operand* op = create_operand(OP_CONST_INT);
+		op -> value = *((int *)first_child -> unit_value);
+		return op;
+	}
+	//Exp -> FLOAT
+	else if(first_child -> unit_code == FLOAT && second_child == NULL) {
+		struct operand* op = create_operand(OP_CONST_INT);
+		op -> float_value = *((float *)first_child -> unit_value);
+		return op;
+	}
+	//Exp -> Exp ASSIGNOP Exp
+	else if(first_child -> unit_code == Exp && second_child -> unit_code == ASSIGNOP) {	// assignments
+		struct operand *left_op = translate_exp(first_child);
+		struct operand *right_op = translate_exp(second_child -> sibling);
+
+		char left_op_buf[10], right_op_buf[10];
+		operand_to_string(left_op_buf, left_op);
+		operand_to_string(right_op_buf, right_op);
+
+		printf("%s := %s\n", left_op_buf, right_op_buf);
+
+	}
+	//Exp -> Exp plus/minus/star/div Exp
+	else if(first_child -> unit_code == Exp && (/*second_child -> unit_code == AND ||
+												second_child -> unit_code == OR ||
+												second_child -> unit_code == RELOP ||*/
+												second_child -> unit_code == PLUS ||
+												second_child -> unit_code == MINUS ||
+												second_child -> unit_code == STAR ||
+												second_child -> unit_code == DIV)) {	// 2-operand operator expressions
+		
+	}
+	//1-operand operators
+	//including "LP RP" "MINUS" "NOT"
+	else if(second_child -> unit_code == Exp) {
+		
+	}
+	//func call
+	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
+		
+		//todo args
+
+		struct operand* op = create_operand(OP_TEMP);
+		op -> value = used_temp_num++;
+		char op_buf[10];
+		operand_to_string(op_buf, op);
+
+		printf("%s := CALL %s\n", op_buf, (char*)first_child -> unit_value);
+
+		return op;
+	}
+	//array call
+	else if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
+		
+	}
+	//struct member call
+	else if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
+		
+	}
+
 
 }
 
