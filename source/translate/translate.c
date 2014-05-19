@@ -107,21 +107,24 @@ translate_exp(struct tree_node* exp_node){
 		return op;
 	}
 	//Exp -> INT 
-	else if(first_child -> unit_code == INT && second_child == NULL) {
+	if(first_child -> unit_code == INT && second_child == NULL) {
 		struct operand* op = create_operand(OP_CONST_INT);
 		op -> value = *((int *)first_child -> unit_value);
 		return op;
 	}
 	//Exp -> FLOAT
-	else if(first_child -> unit_code == FLOAT && second_child == NULL) {
+	if(first_child -> unit_code == FLOAT && second_child == NULL) {
 		struct operand* op = create_operand(OP_CONST_INT);
 		op -> float_value = *((float *)first_child -> unit_value);
 		return op;
 	}
 	//Exp -> Exp ASSIGNOP Exp
-	else if(first_child -> unit_code == Exp && second_child -> unit_code == ASSIGNOP) {	// assignments
+	if(first_child -> unit_code == Exp && second_child -> unit_code == ASSIGNOP) {	// assignments
 		struct operand *left_op = translate_exp(first_child);
 		struct operand *right_op = translate_exp(second_child -> sibling);
+
+		if(left_op == NULL || right_op == NULL)
+			return NULL;
 
 		char left_op_buf[10], right_op_buf[10];
 		operand_to_string(left_op_buf, left_op);
@@ -132,7 +135,7 @@ translate_exp(struct tree_node* exp_node){
 
 	}
 	//Exp -> Exp plus/minus/star/div Exp
-	else if(first_child -> unit_code == Exp && (second_child -> unit_code == PLUS ||
+	if(first_child -> unit_code == Exp && (second_child -> unit_code == PLUS ||
 												second_child -> unit_code == MINUS ||
 												second_child -> unit_code == STAR ||
 												second_child -> unit_code == DIV)) {
@@ -142,7 +145,7 @@ translate_exp(struct tree_node* exp_node){
 		struct operand* result_op = create_operand(OP_TEMP);
 		result_op -> value = used_temp_num++;
 
-		char left_op_buf[10], right_op_buf[10], result_op_buf[10];;
+		char left_op_buf[10], right_op_buf[10], result_op_buf[10];
 		operand_to_string(left_op_buf, left_op);
 		operand_to_string(right_op_buf, right_op);
 		operand_to_string(result_op_buf, result_op);
@@ -160,36 +163,87 @@ translate_exp(struct tree_node* exp_node){
 		printf("%s := %s %s %s\n", result_op_buf, left_op_buf, operator, right_op_buf);
 		return result_op;
 	}
+	// Exp -> MINUS Exp
+	if(first_child -> unit_code == MINUS){
+		struct operand *right_op = translate_exp(second_child);
+		struct operand* result_op = create_operand(OP_TEMP);
+		result_op -> value = used_temp_num++;
+
+		char right_op_buf[10], result_op_buf[10];
+		operand_to_string(right_op_buf, right_op);
+		operand_to_string(result_op_buf, result_op);
+
+		printf("%s = #0 - %s\n", result_op_buf, right_op_buf);
+
+		return result_op;
+	}
+	// Exp -> NOT Exp
+	if(first_child -> unit_code == NOT){
+
+	}
+
 	//conditions
-	else if(first_child -> unit_code == Exp && (second_child -> unit_code == AND ||
+	if(first_child -> unit_code == Exp && (second_child -> unit_code == AND ||
 												second_child -> unit_code == OR ||
 												second_child -> unit_code == RELOP)){
 
 	}
-	//LP EXP RP
-	else if(first_child -> unit_code == LP && second_child -> unit_code == Exp) {
+	//Exp -> LP Exp RP
+	if(first_child -> unit_code == LP && second_child -> unit_code == Exp) {
 		return translate_exp(second_child);
 	}
 	//func call
-	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
+	if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
 		
-		//todo args & read write
+		char* func_name = (char *)first_child -> unit_value;
 
-		struct operand* op = create_operand(OP_TEMP);
-		op -> value = used_temp_num++;
-		char op_buf[10];
-		operand_to_string(op_buf, op);
+		//special func write
+		if(strcmp(func_name, "write") == 0){
+			struct operand* args_op = translate_exp(second_child -> sibling -> child);
+			char args_op_buf[10];
+			operand_to_string(args_op_buf, args_op); 
+			printf("WRITE %s\n", args_op_buf);
 
-		printf("%s := CALL %s\n", op_buf, (char*)first_child -> unit_value);
+			return NULL;
+		}
 
-		return op;
+		//args
+		if(second_child -> sibling -> unit_code == Args){
+			struct tree_node* args_node = second_child -> sibling;
+			while(true){
+				struct tree_node* exp_node = args_node -> child;
+				struct operand* args_op = translate_exp(exp_node); 
+				char args_op_buf[10];
+				operand_to_string(args_op_buf, args_op);
+				printf("ARG %s\n", args_op_buf);	//todo : inverse order
+
+				if(args_node -> child -> sibling != NULL)
+					args_node = args_node -> child -> sibling -> sibling;
+				else
+					break;
+			}
+		}
+
+		//return operator
+		struct operand* return_op = create_operand(OP_TEMP);
+		return_op -> value = used_temp_num++;
+		char return_op_buf[10];
+		operand_to_string(return_op_buf, return_op);
+
+		//func call intercode
+		if(strcmp(func_name, "read") == 0)
+			printf("READ %s\n", return_op_buf);
+		else
+			printf("%s := CALL %s\n", return_op_buf, func_name);
+
+		return return_op;
 	}
 	//array call
-	else if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
+	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
 		
 	}
 	//struct member call
-	else if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
+	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
 		
 	}
 }

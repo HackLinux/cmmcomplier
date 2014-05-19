@@ -1,10 +1,10 @@
 
-int test(){
+int test(int x, int y){
 	
 }
 
 int main(int a, int b){
 	int c;
 	int d;
-	c = write(d, e);
+	d = -a;
 }

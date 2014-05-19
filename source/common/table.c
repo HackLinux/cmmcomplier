@@ -163,14 +163,25 @@ find_var(struct var_descriptor* head, char* var_name){
 }
 
 int
-find_var_seq(struct var_descriptor* head, char* var_name){
-	int seq = 0;
+count_var_num(struct var_descriptor* head){
+	int num = 0;
 	struct var_descriptor* p;
 	for ( p = head -> next; p != NULL; p = p -> next){
+		num ++;
+	}
+	return num;
+}
+
+
+int
+find_var_seq(struct var_descriptor* head, char* var_name){
+	int seq = count_var_num(head);
+	struct var_descriptor* p;
+	for ( p = head -> next; p != NULL; p = p -> next){
+		seq --;
 		if(strcmp(p -> var_name, var_name) == 0){
 			return seq;
 		}
-		seq ++;
 	}
 	return -1;
 }
