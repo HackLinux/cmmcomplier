@@ -12,6 +12,7 @@
 #include "../common/tokenset.h"
 
 int used_temp_num = 0;
+int used_label_num = 0;
 
 struct intercode ic_head_code;
 struct intercode* ic_head = &ic_head_code;	//empty intercode head
@@ -80,7 +81,9 @@ void
 translate_stmt(struct tree_node* stmt_node){
 
 	assert(stmt_node -> unit_code == Stmt);
+	
 	struct tree_node* first_child = stmt_node -> child;
+	struct intercode* new_ic = NULL;
 
 	if(first_child -> unit_code == Exp){
 		translate_exp(first_child);
@@ -94,13 +97,75 @@ translate_stmt(struct tree_node* stmt_node){
 	}
 	else if(first_child -> unit_code == RETURN){
 		struct operand *op = translate_exp(first_child -> sibling);
-		struct intercode* new_ic = create_intercode(IC_RETURN, op, NULL, NULL);
+		new_ic = create_intercode(IC_RETURN, op, NULL, NULL);
 		add_code_to_tail(ic_head, new_ic);
 	}
 	else if(first_child -> unit_code == IF){
+
+		struct tree_node* exp_node = first_child -> sibling;
+		struct tree_node* true_stmt_node = first_child -> sibling -> sibling -> sibling -> sibling;
+		struct tree_node* false_stmt_node = NULL;
+
+		struct operand *label_true = create_operand(OP_LABEL, used_label_num++);
+		struct operand *label_false = create_operand(OP_LABEL, used_label_num++);
+		struct operand *label_next = NULL;
+		
+		//cond exp code
+		translate_cond(first_child -> sibling -> sibling, label_true, label_false);
+		
+		//label true 
+		new_ic = create_intercode(IC_LABEL, label_true, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//true code
+		translate_stmt(true_stmt_node);
+
+		//goto next (if need)
+		if(true_stmt_node -> sibling != NULL){
+			label_next = create_operand(OP_LABEL, used_label_num++);
+			new_ic = create_intercode(IC_GOTO, label_next, NULL, NULL);
+			add_code_to_tail(ic_head, new_ic);
+		}
+
+		//label false
+		new_ic = create_intercode(IC_LABEL, label_false, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//false code and label next(if need)
+		if(true_stmt_node -> sibling != NULL){
+			false_stmt_node = true_stmt_node -> sibling -> sibling;
+			translate_stmt(false_stmt_node);
+			new_ic = create_intercode(IC_LABEL, label_next, NULL, NULL);
+			add_code_to_tail(ic_head, new_ic);
+		}
 		
 	}
 	else if(first_child -> unit_code == WHILE){
+		struct operand* label_start = create_operand(OP_LABEL, used_label_num++);
+		struct operand* label_true = create_operand(OP_LABEL, used_label_num++);
+		struct operand* label_false = create_operand(OP_LABEL, used_label_num++);
+
+		//label start intercode
+		new_ic = create_intercode(IC_LABEL, label_start, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//cond exp intercode
+		translate_cond(first_child -> sibling -> sibling, label_true, label_false);
+
+		//label true
+		new_ic = create_intercode(IC_LABEL, label_true, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//true code
+		translate_stmt(first_child -> sibling -> sibling -> sibling -> sibling);
+
+		//goto label start
+		new_ic = create_intercode(IC_GOTO, label_start, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//label false
+		new_ic = create_intercode(IC_LABEL, label_false, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
 
 	}
 	else
@@ -185,15 +250,39 @@ translate_exp(struct tree_node* exp_node){
 		add_code_to_tail(ic_head, new_ic);
 		return op1;
 	}
-	// Exp -> NOT Exp
-	if(first_child -> unit_code == NOT){
-		
-	}
-
+	
 	//conditions
-	if(first_child -> unit_code == Exp && (second_child -> unit_code == AND ||
-												second_child -> unit_code == OR ||
-												second_child -> unit_code == RELOP)){
+	if(first_child -> unit_code == NOT || (first_child -> unit_code == Exp && 
+											(second_child -> unit_code == AND ||
+											second_child -> unit_code == OR ||
+											second_child -> unit_code == RELOP))){
+
+		struct operand* label_true = create_operand(OP_LABEL, used_label_num++);
+		struct operand* label_false = create_operand(OP_LABEL, used_label_num++);
+
+		op1 = create_operand(OP_TEMP, used_temp_num++);
+		op2 = create_operand(OP_CONST, 0);
+		op3 = create_operand(OP_CONST, 1);
+		
+		// result = 0 code
+		new_ic = create_intercode(IC_ASSIGN, op1, op2, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		translate_cond(exp_node, label_true, label_false);
+
+		//label true
+		new_ic = create_intercode(IC_LABEL, label_true, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//result = 1 code
+		new_ic = create_intercode(IC_ASSIGN, op1, op3, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		//label false
+		new_ic = create_intercode(IC_LABEL, label_false, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		return op1;
 
 	}
 	//Exp -> LP Exp RP
@@ -248,11 +337,80 @@ translate_exp(struct tree_node* exp_node){
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
 		
 	}
+
+	assert(0);
 }
 
-struct operand*
+void
 translate_cond(struct tree_node* exp_node, struct operand* label_true, struct operand* label_false){
-	
+	assert(exp_node -> unit_code = Exp);
+
+	struct intercode* new_ic = NULL;
+
+	struct tree_node* first_child = exp_node -> child;
+	struct tree_node* second_child = first_child -> sibling;
+
+	//exp relop exp
+	if(first_child -> unit_code == Exp && second_child -> unit_code == RELOP){
+
+		struct operand* op1 = translate_exp(first_child);
+		struct operand* op2 = translate_exp(second_child -> sibling);
+
+		new_ic = create_if_intercode(op1, op2, label_true, (char*)second_child -> unit_value);
+		add_code_to_tail(ic_head, new_ic);
+
+		new_ic = create_intercode(IC_GOTO, label_false, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		return ;
+	}
+
+	//not exp
+	if(first_child -> unit_code == NOT){
+		translate_cond(second_child, label_false, label_true);
+		return ;
+	}
+
+	//exp and exp
+	if(first_child -> unit_code == Exp  && second_child -> unit_code == AND){
+		struct operand* label_new = create_operand(OP_LABEL, used_label_num++);
+		
+		translate_cond(first_child, label_new, label_false);
+
+		new_ic = create_intercode(IC_LABEL, label_new, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		translate_cond(second_child -> sibling, label_true, label_false);
+
+		return;
+	}
+
+	//exp or exp
+	if(first_child -> unit_code == Exp  && second_child -> unit_code == OR){
+
+		struct operand* label_new = create_operand(OP_LABEL, used_label_num++);
+		
+		translate_cond(first_child, label_true, label_new);
+
+		new_ic = create_intercode(IC_LABEL, label_new, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		translate_cond(second_child -> sibling, label_true, label_false);
+
+		return;
+		
+	}
+
+	//other cases
+	struct operand* op1 = translate_exp(exp_node);
+	struct operand* op_zero = create_operand(OP_CONST, 0);
+
+	new_ic = create_if_intercode(op1, op_zero, label_true, "!=");
+	add_code_to_tail(ic_head, new_ic);
+
+	new_ic = create_intercode(IC_GOTO, label_false, NULL, NULL);
+	add_code_to_tail(ic_head, new_ic);
+
 }
 
 

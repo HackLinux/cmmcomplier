@@ -11,6 +11,6 @@ void translate_stmt(struct tree_node*);
 
 struct operand* translate_exp(struct tree_node*);
 
-struct operand* translate_cond(struct tree_node*, struct operand*, struct operand*);
+void translate_cond(struct tree_node*, struct operand*, struct operand*);
 
 #endif

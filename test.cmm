@@ -5,6 +5,14 @@ int test(){
 int main(int a, int b){
 	int c;
 	int d;
-	c = test();
-	write(d);
+	c = 0;
+	d = 0;
+	if(c == 0){
+
+		while(d < 5){
+			d = d + 1;
+		}
+	}
+	else
+		d = 2;
 }
