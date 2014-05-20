@@ -65,8 +65,13 @@ create_id_node(int lineno, char *unit_name, char* id_name){
 
 struct tree_node*
 create_type_node(int lineno, char *unit_name, char* type_name){
-	return create_id_node(lineno, unit_name, type_name);
+	return create_id_node(lineno, unit_name, type_name);	//type name == "int" or "float"
 }
+
+struct tree_node*
+create_relop_node(int lineno, char *unit_name, char* relop_name){
+	return create_id_node(lineno, unit_name, relop_name);	//five relop operator
+} 
 
 /* build a small tree according to a production.
  * use this function in syntax.y like below:

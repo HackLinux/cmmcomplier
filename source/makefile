@@ -1,5 +1,5 @@
 CFILES = main.c syntax/syntax.c semantic/semantic.c \
-		 translate/translate.c translate/intercode.c \
+		 translate/*.c \
 		 common/*.c
 
 CFLAGS = -ly -lfl -lm #-Wall

@@ -25,6 +25,7 @@ struct tree_node *create_int_node(int, char*, int);
 struct tree_node *create_float_node(int, char*, float);
 struct tree_node *create_id_node(int, char*, char*);
 struct tree_node *create_type_node(int, char*, char*);
+struct tree_node *create_relop_node(int, char*, char*);
 struct tree_node *build_a_production(int, char *, int, ...);
 
 /*visitors*/

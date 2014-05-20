@@ -6,11 +6,15 @@
 
 #include "translate.h"
 #include "intercode.h"
+#include "operand.h"
 #include "../common/table.h"
 #include "../common/tree.h"
 #include "../common/tokenset.h"
 
 int used_temp_num = 0;
+
+struct intercode ic_head_code;
+struct intercode* ic_head = &ic_head_code;	//empty intercode head
 
 void 
 intermediate_generate(struct tree_node* program_node){
@@ -25,6 +29,8 @@ intermediate_generate(struct tree_node* program_node){
 			translate_func(extdef_node);
 		extdef_node = extdef_node -> sibling -> child;
 	}
+
+	print_intercode_list(ic_head);
 }
 
 void
@@ -33,15 +39,22 @@ translate_func(struct tree_node* extdef_node){
 	assert(extdef_node -> child -> sibling -> unit_code == FunDec);
 
 	struct tree_node* fundec_node = extdef_node -> child -> sibling;
+
+	//function intercode
+	struct intercode* new_ic = create_func_intercode((char *)fundec_node -> child -> unit_value);
+	add_code_to_tail(ic_head, new_ic);
 	
-	printf("Function %s :\n", (char *)fundec_node -> child -> unit_value);
-	
+
+	//parameters intercodes
 	if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
 		struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
 		while(true){
 			struct tree_node* vardec_node = varlist_node -> child -> child -> sibling;
 			if(vardec_node -> child -> unit_code == ID){
-				printf("Param %s\n", (char *)vardec_node -> child -> unit_value);
+				char* var_name = (char *)vardec_node -> child -> unit_value;
+				struct operand* new_op = create_operand(OP_VAR, find_var_seq(var_table_head, var_name));
+				struct intercode* new_ic = create_intercode(IC_PARAM, new_op, NULL, NULL);
+				add_code_to_tail(ic_head, new_ic);
 			}
 			else{
 				printf("error, use array as a parameter\n");
@@ -52,7 +65,10 @@ translate_func(struct tree_node* extdef_node){
 				break;
 		}
 	}
+	//def intercodes
+	//todo
 
+	//statement intercodes
 	struct tree_node* stmtlist_node = fundec_node -> sibling -> child -> sibling -> sibling;
 	while(stmtlist_node -> child != NULL){
 		translate_stmt(stmtlist_node -> child);
@@ -78,9 +94,8 @@ translate_stmt(struct tree_node* stmt_node){
 	}
 	else if(first_child -> unit_code == RETURN){
 		struct operand *op = translate_exp(first_child -> sibling);
-		char op_buf[10];
-		operand_to_string(op_buf, op);
-		printf("RETURN %s\n", op_buf);
+		struct intercode* new_ic = create_intercode(IC_RETURN, op, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
 	}
 	else if(first_child -> unit_code == IF){
 		
@@ -99,39 +114,41 @@ translate_exp(struct tree_node* exp_node){
 	struct tree_node* first_child = exp_node -> child;
 	struct tree_node* second_child = first_child -> sibling;
 
+	struct intercode* new_ic = NULL;
+	struct operand* op1 = NULL;
+	struct operand* op2 = NULL;
+	struct operand* op3 = NULL;
+
 	//Exp -> ID
 	if(first_child -> unit_code == ID && second_child == NULL){	
 		char* var_name = first_child -> unit_value;
-		struct operand* op = create_operand(OP_VARIABLE);
-		op -> value = find_var_seq(var_table_head, var_name);
-		return op;
+		op1 = create_operand(OP_VAR, find_var_seq(var_table_head, var_name));
+		return op1;
 	}
 	//Exp -> INT 
 	if(first_child -> unit_code == INT && second_child == NULL) {
-		struct operand* op = create_operand(OP_CONST_INT);
-		op -> value = *((int *)first_child -> unit_value);
-		return op;
+		op1 = create_operand(OP_CONST, *((int *)first_child -> unit_value));
+		return op1;
 	}
 	//Exp -> FLOAT
 	if(first_child -> unit_code == FLOAT && second_child == NULL) {
-		struct operand* op = create_operand(OP_CONST_INT);
-		op -> float_value = *((float *)first_child -> unit_value);
-		return op;
+		
+		printf("error, float deteced\n");
+		return NULL;
+
 	}
 	//Exp -> Exp ASSIGNOP Exp
 	if(first_child -> unit_code == Exp && second_child -> unit_code == ASSIGNOP) {	// assignments
-		struct operand *left_op = translate_exp(first_child);
-		struct operand *right_op = translate_exp(second_child -> sibling);
+		op1 = translate_exp(first_child);
+		op2 = translate_exp(second_child -> sibling);
 
-		if(left_op == NULL || right_op == NULL)
+		if(op1 == NULL || op2 == NULL)
 			return NULL;
 
-		char left_op_buf[10], right_op_buf[10];
-		operand_to_string(left_op_buf, left_op);
-		operand_to_string(right_op_buf, right_op);
-		
-		printf("%s := %s\n", left_op_buf, right_op_buf);
-		return left_op;
+		new_ic = create_intercode(IC_ASSIGN, op1, op2, NULL);
+		add_code_to_tail(ic_head, new_ic);
+
+		return op1;
 
 	}
 	//Exp -> Exp plus/minus/star/div Exp
@@ -140,46 +157,37 @@ translate_exp(struct tree_node* exp_node){
 												second_child -> unit_code == STAR ||
 												second_child -> unit_code == DIV)) {
 
-		struct operand *left_op = translate_exp(first_child);
-		struct operand *right_op = translate_exp(second_child -> sibling);
-		struct operand* result_op = create_operand(OP_TEMP);
-		result_op -> value = used_temp_num++;
-
-		char left_op_buf[10], right_op_buf[10], result_op_buf[10];
-		operand_to_string(left_op_buf, left_op);
-		operand_to_string(right_op_buf, right_op);
-		operand_to_string(result_op_buf, result_op);
-
-		char operator[2];
+		op1 = create_operand(OP_TEMP, used_temp_num++);
+		op2 = translate_exp(first_child);
+		op3 = translate_exp(second_child -> sibling);
+		
+		int ic_type = -1;
 		if(second_child -> unit_code == PLUS)
-			strcpy(operator, "+");
+			ic_type = IC_ADD;
 		else if(second_child -> unit_code == MINUS)
-			strcpy(operator, "-");
+			ic_type = IC_SUB;
 		else if(second_child -> unit_code == STAR)
-			strcpy(operator, "*");
+			ic_type = IC_MUL;
 		else if(second_child -> unit_code == DIV)
-			strcpy(operator, "/");
+			ic_type = IC_DIV;
 
-		printf("%s := %s %s %s\n", result_op_buf, left_op_buf, operator, right_op_buf);
-		return result_op;
+		new_ic = create_intercode(ic_type, op1, op2, op3);
+		add_code_to_tail(ic_head, new_ic);
+
+		return op1;
 	}
 	// Exp -> MINUS Exp
 	if(first_child -> unit_code == MINUS){
-		struct operand *right_op = translate_exp(second_child);
-		struct operand* result_op = create_operand(OP_TEMP);
-		result_op -> value = used_temp_num++;
-
-		char right_op_buf[10], result_op_buf[10];
-		operand_to_string(right_op_buf, right_op);
-		operand_to_string(result_op_buf, result_op);
-
-		printf("%s = #0 - %s\n", result_op_buf, right_op_buf);
-
-		return result_op;
+		op1 = create_operand(OP_TEMP, used_temp_num++);
+		op2 = create_operand(OP_CONST, 0);
+		op3 = translate_exp(second_child);
+		new_ic = create_intercode(IC_SUB, op1, op2, op3);
+		add_code_to_tail(ic_head, new_ic);
+		return op1;
 	}
 	// Exp -> NOT Exp
 	if(first_child -> unit_code == NOT){
-
+		
 	}
 
 	//conditions
@@ -199,10 +207,9 @@ translate_exp(struct tree_node* exp_node){
 
 		//special func write
 		if(strcmp(func_name, "write") == 0){
-			struct operand* args_op = translate_exp(second_child -> sibling -> child);
-			char args_op_buf[10];
-			operand_to_string(args_op_buf, args_op); 
-			printf("WRITE %s\n", args_op_buf);
+			op1 = translate_exp(second_child -> sibling -> child);
+			new_ic = create_intercode(IC_WRITE, op1, NULL, NULL);
+			add_code_to_tail(ic_head, new_ic);
 
 			return NULL;
 		}
@@ -212,10 +219,9 @@ translate_exp(struct tree_node* exp_node){
 			struct tree_node* args_node = second_child -> sibling;
 			while(true){
 				struct tree_node* exp_node = args_node -> child;
-				struct operand* args_op = translate_exp(exp_node); 
-				char args_op_buf[10];
-				operand_to_string(args_op_buf, args_op);
-				printf("ARG %s\n", args_op_buf);	//todo : inverse order
+				op1 = translate_exp(exp_node); 
+				new_ic = create_intercode(IC_ARG, op1, NULL, NULL);
+				add_code_to_tail(ic_head, new_ic);
 
 				if(args_node -> child -> sibling != NULL)
 					args_node = args_node -> child -> sibling -> sibling;
@@ -225,18 +231,14 @@ translate_exp(struct tree_node* exp_node){
 		}
 
 		//return operator
-		struct operand* return_op = create_operand(OP_TEMP);
-		return_op -> value = used_temp_num++;
-		char return_op_buf[10];
-		operand_to_string(return_op_buf, return_op);
-
-		//func call intercode
+		op1 = create_operand(OP_TEMP, used_temp_num++);
+		
 		if(strcmp(func_name, "read") == 0)
-			printf("READ %s\n", return_op_buf);
+			new_ic = create_intercode(IC_READ, op1, NULL, NULL);
 		else
-			printf("%s := CALL %s\n", return_op_buf, func_name);
-
-		return return_op;
+			new_ic = create_call_intercode(op1, (char*)first_child -> unit_value);
+		add_code_to_tail(ic_head, new_ic);
+		return op1;
 	}
 	//array call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
@@ -246,6 +248,11 @@ translate_exp(struct tree_node* exp_node){
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
 		
 	}
+}
+
+struct operand*
+translate_cond(struct tree_node* exp_node, struct operand* label_true, struct operand* label_false){
+	
 }
 
 

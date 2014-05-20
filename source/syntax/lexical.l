@@ -78,7 +78,7 @@ WHILE 		while
 {ASSIGNOP}	{ 	yylval.pnode = create_node(yylineno, "ASSIGNOP");
 				return ASSIGNOP; 
 			}
-{RELOP}		{ 	yylval.pnode = create_node(yylineno, "RELOP");
+{RELOP}		{ 	yylval.pnode = create_relop_node(yylineno, "RELOP", yytext);
 				return RELOP; 
 			}
 {PLUS}		{ 	yylval.pnode = create_node(yylineno, "PLUS");

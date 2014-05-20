@@ -892,7 +892,7 @@ YY_RULE_SETUP
 case 9:
 YY_RULE_SETUP
 #line 81 "syntax/lexical.l"
-{ 	yylval.pnode = create_node(yylineno, "RELOP");
+{ 	yylval.pnode = create_relop_node(yylineno, "RELOP", yytext);
 				return RELOP; 
 			}
 	YY_BREAK
