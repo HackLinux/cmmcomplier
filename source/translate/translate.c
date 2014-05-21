@@ -79,6 +79,8 @@ translate_func(struct tree_node* extdef_node){
 		translate_stmt(stmtlist_node -> child);
 		stmtlist_node = stmtlist_node -> child -> sibling;
 	}
+
+	//todo add return code if need
 }
 
 void

@@ -119,7 +119,7 @@ print_intercode(struct intercode* ic){
 
 	switch(ic -> type){
 		case IC_LABEL : 
-			printf("LABEL %s\n", op1_buf);
+			printf("LABEL %s :\n", op1_buf);
 			break;
 		case IC_ASSIGN : 
 			printf("%s := %s\n", op1_buf, op2_buf);

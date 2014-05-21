@@ -15,4 +15,6 @@ int main()
 	else
 		result = 1;
 	write(result);
+
+	return 0;
 }

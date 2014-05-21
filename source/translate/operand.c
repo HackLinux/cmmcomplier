@@ -19,7 +19,7 @@ void
 operand_to_string(char* buf, struct operand* op){
 	switch(op -> type){
 		case OP_LABEL :
-			sprintf(buf, "label%d :", op -> value);
+			sprintf(buf, "label%d", op -> value);
 			break;
 		case OP_TEMP :
 			sprintf(buf, "t%d", op -> value);
