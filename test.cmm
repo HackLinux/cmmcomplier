@@ -1,18 +1,18 @@
-int test(){
-	return 1;
+int fact(int n)
+{
+	if(n == 1)
+		return n;
+	else
+		return (n * fact(n - 1));
 }
 
-int main(int a, int b){
-	int c;
-	int d;
-	c = 0;
-	d = 0;
-	if(c == 0){
-
-		while(d < 5){
-			d = d + 1;
-		}
-	}
+int main()
+{
+	int m, result;
+	m = read();
+	if(m > 1)
+		result = fact(m);
 	else
-		d = 2;
+		result = 1;
+	write(result);
 }

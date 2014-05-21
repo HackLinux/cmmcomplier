@@ -11,8 +11,8 @@
 #include "../common/tree.h"
 #include "../common/tokenset.h"
 
-int used_temp_num = 0;
-int used_label_num = 0;
+int used_temp_num = 1;
+int used_label_num = 1;
 
 struct intercode ic_head_code;
 struct intercode* ic_head = &ic_head_code;	//empty intercode head
@@ -67,7 +67,11 @@ translate_func(struct tree_node* extdef_node){
 		}
 	}
 	//def intercodes
-	//todo
+	struct tree_node* deflist_node = fundec_node -> sibling -> child -> sibling;
+	while(deflist_node -> child != NULL){
+		translate_def(deflist_node -> child);
+		deflist_node = deflist_node -> child -> sibling;
+	} 
 
 	//statement intercodes
 	struct tree_node* stmtlist_node = fundec_node -> sibling -> child -> sibling -> sibling;
@@ -76,6 +80,15 @@ translate_func(struct tree_node* extdef_node){
 		stmtlist_node = stmtlist_node -> child -> sibling;
 	}
 }
+
+void
+translate_def(struct tree_node* def_node){
+
+	assert(def_node -> unit_code == Def);
+
+
+}
+
 
 void
 translate_stmt(struct tree_node* stmt_node){
@@ -306,11 +319,21 @@ translate_exp(struct tree_node* exp_node){
 		//args
 		if(second_child -> sibling -> unit_code == Args){
 			struct tree_node* args_node = second_child -> sibling;
+			struct intercode* prev_arg_ic = NULL;
 			while(true){
 				struct tree_node* exp_node = args_node -> child;
-				op1 = translate_exp(exp_node); 
+				op1 = translate_exp(exp_node);
+
+				//todo reverse order
 				new_ic = create_intercode(IC_ARG, op1, NULL, NULL);
-				add_code_to_tail(ic_head, new_ic);
+
+				if(prev_arg_ic == NULL)
+					add_code_to_tail(ic_head, new_ic);
+				else
+					add_code_before(prev_arg_ic, new_ic);
+				prev_arg_ic = new_ic;
+
+				
 
 				if(args_node -> child -> sibling != NULL)
 					args_node = args_node -> child -> sibling -> sibling;
@@ -318,7 +341,6 @@ translate_exp(struct tree_node* exp_node){
 					break;
 			}
 		}
-
 		//return operator
 		op1 = create_operand(OP_TEMP, used_temp_num++);
 		
@@ -331,11 +353,11 @@ translate_exp(struct tree_node* exp_node){
 	}
 	//array call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
-		
+		//todo
 	}
 	//struct member call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
-		
+		//todo
 	}
 
 	assert(0);
@@ -398,7 +420,6 @@ translate_cond(struct tree_node* exp_node, struct operand* label_true, struct op
 		translate_cond(second_child -> sibling, label_true, label_false);
 
 		return;
-		
 	}
 
 	//other cases

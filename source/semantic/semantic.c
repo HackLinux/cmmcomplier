@@ -115,7 +115,6 @@ analyze_compst_node(struct func_descriptor* belongs_func, struct tree_node* comp
 	struct tree_node* deflist_node = compst_node -> child -> sibling;
 	struct tree_node* stmtlist_node = deflist_node -> sibling;
 
-
 	//firstly, deal with local defs
 	while(deflist_node -> child != NULL){
 		

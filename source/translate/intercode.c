@@ -6,6 +6,7 @@
 #include "operand.h"
 #include "intercode.h"
 
+/*creators*/
 struct intercode*
 create_intercode(int type, struct operand* op1, struct operand* op2, struct operand* op3){
 	struct intercode* new_ic = (struct intercode*)malloc(sizeof(struct intercode));
@@ -18,7 +19,6 @@ create_intercode(int type, struct operand* op1, struct operand* op2, struct oper
 	new_ic -> func_name = NULL;
 	new_ic -> prev = NULL;
 	new_ic -> next = NULL;
-
 	return new_ic;
 }
 
@@ -53,10 +53,12 @@ create_func_intercode(char* func_name){
 	return new_ic;
 }
 
+/*adders*/
 void
 add_code_to_tail(struct intercode* ic_head, struct intercode* new_ic){
+	assert(ic_head != NULL && new_ic != NULL);
 	assert(new_ic -> next == NULL && new_ic -> prev == NULL);
-	assert(ic_head != NULL);
+	
 	struct intercode* ic_tail = ic_head;
 	while(ic_tail -> next != NULL)
 		ic_tail = ic_tail -> next;
@@ -64,7 +66,22 @@ add_code_to_tail(struct intercode* ic_head, struct intercode* new_ic){
 	new_ic -> prev = ic_tail;
 }
 
+// add a intercode before "old_ic"
+void
+add_code_before(struct intercode* old_ic, struct intercode* new_ic){
+	assert(old_ic != NULL && new_ic != NULL);
+	assert(new_ic -> next == NULL && new_ic -> prev == NULL);
+	assert(old_ic -> prev != NULL);
 
+	struct intercode* prev_ic = old_ic -> prev;
+
+	prev_ic -> next = new_ic;
+	old_ic -> prev = new_ic;
+	new_ic -> next = old_ic;
+	new_ic -> prev = prev_ic;
+}
+
+/*destructors*/
 void
 destroy_intercode(struct intercode *ic){
 	if(ic -> relop != NULL)
@@ -85,6 +102,7 @@ destroy_intercode_list(struct intercode* ic_head){
 	destroy_intercode(ic_head);
 }
 
+/*printers*/
 void
 print_intercode(struct intercode* ic){
 	
@@ -146,7 +164,7 @@ print_intercode(struct intercode* ic){
 			printf("WRITE %s\n", op1_buf);
 			break;
 		case IC_FUNC :
-			printf("FUNCTION %s :\n", ic -> func_name);
+			printf("\nFUNCTION %s :\n", ic -> func_name);
 			break;
 		default : assert(0);
 	}

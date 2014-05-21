@@ -7,6 +7,8 @@ void intermediate_generate(struct tree_node*);
 
 void translate_func(struct tree_node*);
 
+void translate_def(struct tree_node*);
+
 void translate_stmt(struct tree_node*);
 
 struct operand* translate_exp(struct tree_node*);

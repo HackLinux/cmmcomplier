@@ -52,5 +52,6 @@ void print_intercode(struct intercode*);
 void print_intercode_list(struct intercode*);
 
 void add_code_to_tail(struct intercode*, struct intercode*);
+void add_code_before(struct intercode*, struct intercode*);
 
 #endif
