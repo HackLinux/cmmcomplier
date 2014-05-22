@@ -209,3 +209,23 @@ print_var_table(struct var_descriptor* head){
 	}
 	printf("\n+=============================================+\n");
 }
+
+
+int
+calculate_struct_size(struct struct_descriptor* sd){
+	int size = 0;
+	struct var_descriptor* p = sd -> member_list_head -> next;
+	while(p != NULL){
+		size += calculate_var_size(p);
+		p = p -> next;
+	}
+	return size;
+}
+
+int
+calculate_var_size(struct var_descriptor* vd){
+	assert(vd != NULL);
+	int type_size = calculate_type_size(vd -> var_type);
+	int array_num = calculate_array_num(vd -> var_array);
+	return type_size * array_num;
+}

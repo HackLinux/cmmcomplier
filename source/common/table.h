@@ -57,4 +57,7 @@ void print_var_table(struct var_descriptor*);
 
 int find_var_seq(struct var_descriptor*, char*);
 
+int calculate_struct_size(struct struct_descriptor* sd);
+int calculate_var_size(struct var_descriptor* vd);
+
 #endif

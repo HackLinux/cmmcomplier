@@ -9,6 +9,7 @@
 #include "operand.h"
 #include "../common/table.h"
 #include "../common/tree.h"
+#include "../common/type.h"
 #include "../common/tokenset.h"
 
 int used_temp_num = 1;
@@ -17,6 +18,7 @@ int used_label_num = 1;
 struct intercode ic_head_code;
 struct intercode* ic_head = &ic_head_code;	//empty intercode head
 
+/*generate all intercodes into list heading "ic_head"*/
 void 
 intermediate_generate(struct tree_node* program_node){
 
@@ -80,7 +82,17 @@ translate_func(struct tree_node* extdef_node){
 		stmtlist_node = stmtlist_node -> child -> sibling;
 	}
 
-	//todo add return code if need
+	//todo: optimize function (func_start_ic, func_stop_ic)
+
+	//add return code if need
+	struct intercode* ic_tail =  ic_head;
+	while(ic_tail -> next != NULL)
+		ic_tail = ic_tail -> next;
+	if(ic_tail -> type != IC_RETURN){
+		struct operand *op = create_operand(OP_CONST, 0);
+		struct intercode* new_ic = create_intercode(IC_RETURN, op, NULL, NULL);
+		add_code_to_tail(ic_head, new_ic);
+	}
 }
 
 void
@@ -88,7 +100,39 @@ translate_def(struct tree_node* def_node){
 
 	assert(def_node -> unit_code == Def);
 
+	struct tree_node* declist_node = def_node -> child -> sibling;
+	struct intercode* new_ic = NULL;
+	
+	while(true){
+		//find each vardec and translate it.
+		struct tree_node* vardec_node = declist_node -> child -> child;
+		char* var_name = (char *)(find_id_node_in_vardec(vardec_node) -> unit_value);
+		struct var_descriptor* vd = find_var(var_table_head, var_name);
+		struct operand* var_op = create_operand(OP_VAR, find_var_seq(var_table_head, var_name));
 
+		assert(vd != NULL);
+
+		// struct or array variable need dec intercode
+		if(vd -> var_type -> type_code == TYPE_STRUCT || vd -> var_array != NULL){
+			int var_size = calculate_var_size(vd);
+			
+			new_ic = create_dec_intercode(var_op, var_size);
+			add_code_to_tail(ic_head, new_ic);
+		}
+
+		// initialized variable need assign intercode
+		if(vardec_node -> sibling != NULL){
+			//todo: deal with struct or array initial
+			struct operand* assign_op = translate_exp(vardec_node -> sibling -> sibling);
+			new_ic = create_intercode(IC_ASSIGN, var_op, assign_op, NULL);
+			add_code_to_tail(ic_head, new_ic);
+		}
+
+		if(declist_node -> child -> sibling != NULL)
+			declist_node = declist_node -> child -> sibling -> sibling;
+		else
+			break;
+	}
 }
 
 

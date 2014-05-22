@@ -146,7 +146,7 @@ print_intercode(struct intercode* ic){
 			printf("RETURN %s\n", op1_buf);
 			break;
 		case IC_DEC :
-			printf("DEC %s [%d]\n", op1_buf, ic -> dec_size); 
+			printf("DEC %s %d\n", op1_buf, ic -> dec_size); 
 			break;
 		case IC_ARG : 
 			printf("ARG %s\n", op1_buf);

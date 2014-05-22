@@ -109,3 +109,25 @@ array_equal(struct array_descriptor* a1, struct array_descriptor* a2){
 		return false;
 	return array_equal(a1 -> subarray, a2 -> subarray);
 }
+
+
+int
+calculate_type_size(struct type_descriptor* the_type){
+	
+	assert(the_type != NULL);
+	if(the_type -> type_code == TYPE_INT)
+		return 4;
+	if(the_type -> type_code == TYPE_FLOAT)
+		return 4;
+	if(the_type -> type_code == TYPE_STRUCT)
+		return calculate_struct_size(the_type -> sd);
+	return -1;
+}
+
+
+int
+calculate_array_num(struct array_descriptor* ad){
+	if(ad == NULL)
+		return 1;
+	return ad -> size * calculate_array_num(ad -> subarray);
+}

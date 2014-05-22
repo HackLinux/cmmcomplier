@@ -30,4 +30,7 @@ struct array_descriptor* create_array_descriptor_by_vardec(struct tree_node*);
 bool type_equal(struct type_descriptor*, struct type_descriptor*);
 bool array_equal(struct array_descriptor*, struct array_descriptor*);
 
+int calculate_type_size(struct type_descriptor* );
+int calculate_array_num(struct array_descriptor* ad);
+
 #endif
