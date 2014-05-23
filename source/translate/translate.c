@@ -7,6 +7,7 @@
 #include "translate.h"
 #include "intercode.h"
 #include "operand.h"
+#include "../semantic/semantic.h"	//check exp valid
 #include "../common/table.h"
 #include "../common/tree.h"
 #include "../common/type.h"
@@ -396,23 +397,23 @@ translate_exp(struct tree_node* exp_node){
 	}
 	//array call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
-		//todo
 
-		assert(first_child -> child -> unit_code == ID);
 		struct operand* array_address_op = take_address_of_operand(translate_exp(first_child));
-		struct operand* offset_op = translate_exp(second_child -> sibling);
-		struct operand* offset_temp_op = create_operand(OP_TEMP, used_temp_num ++);
-		struct operand* width_op = create_operand(OP_CONST, 4);
+		struct operand* subscript_op = translate_exp(second_child -> sibling);
+		struct operand* offset_op = create_operand(OP_TEMP, used_temp_num ++);
+		int width = calculate_var_size(check_exp_valid(exp_node));
+		struct operand* width_op = create_operand(OP_CONST, width);
 		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
 
-		// temp1 = offset * width
-		new_ic = create_intercode(IC_MUL, offset_temp_op, offset_op, width_op);
+		// offset = subsript * width
+		new_ic = create_intercode(IC_MUL, offset_op, subscript_op, width_op);
 		add_code_to_tail(ic_head, new_ic);
 
-		// temp2 = &array + temp1
-		new_ic = create_intercode(IC_ADD, target_address_op, array_address_op, offset_temp_op);
+		// target_address = &array + offset
+		new_ic = create_intercode(IC_ADD, target_address_op, array_address_op, offset_op);
 		add_code_to_tail(ic_head, new_ic);
 
+		//target = *target_address(not create code)
 		return take_value_of_operand(target_address_op);
 	}
 	//struct member call
