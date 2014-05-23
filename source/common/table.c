@@ -229,3 +229,21 @@ calculate_var_size(struct var_descriptor* vd){
 	int array_num = calculate_array_num(vd -> var_array);
 	return type_size * array_num;
 }
+
+int
+calculate_member_offset(struct struct_descriptor* sd, char* member_name){
+	assert(sd != 0);
+	bool find = false;
+	int offset = calculate_struct_size(sd);
+	struct var_descriptor* p = sd -> member_list_head -> next;
+	for (; p != NULL; p = p -> next){
+		offset -= calculate_var_size(p);
+		if(strcmp(p -> var_name, member_name) == 0){
+			find = true;
+			break;
+		}
+
+		
+	}
+	return find ? offset : -1;
+}

@@ -1,9 +1,6 @@
 
-
 int main()
 {	
-	int i;
-	int a[2][3];
-	i = 0;
-	a[0][1] = 1;
+	int i, j, k;
+	i * (j = 1);
 }

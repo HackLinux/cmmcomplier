@@ -59,5 +59,7 @@ int find_var_seq(struct var_descriptor*, char*);
 
 int calculate_struct_size(struct struct_descriptor* sd);
 int calculate_var_size(struct var_descriptor* vd);
+int calculate_member_offset(struct struct_descriptor*, char*);
+
 
 #endif

@@ -49,6 +49,7 @@ translate_func(struct tree_node* extdef_node){
 	add_code_to_tail(ic_head, new_ic);
 	
 
+	//todo complex param
 	//parameters intercodes
 	if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
 		struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
@@ -83,8 +84,6 @@ translate_func(struct tree_node* extdef_node){
 		stmtlist_node = stmtlist_node -> child -> sibling;
 	}
 
-	//todo: optimize function (func_start_ic, func_stop_ic)
-
 	//add return code if need
 	struct intercode* ic_tail =  ic_head;
 	while(ic_tail -> next != NULL)
@@ -94,6 +93,9 @@ translate_func(struct tree_node* extdef_node){
 		struct intercode* new_ic = create_intercode(IC_RETURN, op, NULL, NULL);
 		add_code_to_tail(ic_head, new_ic);
 	}
+
+	//todo: optimize function (func_start_ic, func_stop_ic)
+
 }
 
 void
@@ -146,9 +148,14 @@ translate_stmt(struct tree_node* stmt_node){
 	struct intercode* new_ic = NULL;
 
 	if(first_child -> unit_code == Exp){
-		translate_exp(first_child);
+		translate_exp(first_child);	//todo only translate assign exp
 	} 
 	else if(first_child -> unit_code == CompSt){
+		struct tree_node* inner_deflist_node = first_child -> child -> sibling;
+		while(inner_deflist_node -> child != NULL){
+			translate_def(inner_deflist_node -> child);
+			inner_deflist_node = inner_deflist_node -> child -> sibling;
+		} 
 		struct tree_node* inner_stmtlist_node = first_child -> child -> sibling -> sibling;
 		while(inner_stmtlist_node -> child != NULL){
 			translate_stmt(inner_stmtlist_node -> child);
@@ -162,7 +169,6 @@ translate_stmt(struct tree_node* stmt_node){
 	}
 	else if(first_child -> unit_code == IF){
 
-		struct tree_node* exp_node = first_child -> sibling;
 		struct tree_node* true_stmt_node = first_child -> sibling -> sibling -> sibling -> sibling;
 		struct tree_node* false_stmt_node = NULL;
 
@@ -364,6 +370,7 @@ translate_exp(struct tree_node* exp_node){
 		}
 
 		//args
+		//todo complex arg
 		if(second_child -> sibling -> unit_code == Args){
 			struct tree_node* args_node = second_child -> sibling;
 			struct intercode* prev_arg_ic = NULL;
@@ -398,7 +405,7 @@ translate_exp(struct tree_node* exp_node){
 	//array call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
 
-		struct operand* array_address_op = take_address_of_operand(translate_exp(first_child));
+		struct operand* base_address_op = take_address_of_operand(translate_exp(first_child));
 		struct operand* subscript_op = translate_exp(second_child -> sibling);
 		struct operand* offset_op = create_operand(OP_TEMP, used_temp_num ++);
 		int width = calculate_var_size(check_exp_valid(exp_node));
@@ -409,8 +416,8 @@ translate_exp(struct tree_node* exp_node){
 		new_ic = create_intercode(IC_MUL, offset_op, subscript_op, width_op);
 		add_code_to_tail(ic_head, new_ic);
 
-		// target_address = &array + offset
-		new_ic = create_intercode(IC_ADD, target_address_op, array_address_op, offset_op);
+		// target_address = base_address + offset
+		new_ic = create_intercode(IC_ADD, target_address_op, base_address_op, offset_op);
 		add_code_to_tail(ic_head, new_ic);
 
 		//target = *target_address(not create code)
@@ -418,9 +425,20 @@ translate_exp(struct tree_node* exp_node){
 	}
 	//struct member call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
-		//todo
+		struct operand* base_address_op = take_address_of_operand(translate_exp(first_child));
+		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
+		
+		char* member_name  = (char*)second_child -> sibling -> unit_value;
+		struct struct_descriptor* the_struct = check_exp_valid(first_child) -> var_type -> sd;
 
-		return NULL;
+		int offset = calculate_member_offset(the_struct, member_name);
+		struct operand* offset_op = create_operand(OP_CONST, offset);
+
+		// target_address = base_address + offset
+		new_ic = create_intercode(IC_ADD, target_address_op, base_address_op, offset_op);
+		add_code_to_tail(ic_head, new_ic);
+
+		return take_value_of_operand(target_address_op);
 	}
 
 	assert(0);
@@ -493,7 +511,6 @@ translate_cond(struct tree_node* exp_node, struct operand* label_true, struct op
 	add_code_to_tail(ic_head, new_ic);
 	return ;
 }
-
 
 
 
