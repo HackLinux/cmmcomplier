@@ -370,16 +370,13 @@ translate_exp(struct tree_node* exp_node){
 				struct tree_node* exp_node = args_node -> child;
 				op1 = translate_exp(exp_node);
 
-				//todo reverse order
+				//reverse arg order
 				new_ic = create_intercode(IC_ARG, op1, NULL, NULL);
-
 				if(prev_arg_ic == NULL)
 					add_code_to_tail(ic_head, new_ic);
 				else
 					add_code_before(prev_arg_ic, new_ic);
 				prev_arg_ic = new_ic;
-
-				
 
 				if(args_node -> child -> sibling != NULL)
 					args_node = args_node -> child -> sibling -> sibling;
@@ -400,10 +397,29 @@ translate_exp(struct tree_node* exp_node){
 	//array call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
 		//todo
+
+		assert(first_child -> child -> unit_code == ID);
+		struct operand* array_address_op = take_address_of_operand(translate_exp(first_child));
+		struct operand* offset_op = translate_exp(second_child -> sibling);
+		struct operand* offset_temp_op = create_operand(OP_TEMP, used_temp_num ++);
+		struct operand* width_op = create_operand(OP_CONST, 4);
+		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
+
+		// temp1 = offset * width
+		new_ic = create_intercode(IC_MUL, offset_temp_op, offset_op, width_op);
+		add_code_to_tail(ic_head, new_ic);
+
+		// temp2 = &array + temp1
+		new_ic = create_intercode(IC_ADD, target_address_op, array_address_op, offset_temp_op);
+		add_code_to_tail(ic_head, new_ic);
+
+		return take_value_of_operand(target_address_op);
 	}
 	//struct member call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
 		//todo
+
+		return NULL;
 	}
 
 	assert(0);
@@ -429,7 +445,6 @@ translate_cond(struct tree_node* exp_node, struct operand* label_true, struct op
 
 		new_ic = create_intercode(IC_GOTO, label_false, NULL, NULL);
 		add_code_to_tail(ic_head, new_ic);
-
 		return ;
 	}
 
@@ -449,7 +464,6 @@ translate_cond(struct tree_node* exp_node, struct operand* label_true, struct op
 		add_code_to_tail(ic_head, new_ic);
 
 		translate_cond(second_child -> sibling, label_true, label_false);
-
 		return;
 	}
 
@@ -464,7 +478,6 @@ translate_cond(struct tree_node* exp_node, struct operand* label_true, struct op
 		add_code_to_tail(ic_head, new_ic);
 
 		translate_cond(second_child -> sibling, label_true, label_false);
-
 		return;
 	}
 
@@ -477,7 +490,7 @@ translate_cond(struct tree_node* exp_node, struct operand* label_true, struct op
 
 	new_ic = create_intercode(IC_GOTO, label_false, NULL, NULL);
 	add_code_to_tail(ic_head, new_ic);
-
+	return ;
 }
 
 

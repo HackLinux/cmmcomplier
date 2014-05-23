@@ -6,15 +6,20 @@
 #define OP_TEMP 1
 #define OP_VAR 2
 #define OP_CONST 3
-#define OP_AT_VAR 4
-#define OP_STAR_VAR 5
 
 struct operand {
 	int type;
 	int value;
+
+	int star_num;
+	int at_num;
 };
 
 struct operand* create_operand(int, int);
 void operand_to_string(char*, struct operand*);
+
+
+struct operand* take_value_of_operand(struct operand* origin_op);
+struct operand* take_address_of_operand(struct operand* origin_op);
 
 #endif
