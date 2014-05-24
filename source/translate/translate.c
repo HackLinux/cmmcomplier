@@ -148,7 +148,7 @@ translate_stmt(struct tree_node* stmt_node){
 	struct intercode* new_ic = NULL;
 
 	if(first_child -> unit_code == Exp){
-		translate_exp(first_child);	//todo only translate assign exp
+		find_necessary_exp(first_child);	//todo only translate assign exp
 	} 
 	else if(first_child -> unit_code == CompSt){
 		struct tree_node* inner_deflist_node = first_child -> child -> sibling;
@@ -236,6 +236,37 @@ translate_stmt(struct tree_node* stmt_node){
 	}
 	else
 		assert(0);
+}
+
+/*find necessary exp and translate it *
+ *necessary : func call \ assign \ */
+void
+find_necessary_exp(struct tree_node* exp_node){
+
+	assert(exp_node -> unit_code == Exp);
+	struct tree_node* first_child = exp_node -> child;
+	struct tree_node* second_child = first_child -> sibling;
+
+	if(second_child == NULL)
+		return ;
+	
+	//assign exp and func call exp need translate
+	if(first_child -> unit_code == Exp && second_child -> unit_code == ASSIGNOP) {	// assignments
+		translate_exp(exp_node);
+	}
+	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
+		translate_exp(exp_node);
+	}
+	//find necessary sub-exp
+	else {
+		if(first_child -> unit_code == Exp)
+			find_necessary_exp(first_child);
+		if(second_child -> unit_code == Exp)
+			find_necessary_exp(second_child);
+		if(second_child -> sibling != NULL)
+			if(second_child -> sibling -> unit_code == Exp)
+				find_necessary_exp(second_child -> sibling);
+	}
 }
 
 struct operand*
