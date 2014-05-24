@@ -1,6 +1,8 @@
 #ifndef __OPERAND_H__
 #define __OPERAND_H__
 
+#include "../common/bool.h"
+
 /**operand type define**/
 #define OP_LABEL 0
 #define OP_TEMP 1
@@ -18,8 +20,9 @@ struct operand {
 struct operand* create_operand(int, int);
 void operand_to_string(char*, struct operand*);
 
+struct operand* take_value_of_operand(struct operand*);
+struct operand* take_address_of_operand(struct operand*);
 
-struct operand* take_value_of_operand(struct operand* origin_op);
-struct operand* take_address_of_operand(struct operand* origin_op);
+bool operand_equal(struct operand*, struct operand*);
 
 #endif

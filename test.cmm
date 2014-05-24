@@ -1,6 +1,18 @@
+struct T {
+	int x;
+	int y;
+};
+
+int sum(int a, int b){
+	return a + b;
+}
 
 int main()
 {	
-	int i, j, k;
-	i * (j = 1);
+	struct T tt[5];
+	int x, y;
+	x = read();
+	y = read();
+	tt[0].x = sum(x, y);
+	write(tt[0].x);
 }

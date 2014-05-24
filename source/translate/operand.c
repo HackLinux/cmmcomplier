@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "operand.h"
+#include "../common/bool.h"
 
 struct operand*
 create_operand(int type, int value){
@@ -94,4 +95,17 @@ operand_to_string(char* buf, struct operand* op){
 			break;
 		default : assert(0);
 	}
+}
+
+bool
+operand_equal(struct operand* op1, struct operand* op2){
+	if(op1 -> type != op2 -> type )
+		return false;
+	if(op1 -> value != op2 -> value)
+		return false;
+	if(op1 -> star_num != op2 -> star_num)
+		return false;
+	if(op1 -> at_num != op2 -> at_num)
+		return false;
+	return true;
 }

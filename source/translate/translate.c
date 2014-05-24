@@ -45,8 +45,8 @@ translate_func(struct tree_node* extdef_node){
 	struct tree_node* fundec_node = extdef_node -> child -> sibling;
 
 	//function intercode
-	struct intercode* new_ic = create_func_intercode((char *)fundec_node -> child -> unit_value);
-	add_code_to_tail(ic_head, new_ic);
+	struct intercode* func_start_ic = create_func_intercode((char *)fundec_node -> child -> unit_value);
+	add_code_to_tail(ic_head, func_start_ic);
 	
 
 	//todo complex param
@@ -92,10 +92,11 @@ translate_func(struct tree_node* extdef_node){
 		struct operand *op = create_operand(OP_CONST, 0);
 		struct intercode* new_ic = create_intercode(IC_RETURN, op, NULL, NULL);
 		add_code_to_tail(ic_head, new_ic);
+		ic_tail = new_ic;
 	}
 
 	//todo: optimize function (func_start_ic, func_stop_ic)
-
+	optimize_func(func_start_ic, ic_tail);
 }
 
 void
@@ -204,7 +205,6 @@ translate_stmt(struct tree_node* stmt_node){
 			new_ic = create_intercode(IC_LABEL, label_next, NULL, NULL);
 			add_code_to_tail(ic_head, new_ic);
 		}
-		
 	}
 	else if(first_child -> unit_code == WHILE){
 		struct operand* label_start = create_operand(OP_LABEL, used_label_num++);
@@ -257,7 +257,7 @@ find_necessary_exp(struct tree_node* exp_node){
 	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
 		translate_exp(exp_node);
 	}
-	//find necessary sub-exp
+	//find necessary sub-lexp
 	else {
 		if(first_child -> unit_code == Exp)
 			find_necessary_exp(first_child);
@@ -319,7 +319,6 @@ translate_exp(struct tree_node* exp_node){
 												second_child -> unit_code == STAR ||
 												second_child -> unit_code == DIV)) {
 
-		op1 = create_operand(OP_TEMP, used_temp_num++);
 		op2 = translate_exp(first_child);
 		op3 = translate_exp(second_child -> sibling);
 		
@@ -332,7 +331,39 @@ translate_exp(struct tree_node* exp_node){
 			ic_type = IC_MUL;
 		else if(second_child -> unit_code == DIV)
 			ic_type = IC_DIV;
+		else
+			assert(0);
 
+		// two const operand, calculate it
+		if(op2 -> type == OP_CONST && op3 -> type == OP_CONST){
+			int result_value = -1; 
+			if(ic_type == IC_ADD)
+				result_value = op2 -> value + op3 -> value;
+			else if(ic_type == IC_SUB)
+				result_value = op2 -> value - op3 -> value;
+			else if(ic_type == IC_MUL)
+				result_value = op2 -> value * op3 -> value;
+			else				
+				result_value = op2 -> value / op3 -> value;
+			return create_operand(OP_CONST, result_value);
+		}
+
+		//one const operand
+		if(op2 -> type == OP_CONST || op3 -> type == OP_CONST){
+			
+			struct operand* const_op = (op3 -> type == OP_CONST) ? op3 : op3;
+			struct operand* non_const_op = (op3 -> type == OP_CONST) ? op3 : op3;
+
+			if(ic_type == IC_ADD || ic_type == IC_SUB)
+				if(const_op -> value == 0)
+					return non_const_op;
+			if(ic_type == IC_SUB || ic_type == IC_MUL)
+				if(const_op -> value == 1)
+					return non_const_op;
+		}
+
+		//result op
+		op1 = create_operand(OP_TEMP, used_temp_num++);
 		new_ic = create_intercode(ic_type, op1, op2, op3);
 		add_code_to_tail(ic_head, new_ic);
 
@@ -340,9 +371,15 @@ translate_exp(struct tree_node* exp_node){
 	}
 	// Exp -> MINUS Exp
 	if(first_child -> unit_code == MINUS){
+		op3 = translate_exp(second_child);
+
+		if(op3 -> type == OP_CONST){\
+			op3 -> value = - op3 -> value;
+			return op3;
+		}
+
 		op1 = create_operand(OP_TEMP, used_temp_num++);
 		op2 = create_operand(OP_CONST, 0);
-		op3 = translate_exp(second_child);
 		new_ic = create_intercode(IC_SUB, op1, op2, op3);
 		add_code_to_tail(ic_head, new_ic);
 		return op1;
@@ -396,8 +433,8 @@ translate_exp(struct tree_node* exp_node){
 			op1 = translate_exp(second_child -> sibling -> child);
 			new_ic = create_intercode(IC_WRITE, op1, NULL, NULL);
 			add_code_to_tail(ic_head, new_ic);
-
-			return NULL;
+			//return create_operand(OP_CONST, 0);
+			return NULL;	//todo : write return
 		}
 
 		//args
@@ -438,37 +475,50 @@ translate_exp(struct tree_node* exp_node){
 
 		struct operand* base_address_op = take_address_of_operand(translate_exp(first_child));
 		struct operand* subscript_op = translate_exp(second_child -> sibling);
-		struct operand* offset_op = create_operand(OP_TEMP, used_temp_num ++);
+		struct operand* offset_op = NULL;
+		
 		int width = calculate_var_size(check_exp_valid(exp_node));
-		struct operand* width_op = create_operand(OP_CONST, width);
-		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
 
-		// offset = subsript * width
-		new_ic = create_intercode(IC_MUL, offset_op, subscript_op, width_op);
-		add_code_to_tail(ic_head, new_ic);
+		if(subscript_op -> type == OP_CONST){	//subscript is a constant, calculate offset now
+			int offset_value = subscript_op -> value * width;
+			if(offset_value == 0)
+				return take_value_of_operand(base_address_op);
 
+			offset_op = create_operand(OP_CONST, offset_value);
+		}
+		else {	// offset = subsript * width
+			offset_op = create_operand(OP_TEMP, used_temp_num ++);
+			new_ic = create_intercode(IC_MUL, offset_op, subscript_op, create_operand(OP_CONST, width));
+			add_code_to_tail(ic_head, new_ic);
+		}
 		// target_address = base_address + offset
+		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
 		new_ic = create_intercode(IC_ADD, target_address_op, base_address_op, offset_op);
 		add_code_to_tail(ic_head, new_ic);
 
-		//target = *target_address(not create code)
+		//target = *target_address
 		return take_value_of_operand(target_address_op);
 	}
 	//struct member call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
 		struct operand* base_address_op = take_address_of_operand(translate_exp(first_child));
-		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
 		
 		char* member_name  = (char*)second_child -> sibling -> unit_value;
 		struct struct_descriptor* the_struct = check_exp_valid(first_child) -> var_type -> sd;
 
 		int offset = calculate_member_offset(the_struct, member_name);
+		if(offset == 0){
+			return take_value_of_operand(base_address_op);
+		}
+
 		struct operand* offset_op = create_operand(OP_CONST, offset);
 
 		// target_address = base_address + offset
+		struct operand* target_address_op = create_operand(OP_TEMP, used_temp_num++);
 		new_ic = create_intercode(IC_ADD, target_address_op, base_address_op, offset_op);
 		add_code_to_tail(ic_head, new_ic);
 
+		//target = *target_address
 		return take_value_of_operand(target_address_op);
 	}
 
