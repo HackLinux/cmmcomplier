@@ -36,8 +36,8 @@ optimize_func(struct intercode* start_ic, struct intercode* end_ic){
 }
 
 /*
-ic1	:		t1 = ***
-ic1 next:	** = t1
+ic1	:		t1 = XXX
+ic1 next:	XX = t1
 */
 void
 reduce_temp(struct intercode* ic1){
@@ -45,15 +45,18 @@ reduce_temp(struct intercode* ic1){
 	assert(ic1 -> next -> type == IC_ASSIGN);
 
 	struct intercode* ic2 = ic1 -> next;
+	if(ic2 -> op1 -> star_num != 0)
+		return ;	//ic2 : *t1 = XXX
 
 	if(ic1 -> op1 -> type == OP_TEMP){
+		
 		if(operand_equal(ic1 -> op1, ic2 -> op2)){
-			
+		
 			//exchange ic1 -> op1 with ic2 -> op1
 			struct operand* temp = ic1 -> op1;
 			ic1 -> op1 = ic2 -> op1;
 			ic2 -> op1 = temp;
-
+			
 			//remove ic2 from list
 			remove_intercode(ic2);
 		}
@@ -66,7 +69,7 @@ ic1 next : 	LABEL label**
 */
 void
 reduce_lable(struct intercode* ic1){
-	
+	//todo
 }
 
 

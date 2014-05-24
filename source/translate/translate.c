@@ -357,9 +357,10 @@ translate_exp(struct tree_node* exp_node){
 			if(ic_type == IC_ADD || ic_type == IC_SUB)
 				if(const_op -> value == 0)
 					return non_const_op;
-			if(ic_type == IC_SUB || ic_type == IC_MUL)
+			if(ic_type == IC_MUL || ic_type == IC_DIV)
 				if(const_op -> value == 1)
 					return non_const_op;
+		
 		}
 
 		//result op
