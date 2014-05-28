@@ -210,6 +210,15 @@ print_var_table(struct var_descriptor* head){
 	printf("\n+=============================================+\n");
 }
 
+/*array or struct variables are complex*/
+bool
+is_complex_var(struct var_descriptor* vd){
+	if(vd -> var_array != NULL)
+		return true;
+	if(vd -> var_type -> type_code == TYPE_STRUCT)
+		return true;
+	return false;
+}
 
 int
 calculate_struct_size(struct struct_descriptor* sd){
@@ -242,8 +251,6 @@ calculate_member_offset(struct struct_descriptor* sd, char* member_name){
 			find = true;
 			break;
 		}
-
-		
 	}
 	return find ? offset : -1;
 }

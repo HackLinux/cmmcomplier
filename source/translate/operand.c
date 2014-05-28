@@ -43,7 +43,6 @@ take_value_of_operand(struct operand* origin_op){
 		new_op -> star_num --;
 		new_op -> at_num --;
 	}
-
 	return new_op;
 }
 
@@ -60,7 +59,6 @@ take_address_of_operand(struct operand* origin_op){
 		new_op -> star_num --;
 		new_op -> at_num --;
 	}
-
 	return new_op;
 }
 

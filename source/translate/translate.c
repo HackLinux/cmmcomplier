@@ -62,7 +62,7 @@ translate_func(struct tree_node* extdef_node){
 				add_code_to_tail(ic_head, new_ic);
 			}
 			else{
-				printf("error, use array as a parameter\n");
+				printf("error, use complex variables as parameters\n");
 			}
 			if(varlist_node -> child -> sibling != NULL)
 				varlist_node = varlist_node -> child -> sibling -> sibling;
@@ -95,7 +95,6 @@ translate_func(struct tree_node* extdef_node){
 		ic_tail = new_ic;
 	}
 
-	//todo: optimize function (func_start_ic, func_stop_ic)
 	optimize_func(func_start_ic, ic_tail);
 }
 
