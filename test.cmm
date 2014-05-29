@@ -1,17 +1,5 @@
+int main()
+{
+int a = 3, b;
 
-struct T {
-  int x;
-  int y;
-};
-
-int test(struct T tt0){
-  struct T tt1;
-  tt0.y = 1;
-  tt1.y = 1;
-}
-
-int main(){
-  struct T t;
-
-  test(t);
 }

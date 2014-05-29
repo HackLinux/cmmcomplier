@@ -104,7 +104,7 @@ destroy_intercode_list(struct intercode* ic_head){
 
 /*printers*/
 void
-print_intercode(struct intercode* ic){
+print_intercode(struct intercode* ic, FILE *fp){
 	
 	assert(ic != NULL);
 
@@ -119,63 +119,63 @@ print_intercode(struct intercode* ic){
 
 	switch(ic -> type){
 		case IC_LABEL : 
-			printf("LABEL %s :\n", op1_buf);
+			fprintf(fp, "LABEL %s :\n", op1_buf);
 			break;
 		case IC_ASSIGN : 
-			printf("%s := %s\n", op1_buf, op2_buf);
+			fprintf(fp, "%s := %s\n", op1_buf, op2_buf);
 			break;
 		case IC_ADD : 
-			printf("%s := %s + %s\n", op1_buf, op2_buf, op3_buf);
+			fprintf(fp, "%s := %s + %s\n", op1_buf, op2_buf, op3_buf);
 			break;
 		case IC_SUB : 
-			printf("%s := %s - %s\n", op1_buf, op2_buf, op3_buf);
+			fprintf(fp, "%s := %s - %s\n", op1_buf, op2_buf, op3_buf);
 			break;
 		case IC_MUL : 
-			printf("%s := %s * %s\n", op1_buf, op2_buf, op3_buf);
+			fprintf(fp, "%s := %s * %s\n", op1_buf, op2_buf, op3_buf);
 			break;
 		case IC_DIV : 
-			printf("%s := %s / %s\n", op1_buf, op2_buf, op3_buf);
+			fprintf(fp, "%s := %s / %s\n", op1_buf, op2_buf, op3_buf);
 			break;
 		case IC_GOTO : 
-			printf("GOTO %s\n", op1_buf);
+			fprintf(fp, "GOTO %s\n", op1_buf);
 			break;
 		case IC_IF : 
-			printf("IF %s %s %s GOTO %s\n",  op1_buf, ic -> relop, op2_buf, op3_buf);
+			fprintf(fp, "IF %s %s %s GOTO %s\n",  op1_buf, ic -> relop, op2_buf, op3_buf);
 			break;
 		case IC_RETURN : 
-			printf("RETURN %s\n", op1_buf);
+			fprintf(fp, "RETURN %s\n", op1_buf);
 			break;
 		case IC_DEC :
-			printf("DEC %s %d\n", op1_buf, ic -> dec_size); 
+			fprintf(fp, "DEC %s %d\n", op1_buf, ic -> dec_size); 
 			break;
 		case IC_ARG : 
-			printf("ARG %s\n", op1_buf);
+			fprintf(fp, "ARG %s\n", op1_buf);
 			break;
 		case IC_CALL : 
-			printf("%s := CALL %s\n", op1_buf, ic -> func_name);
+			fprintf(fp, "%s := CALL %s\n", op1_buf, ic -> func_name);
 			break;
 		case IC_PARAM :
-			printf("PARAM %s\n", op1_buf);
+			fprintf(fp, "PARAM %s\n", op1_buf);
 			break;
 		case IC_READ : 
-			printf("READ %s\n", op1_buf);
+			fprintf(fp, "READ %s\n", op1_buf);
 			break;
 		case IC_WRITE : 
-			printf("WRITE %s\n", op1_buf);
+			fprintf(fp, "WRITE %s\n", op1_buf);
 			break;
 		case IC_FUNC :
-			printf("\nFUNCTION %s :\n", ic -> func_name);
+			fprintf(fp, "\nFUNCTION %s :\n", ic -> func_name);
 			break;
 		default : assert(0);
 	}
 }
 
 void
-print_intercode_list(struct intercode* ic_head){
+print_intercode_list(struct intercode* ic_head, FILE *fp){
 	assert(ic_head != NULL);
 	struct intercode* p = ic_head -> next;
 	while(p != NULL){
-		print_intercode(p);
+		print_intercode(p, fp);
 		p = p -> next;
 	}
 }

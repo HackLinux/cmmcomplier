@@ -7,6 +7,7 @@
 #include "translate.h"
 #include "intercode.h"
 #include "operand.h"
+#include "optimize.h"
 #include "../semantic/semantic.h"	//check exp valid
 #include "../common/table.h"
 #include "../common/tree.h"
@@ -20,7 +21,7 @@ struct intercode ic_head_code;
 struct intercode* ic_head = &ic_head_code;	//empty intercode head
 
 /*generate all intercodes into list heading "ic_head"*/
-void 
+struct intercode*
 intermediate_generate(struct tree_node* program_node){
 
 	assert(program_node -> unit_code == Program);
@@ -33,8 +34,7 @@ intermediate_generate(struct tree_node* program_node){
 			translate_func(extdef_node);
 		extdef_node = extdef_node -> sibling -> child;
 	}
-
-	print_intercode_list(ic_head);
+	return ic_head;
 }
 
 void

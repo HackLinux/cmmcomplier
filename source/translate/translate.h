@@ -3,7 +3,7 @@
 
 #include "../common/tree.h"
 
-void intermediate_generate(struct tree_node*);
+struct intercode* intermediate_generate(struct tree_node*);
 
 void translate_func(struct tree_node*);
 

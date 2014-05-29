@@ -3,12 +3,12 @@ all:
 	@cd source; make
 	cp source/parser parser
 
-.PHONY:clean
+.PHONY:clean parse
 clean:
 	@cd source; make clean
 	rm -f parser
+	rm -f *.ir
 	rm -f *~
 
-.PHONY:parse
 parse: all
 	./parser test.cmm

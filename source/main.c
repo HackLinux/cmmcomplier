@@ -5,31 +5,47 @@
 #include "syntax/syntax.h"
 #include "semantic/semantic.h"
 #include "translate/translate.h"
+#include "translate/intercode.h"
 
 #include "syntax/lexical.c"
 
 int main(int argc, char** argv){
 
-	if(argc != 2){
+	FILE* fin = NULL;	//cmm source file
+	FILE* fout = NULL;	//intercode output file
+	if(argc == 2){
+		fin = fopen(argv[1], "r");
+		fout = stdout;
+	}
+	else if (argc == 3){
+		fin = fopen(argv[1], "r");
+		fout = fopen(argv[2], "w");	
+		if(!fout){
+			perror(argv[2]);
+			return 1;
+		}
+	}
+	else{
 		printf("too few or too many call parameters\n");
 		return 1;
 	}
-	FILE *f = fopen(argv[1], "r");
-	if(!f){
+	if(!fin){
 		perror(argv[1]);
 		return 1;
 	}
 	
-	yyrestart(f);
-	yyparse();
+	yyrestart(fin);
+	yyparse();	//generate a tree rooted at program_node declared in tree.h
 
 	if(error_flag)
-		return 1;//lex or syntax error	
+		return 1;	//lex or syntax error	
 
 	if(semantic_analyze(program_node))
 		return 1;	//semantic error
 
-	intermediate_generate(program_node);
+	struct intercode* ic_head = intermediate_generate(program_node);
+
+	print_intercode_list(ic_head, fout);
 	
 	destroy_tree(program_node);
 	
@@ -37,7 +53,6 @@ int main(int argc, char** argv){
 }
 
 yyerror(char *msg){
-
 	error_flag = true;
 	fprintf(stderr, "%s at line%d\n",msg, yylineno);
 }

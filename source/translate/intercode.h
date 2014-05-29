@@ -48,8 +48,8 @@ struct intercode* create_func_intercode(char*);
 void destroy_intercode(struct intercode*);
 void destroy_intercode_list(struct intercode*);
 
-void print_intercode(struct intercode*);
-void print_intercode_list(struct intercode*);
+void print_intercode(struct intercode*, FILE*);
+void print_intercode_list(struct intercode*, FILE*);
 
 void add_code_to_tail(struct intercode*, struct intercode*);
 void add_code_before(struct intercode*, struct intercode*);
