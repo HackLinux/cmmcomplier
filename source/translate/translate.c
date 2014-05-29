@@ -148,7 +148,7 @@ translate_stmt(struct tree_node* stmt_node){
 	struct intercode* new_ic = NULL;
 
 	if(first_child -> unit_code == Exp){
-		find_necessary_exp(first_child);	//todo only translate assign exp
+		find_necessary_exp(first_child);	//find necessary exp and translate it
 	} 
 	else if(first_child -> unit_code == CompSt){
 		struct tree_node* inner_deflist_node = first_child -> child -> sibling;
@@ -256,7 +256,7 @@ find_necessary_exp(struct tree_node* exp_node){
 	else if(first_child -> unit_code == ID && second_child -> unit_code == LP) {
 		translate_exp(exp_node);
 	}
-	//find necessary sub-lexp
+	//find necessary sub-exp
 	else {
 		if(first_child -> unit_code == Exp)
 			find_necessary_exp(first_child);
@@ -350,8 +350,8 @@ translate_exp(struct tree_node* exp_node){
 		//one const operand
 		if(op2 -> type == OP_CONST || op3 -> type == OP_CONST){
 			
-			struct operand* const_op = (op3 -> type == OP_CONST) ? op3 : op3;
-			struct operand* non_const_op = (op3 -> type == OP_CONST) ? op3 : op3;
+			struct operand* const_op = (op2 -> type == OP_CONST) ? op2 : op3;
+			struct operand* non_const_op = (op2 -> type == OP_CONST) ? op3 : op2;
 
 			if(ic_type == IC_ADD || ic_type == IC_SUB)
 				if(const_op -> value == 0)
@@ -359,7 +359,6 @@ translate_exp(struct tree_node* exp_node){
 			if(ic_type == IC_MUL || ic_type == IC_DIV)
 				if(const_op -> value == 1)
 					return non_const_op;
-		
 		}
 
 		//result op
