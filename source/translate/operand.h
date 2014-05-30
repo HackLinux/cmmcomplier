@@ -20,8 +20,11 @@ struct operand {
 struct operand* create_operand(int, int);
 void operand_to_string(char*, struct operand*);
 
-struct operand* take_value_of_operand(struct operand*);
-struct operand* take_address_of_operand(struct operand*);
+struct operand* create_operand_take_value(struct operand*);
+struct operand* create_operand_take_address(struct operand*);
+
+void take_value_of_operand(struct operand*);
+void take_address_of_operand(struct operand*);
 
 bool operand_equal(struct operand*, struct operand*);
 

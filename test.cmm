@@ -1,8 +1,9 @@
+int test(int a[5]){
+	return a[1];
+}
+
 int main()
 {
-int a;
-int b;
-int c;
-b = a * 5;
-c = b * 4;
+int x[5];
+test(x);
 }

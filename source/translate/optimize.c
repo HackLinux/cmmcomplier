@@ -33,10 +33,9 @@ optimize_func(struct intercode* start_ic, struct intercode* end_ic){
 				reduce_calculate(p);
 			}
 		}
-
+		
 		p = p -> next;
 	}
-
 }
 
 /*
@@ -85,23 +84,20 @@ reduce_calculate(struct intercode* ic1){
 	if(ic1 -> type == IC_ADD || ic1 -> type == IC_SUB){
 		if(ic2 -> type == ic1 -> type){
 			ic1 -> op3 -> value += ic2 -> op3 -> value;
-			
 			exchange_op1(ic1, ic2);
 			remove_intercode(ic2);
 		}
 		else if(ic2 -> type == IC_ADD || ic2 -> type == IC_SUB){
 			ic1 -> op3 -> value -= ic2 -> op3 -> value;
-
 			exchange_op1(ic1, ic2);
 			remove_intercode(ic2);
 		}
 	}
-	
+
 	//two multiply/divide
 	if(ic1 -> type == IC_MUL || ic1 -> type == IC_DIV){
 		if(ic2 -> type == ic1 -> type){
 			ic1 -> op3 -> value *= ic2 -> op3 -> value;
-			
 			exchange_op1(ic1, ic2);
 			remove_intercode(ic2);
 		}

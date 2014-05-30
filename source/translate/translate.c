@@ -20,6 +20,8 @@ int used_label_num = 1;
 struct intercode ic_head_code;
 struct intercode* ic_head = &ic_head_code;	//empty intercode head
 
+struct func_descriptor* belongs_func = NULL;//get value at translate_func
+
 /*generate all intercodes into list heading "ic_head"*/
 struct intercode*
 intermediate_generate(struct tree_node* program_node){
@@ -44,26 +46,26 @@ translate_func(struct tree_node* extdef_node){
 
 	struct tree_node* fundec_node = extdef_node -> child -> sibling;
 
+	//init belongs_func
+	belongs_func = find_func(func_table_head, (char *)fundec_node -> child -> unit_value);
+	assert(belongs_func != NULL);
+
+
 	//function intercode
 	struct intercode* func_start_ic = create_func_intercode((char *)fundec_node -> child -> unit_value);
 	add_code_to_tail(ic_head, func_start_ic);
 	
-
-	//todo complex param
 	//parameters intercodes
 	if(fundec_node -> child -> sibling -> sibling -> unit_code == VarList){
 		struct tree_node* varlist_node = fundec_node -> child -> sibling -> sibling;
 		while(true){
 			struct tree_node* vardec_node = varlist_node -> child -> child -> sibling;
-			if(vardec_node -> child -> unit_code == ID){
-				char* var_name = (char *)vardec_node -> child -> unit_value;
-				struct operand* new_op = create_operand(OP_VAR, find_var_seq(var_table_head, var_name));
-				struct intercode* new_ic = create_intercode(IC_PARAM, new_op, NULL, NULL);
-				add_code_to_tail(ic_head, new_ic);
-			}
-			else{
-				printf("error, use complex variables as parameters\n");
-			}
+			
+			char* var_name = (char *)find_id_node_in_vardec(vardec_node) -> unit_value;
+			struct operand* new_op = create_operand(OP_VAR, find_var_seq(var_table_head, var_name));
+			struct intercode* new_ic = create_intercode(IC_PARAM, new_op, NULL, NULL);
+			add_code_to_tail(ic_head, new_ic);
+			
 			if(varlist_node -> child -> sibling != NULL)
 				varlist_node = varlist_node -> child -> sibling -> sibling;
 			else
@@ -437,13 +439,17 @@ translate_exp(struct tree_node* exp_node){
 		}
 
 		//args
-		//todo complex arg
 		if(second_child -> sibling -> unit_code == Args){
 			struct tree_node* args_node = second_child -> sibling;
 			struct intercode* prev_arg_ic = NULL;
 			while(true){
 				struct tree_node* exp_node = args_node -> child;
+				struct var_descriptor* arg_var = check_exp_valid(exp_node);
 				op1 = translate_exp(exp_node);
+
+				if(is_complex_var(arg_var)){
+					take_address_of_operand(op1);	//give address as of complex args
+				}
 
 				//reverse arg order
 				new_ic = create_intercode(IC_ARG, op1, NULL, NULL);
@@ -472,7 +478,11 @@ translate_exp(struct tree_node* exp_node){
 	//array call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == LB) {
 
-		struct operand* base_address_op = take_address_of_operand(translate_exp(first_child));
+		struct operand* base_address_op = NULL;
+		if(is_parameter_var(belongs_func, check_exp_valid(first_child)))
+			base_address_op = translate_exp(first_child);
+		else
+			base_address_op = create_operand_take_address(translate_exp(first_child));
 		struct operand* subscript_op = translate_exp(second_child -> sibling);
 		struct operand* offset_op = NULL;
 		
@@ -481,7 +491,7 @@ translate_exp(struct tree_node* exp_node){
 		if(subscript_op -> type == OP_CONST){	//subscript is a constant, calculate offset now
 			int offset_value = subscript_op -> value * width;
 			if(offset_value == 0)
-				return take_value_of_operand(base_address_op);
+				return create_operand_take_value(base_address_op);
 
 			offset_op = create_operand(OP_CONST, offset_value);
 		}
@@ -496,18 +506,22 @@ translate_exp(struct tree_node* exp_node){
 		add_code_to_tail(ic_head, new_ic);
 
 		//target = *target_address
-		return take_value_of_operand(target_address_op);
+		return create_operand_take_value(target_address_op);
 	}
 	//struct member call
 	if(first_child -> unit_code == Exp && second_child -> unit_code == DOT) {
-		struct operand* base_address_op = take_address_of_operand(translate_exp(first_child));
+		struct operand* base_address_op = NULL;
+		if(is_parameter_var(belongs_func, check_exp_valid(first_child)))
+			base_address_op = translate_exp(first_child);
+		else
+			base_address_op = create_operand_take_address(translate_exp(first_child));
 		
 		char* member_name  = (char*)second_child -> sibling -> unit_value;
 		struct struct_descriptor* the_struct = check_exp_valid(first_child) -> var_type -> sd;
 
 		int offset = calculate_member_offset(the_struct, member_name);
 		if(offset == 0){
-			return take_value_of_operand(base_address_op);
+			return create_operand_take_value(base_address_op);
 		}
 
 		struct operand* offset_op = create_operand(OP_CONST, offset);
@@ -518,7 +532,7 @@ translate_exp(struct tree_node* exp_node){
 		add_code_to_tail(ic_head, new_ic);
 
 		//target = *target_address
-		return take_value_of_operand(target_address_op);
+		return create_operand_take_value(target_address_op);
 	}
 
 	assert(0);

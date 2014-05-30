@@ -56,6 +56,7 @@ void add_var(struct var_descriptor*, struct var_descriptor*);
 void print_var_table(struct var_descriptor*);
 
 bool is_complex_var(struct var_descriptor* vd);
+bool is_parameter_var(struct func_descriptor* , struct var_descriptor* );
 
 int find_var_seq(struct var_descriptor*, char*);
 

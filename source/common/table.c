@@ -213,12 +213,22 @@ print_var_table(struct var_descriptor* head){
 /*array or struct variables are complex*/
 bool
 is_complex_var(struct var_descriptor* vd){
+	assert(vd != NULL);
 	if(vd -> var_array != NULL)
 		return true;
 	if(vd -> var_type -> type_code == TYPE_STRUCT)
 		return true;
 	return false;
 }
+
+bool
+is_parameter_var(struct func_descriptor* belongs_func, struct var_descriptor* vd){
+	assert(belongs_func != NULL && vd != NULL);
+	if(find_var(belongs_func -> param_list_head, vd -> var_name))
+		return true;
+	return false;
+}
+
 
 int
 calculate_struct_size(struct struct_descriptor* sd){
