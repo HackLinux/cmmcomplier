@@ -27,6 +27,7 @@ struct intercode{
 	struct operand *op1;
 	struct operand *op2;
 	struct operand *op3;
+	
 	int dec_size;		//dec intercode has this
 	char* relop;		//if intercode has this
 	char* func_name;	//func or call intercode has this

@@ -31,10 +31,13 @@ create_operand_full(int type, int value, int star_num, int at_num){
 
 void
 reduce_star_at_symbol(struct operand* op){
-	while(op -> star_num * op -> at_num != 0){	//both non-zero
+	
+	while(op -> star_num * op -> at_num != 0){	
+		//both non-zero
 		op -> star_num --;
 		op -> at_num --;
 	}
+
 }
 
 

@@ -7,6 +7,6 @@ The experiment of Compliers
 3rd: intermediate representation	
 
 Usage:
-	./parser test.cmml
+	./parser test.cmm
 
 
