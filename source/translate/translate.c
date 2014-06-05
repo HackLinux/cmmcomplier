@@ -441,7 +441,8 @@ translate_exp(struct tree_node* exp_node){
 		//args
 		if(second_child -> sibling -> unit_code == Args){
 			struct tree_node* args_node = second_child -> sibling;
-			struct intercode* prev_arg_ic = NULL;
+			struct intercode* args_ic_head = NULL;
+			int args_ic_num = 0;
 			while(true){
 				struct tree_node* exp_node = args_node -> child;
 				struct var_descriptor* arg_var = check_exp_valid(exp_node);
@@ -451,20 +452,33 @@ translate_exp(struct tree_node* exp_node){
 					take_address_of_operand(op1);	//give address as of complex args
 				}
 
-				//reverse arg order
 				new_ic = create_intercode(IC_ARG, op1, NULL, NULL);
-				if(prev_arg_ic == NULL)
-					add_code_to_tail(ic_head, new_ic);
-				else
-					add_code_before(prev_arg_ic, new_ic);
-				prev_arg_ic = new_ic;
+				args_ic_num ++;
+				if(args_ic_head == NULL)
+					args_ic_head = new_ic;
+				else{
+					args_ic_head -> next = new_ic;
+					new_ic -> prev = args_ic_head;
+					args_ic_head = new_ic;
+				}
 
 				if(args_node -> child -> sibling != NULL)
 					args_node = args_node -> child -> sibling -> sibling;
 				else
 					break;
 			}
+
+			struct intercode* iterator = new_ic;
+			int i;
+			for (i = 0; i < args_ic_num; i++){
+				
+				struct intercode* temp = iterator;
+				iterator = iterator -> prev;
+				temp -> prev = temp -> next = NULL;
+				add_code_to_tail(ic_head, temp);
+			}
 		}
+
 		//return operator
 		op1 = create_operand(OP_TEMP, used_temp_num++);
 		
@@ -473,6 +487,7 @@ translate_exp(struct tree_node* exp_node){
 		else
 			new_ic = create_call_intercode(op1, (char*)first_child -> unit_value);
 		add_code_to_tail(ic_head, new_ic);
+
 		return op1;
 	}
 	//array call

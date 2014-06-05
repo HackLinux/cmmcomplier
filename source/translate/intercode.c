@@ -164,7 +164,9 @@ print_intercode(struct intercode* ic, FILE *fp){
 			fprintf(fp, "WRITE %s\n", op1_buf);
 			break;
 		case IC_FUNC :
-			fprintf(fp, "\nFUNCTION %s :\n", ic -> func_name);
+			if(fp == stdout)
+				fprintf(fp, "\n");
+			fprintf(fp, "FUNCTION %s :\n", ic -> func_name);
 			break;
 		default : assert(0);
 	}
