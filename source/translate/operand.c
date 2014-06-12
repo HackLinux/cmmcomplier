@@ -114,6 +114,8 @@ operand_to_string(char* buf, struct operand* op){
 
 bool
 operand_equal(struct operand* op1, struct operand* op2){
+	if(op1 == NULL || op2 == NULL)
+		return false;
 	if(op1 -> type != op2 -> type )
 		return false;
 	if(op1 -> value != op2 -> value)
