@@ -35,7 +35,12 @@ int main(int argc, char** argv){
 	}
 	
 	yyrestart(fin);
-	yyparse();	//generate a tree rooted at program_node declared in tree.h
+	yyparse();	
+
+	/*	a syntax tree has been generated until here.
+	 *	the tree is rooted in "program_node" declared in common/tree.h
+	 *	semantic analyze, ir-code gengrate and assemble-code generate
+	 *	will be done on the syntax tree*/
 
 	if(error_flag)
 		return 1;	//lex or syntax error	
@@ -45,7 +50,7 @@ int main(int argc, char** argv){
 
 	struct intercode* ic_head = intermediate_generate(program_node);
 
-	print_intercode_list(ic_head, fout);
+	//print_intercode_list(ic_head, fout);
 	
 	destroy_tree(program_node);
 	

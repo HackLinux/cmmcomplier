@@ -45,7 +45,7 @@ optimize_func(struct intercode* start_ic, struct intercode* end_ic){
 			struct intercode* pnn = pn -> next;
 			if(pnn != NULL)
 				if(pn -> type == IC_GOTO && pnn -> type == IC_LABEL){
-					//optimized = if_to_ifFalse(p);
+					optimized = if_to_ifFalse(p);
 				}
 		}
 
