@@ -182,3 +182,16 @@ print_intercode_list(struct intercode* ic_head, FILE *fp){
 	}
 }
 
+struct intercode*
+find_func_stop_ic(struct intercode* func_start_ic){
+	struct intercode* func_stop_ic = func_start_ic;
+	while(1){
+		if(func_stop_ic -> next == NULL)
+			break;
+		if(func_stop_ic -> next -> type == IC_FUNC)
+			break;
+		func_stop_ic = func_stop_ic -> next;
+	}
+	return func_stop_ic;
+}
+

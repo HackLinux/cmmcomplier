@@ -12,6 +12,7 @@
 struct reg_descriptor{
 	int type;
 	int num;
+	char name[10];
 
 	bool used;
 	struct operand* stored_op;

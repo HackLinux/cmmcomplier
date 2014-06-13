@@ -12,6 +12,8 @@ init_reg(struct reg_descriptor* rd, int type, int num){
 	rd -> num = num;
 	rd -> used = false;
 	rd -> stored_op = NULL;
+
+	reg_to_string(rd -> name, rd);
 }
 
 void

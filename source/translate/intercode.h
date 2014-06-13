@@ -55,4 +55,6 @@ void print_intercode_list(struct intercode*, FILE*);
 void add_code_to_tail(struct intercode*, struct intercode*);
 void add_code_before(struct intercode*, struct intercode*);
 
+struct intercode* find_func_stop_ic(struct intercode*);
+
 #endif

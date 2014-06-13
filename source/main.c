@@ -54,7 +54,7 @@ int main(int argc, char** argv){
 
 	printf("\n\n");
 
-	assemble_intercode_list(ic_head);
+	assemble_intercode(ic_head);
 	
 	destroy_tree(program_node);
 	
