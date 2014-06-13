@@ -10,4 +10,8 @@ void assemble_one_intercode(struct intercode*);
 struct reg_descriptor* alloc_reg(struct operand*);
 struct reg_descriptor* get_reg(struct operand*);
 
+void push_stack();
+void pop_stack();
+int calculate_offset();
+
 #endif

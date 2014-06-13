@@ -9,11 +9,10 @@
 #include "../translate/operand.h"
 
 #define S_REG_NUM 9
-#define T_REG_NUM 9
+#define T_REG_NUM 10
 #define A_REG_NUM 4
-struct reg_descriptor s_reg[S_REG_NUM];			//for variable
-struct reg_descriptor t_reg[T_REG_NUM + 1];		//0-8 for temp and 9 for const
-struct reg_descriptor a_reg[A_REG_NUM];			//for arguments
+struct reg_descriptor s_reg[S_REG_NUM];		//for variable
+struct reg_descriptor t_reg[T_REG_NUM];		//0-8 for temp and 9 for const
 
 
 void
@@ -43,20 +42,16 @@ assemble_intercode(struct intercode* ic_head){
 			"	move $v0, $0\n"
 			"	jr $ra\n");
 
-	/*init a_reg*/
-	int i;
-	for (i = 0; i < A_REG_NUM; ++i)
-			init_reg(&a_reg[i], A_REG, i);
-
 	/*assembling*/
 	while(func_start_ic != NULL){
 
 		struct intercode* func_stop_ic = find_func_stop_ic(func_start_ic);
 
 		/*init s_reg and t_reg per func*/
+		int i;
 		for (i = 0; i < S_REG_NUM; ++i)
 			init_reg(&s_reg[i], S_REG, i);
-		for (i = 0; i < T_REG_NUM + 1; ++i)
+		for (i = 0; i < T_REG_NUM; ++i)
 			init_reg(&t_reg[i], T_REG, i);
 		
 		assemble_func(func_start_ic, func_stop_ic);
@@ -202,32 +197,33 @@ assemble_one_intercode(struct intercode* ic){
 			break;
 		}
 		case IC_ARG:{
-			
 			break;
 		}
 		case IC_CALL:{
 
-			/*params*/
+			/*store args in a_regs*/
 			struct intercode* arg_ic = ic -> prev;
 			int used_a_reg = 0;
 			while(arg_ic -> type == IC_ARG){
 				printf(	"\tmove $a%d, %s\n", used_a_reg++, get_reg(arg_ic -> op1) -> name);
 				arg_ic = arg_ic -> prev;
 			}
-			assert(used_a_reg <= 4);
+			assert(used_a_reg <= A_REG_NUM);
 
+			//push s_regs on stack
+			push_stack();
 			
-			
-			printf(	"\taddi $sp, $sp, -4\n"
-					"\tsw $ra, 0($sp)\n");
+			//call func
 			printf(	"\tjal %s\n", ic -> func_name);
-			printf(	"\tlw $ra, 0($sp)\n"
-					"\taddi $sp, $sp, 4\n");
+			
+			//pop s_regs out of stack
+			pop_stack();
+			
+			//fetch return value
 			printf("\tmove %s, $v0\n", get_reg(ic -> op1) -> name);
 
 		}
 		case IC_PARAM:{
-			//printf("move $v0, \n");
 			break;
 		}
 		case IC_READ:{
@@ -255,14 +251,14 @@ assemble_one_intercode(struct intercode* ic){
 		case IC_FUNC:{
 			printf("\n%s:\n", ic -> func_name);
 
-			/*params*/
+			/*get params out from a_regs*/
 			struct intercode* param_ic = ic -> next;
 			int used_a_reg = 0;
 			while(param_ic -> type == IC_PARAM){
 				printf(	"\tmove %s, $a%d\n", get_reg(param_ic -> op1) -> name, used_a_reg++);
 				param_ic = param_ic -> next;
 			}
-			assert(used_a_reg <= 4);
+			assert(used_a_reg <= A_REG_NUM);
 
 			break;
 		}
@@ -291,10 +287,10 @@ get_reg(struct operand *op){
 		case OP_TEMP:{
 
 			int i;
-			for (i = 0; i < T_REG_NUM; ++i)
+			for (i = 0; i < T_REG_NUM - 1; ++i)
 				if(operand_equal(t_reg[i].stored_op, op))
 					break;
-			if(i < T_REG_NUM){
+			if(i < T_REG_NUM - 1){
 				/*after one use, the temp will be thrown out of register*/
 				t_reg[i].used = false;
 				t_reg[i].stored_op = NULL;
@@ -337,10 +333,10 @@ alloc_reg(struct operand* op){
 
 		case OP_TEMP:{
 			int i;
-			for (i = 0; i < T_REG_NUM; ++i)
+			for (i = 0; i < T_REG_NUM - 1; ++i)
 				if(!t_reg[i].used)
 					break;
-			if(i == T_REG_NUM){
+			if(i == T_REG_NUM - 1){
 				printf("no more register for variable, exit\n");
 				exit(-1);
 			}
@@ -353,4 +349,54 @@ alloc_reg(struct operand* op){
 		default: assert(0);
 	}
 	return NULL;
+}
+
+
+/*store regs on stack before func call*/
+void
+push_stack(){
+
+	int total_offset = calculate_offset();
+	int offset = 0;
+
+	printf(	"\taddi $sp, $sp, -%d\n", total_offset);
+	int i;
+	for (i = 0; i < S_REG_NUM; ++i){
+		if(s_reg[i].used){
+			printf(	"\tsw %s, %d($sp)\n", s_reg[i].name, offset);
+			offset += 4;
+		}
+	}
+	printf(	"\tsw $ra, %d($sp)\n", offset);
+	assert((total_offset - offset) == 4);
+}
+
+/*fetch regs stored on the stack after func call return*/
+void
+pop_stack(){
+
+	int offset = 0;
+
+	int i;
+	for (i = 0; i < S_REG_NUM; ++i){
+		if(s_reg[i].used){
+			printf(	"\tlw %s, %d($sp)\n", s_reg[i].name, offset);
+			offset += 4;
+		}
+	}
+	printf(	"\tlw $ra, %d($sp)\n", offset);
+	offset += 4;
+	printf(	"\taddi $sp, $sp, %d\n", offset);
+}
+
+
+int
+calculate_offset(){
+	int offset = 4;	//$ra
+	int i;
+	for (i = 0; i < S_REG_NUM; ++i)
+		if(s_reg[i].used)
+			offset += 4;
+
+	return offset;
 }
