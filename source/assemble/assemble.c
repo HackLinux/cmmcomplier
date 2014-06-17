@@ -361,13 +361,26 @@ push_stack(){
 
 	printf(	"\taddi $sp, $sp, -%d\n", total_offset);
 	int i;
+	
+	//store s_regs for variable
 	for (i = 0; i < S_REG_NUM; ++i){
 		if(s_reg[i].used){
 			printf(	"\tsw %s, %d($sp)\n", s_reg[i].name, offset);
 			offset += 4;
 		}
 	}
+
+	//store t_regs for constant
+	for (i = 0; i < T_REG_NUM - 1; ++i){
+		if(t_reg[i].used){
+			printf(	"\tsw %s, %d($sp)\n", t_reg[i].name, offset);
+			offset += 4;
+		}
+	}
+
+	//store ra for return address
 	printf(	"\tsw $ra, %d($sp)\n", offset);
+	
 	assert((total_offset - offset) == 4);
 }
 
@@ -384,6 +397,12 @@ pop_stack(){
 			offset += 4;
 		}
 	}
+	for (i = 0; i < T_REG_NUM - 1; ++i){
+		if(t_reg[i].used){
+			printf(	"\tlw %s, %d($sp)\n", t_reg[i].name, offset);
+			offset += 4;
+		}
+	}
 	printf(	"\tlw $ra, %d($sp)\n", offset);
 	offset += 4;
 	printf(	"\taddi $sp, $sp, %d\n", offset);
@@ -396,6 +415,10 @@ calculate_offset(){
 	int i;
 	for (i = 0; i < S_REG_NUM; ++i)
 		if(s_reg[i].used)
+			offset += 4;
+
+	for (i = 0; i < T_REG_NUM; ++i)
+		if(t_reg[i].used)
 			offset += 4;
 
 	return offset;

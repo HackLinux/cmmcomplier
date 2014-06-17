@@ -2,9 +2,11 @@ The experiment of Compliers
 
 1st: C-- lexical and syntax analysis
 
-2nd: semantic analysis	
+2nd: semantic analysis
 
-3rd: intermediate representation	
+3rd: intermediate representation
+
+4th: mips assemble code generation , for spim
 
 Usage:
 	./parser test.cmm
