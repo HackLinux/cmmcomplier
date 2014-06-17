@@ -14,14 +14,18 @@
 struct reg_descriptor s_reg[S_REG_NUM];		//for variable
 struct reg_descriptor t_reg[T_REG_NUM];		//0-8 for temp and 9 for const
 
+FILE *fp;
 
 void
-assemble_intercode(struct intercode* ic_head){
+assemble_intercode(struct intercode* ic_head, FILE *fout){
+
 
 	assert(ic_head != NULL);
 	struct intercode* func_start_ic = ic_head -> next;
-	
-	printf(	".data\n"
+	fp = fout;
+		
+	fprintf(fp,	
+			".data\n"
 			"_prompt: .asciiz \"Enter an integer:\"\n"
 			"_ret: .asciiz \"\\n\"\n"
 			".globl main\n"
@@ -86,17 +90,17 @@ assemble_one_intercode(struct intercode* ic){
 		case IC_LABEL:{
 			char op_buf[10];
 			operand_to_string(op_buf, ic -> op1);
-			printf("%s:\n", op_buf);
+			fprintf(fp, "%s:\n", op_buf);
 			break;
 		}
 		case IC_ASSIGN:{
 			struct reg_descriptor* reg1 = get_reg(ic -> op1);
 			if(ic -> op2 -> type == OP_CONST){
-				printf("\tli %s, %d\n", reg1 -> name, ic -> op2 -> value);
+				fprintf(fp, "\tli %s, %d\n", reg1 -> name, ic -> op2 -> value);
 			}
 			else{	//OP_TEMP or OP_VAR
 				struct reg_descriptor* reg2 = get_reg(ic -> op2);
-				printf("\tmove %s, %s\n", reg1 -> name, reg2 -> name);
+				fprintf(fp, "\tmove %s, %s\n", reg1 -> name, reg2 -> name);
 			}
 			break;
 		}
@@ -105,11 +109,11 @@ assemble_one_intercode(struct intercode* ic){
 			struct reg_descriptor* reg1 = get_reg(ic -> op1);
 			struct reg_descriptor* reg2 = get_reg(ic -> op2);
 			if(ic -> op3 -> type == OP_CONST){
-				printf("\taddi %s, %s, %d\n", reg1 -> name, reg2 -> name, ic -> op3 -> value);
+				fprintf(fp, "\taddi %s, %s, %d\n", reg1 -> name, reg2 -> name, ic -> op3 -> value);
 			}
 			else{
 				struct reg_descriptor* reg3 = get_reg(ic -> op3);	
-				printf("\tadd %s, %s, %s\n", reg1 -> name, reg2 -> name, reg3 -> name);
+				fprintf(fp, "\tadd %s, %s, %s\n", reg1 -> name, reg2 -> name, reg3 -> name);
 			}
 						
 			break;
@@ -119,11 +123,11 @@ assemble_one_intercode(struct intercode* ic){
 			struct reg_descriptor* reg1 = get_reg(ic -> op1);
 			struct reg_descriptor* reg2 = get_reg(ic -> op2);
 			if(ic -> op3 -> type == OP_CONST){
-				printf("\taddi %s, %s, %d\n", reg1 -> name, reg2 -> name, -ic -> op3 -> value);
+				fprintf(fp, "\taddi %s, %s, %d\n", reg1 -> name, reg2 -> name, -ic -> op3 -> value);
 			}
 			else{
 				struct reg_descriptor* reg3 = get_reg(ic -> op3);	
-				printf("\tsub %s, %s, %s\n", reg1 -> name, reg2 -> name, reg3 -> name);
+				fprintf(fp, "\tsub %s, %s, %s\n", reg1 -> name, reg2 -> name, reg3 -> name);
 			}
 			
 			break;
@@ -133,7 +137,7 @@ assemble_one_intercode(struct intercode* ic){
 			struct reg_descriptor* reg1 = get_reg(ic -> op1);
 			struct reg_descriptor* reg2 = get_reg(ic -> op2);
 			struct reg_descriptor* reg3 = get_reg(ic -> op3);
-			printf("\tmul %s, %s, %s\n", reg1 -> name, reg2 -> name, reg3 -> name);	
+			fprintf(fp, "\tmul %s, %s, %s\n", reg1 -> name, reg2 -> name, reg3 -> name);	
 			
 			break;
 		}
@@ -142,15 +146,15 @@ assemble_one_intercode(struct intercode* ic){
 			struct reg_descriptor* reg1 = get_reg(ic -> op1);
 			struct reg_descriptor* reg2 = get_reg(ic -> op2);
 			struct reg_descriptor* reg3 = get_reg(ic -> op3);
-			printf("\tdiv %s, %s\n", reg2 -> name, reg3 -> name);
-			printf("\tmflo %s\n", reg1 -> name);	
+			fprintf(fp, "\tdiv %s, %s\n", reg2 -> name, reg3 -> name);
+			fprintf(fp, "\tmflo %s\n", reg1 -> name);	
 			
 			break;
 		}
 		case IC_GOTO:{
 			char op_buf[10];
 			operand_to_string(op_buf, ic -> op1);
-			printf("\tj %s\n", op_buf);
+			fprintf(fp, "\tj %s\n", op_buf);
 			break;
 		}
 		case IC_IF:{
@@ -183,13 +187,13 @@ assemble_one_intercode(struct intercode* ic){
 			else
 				assert(0);
 
-			printf("\t%s %s, %s, %s\n", relop_buf, reg1 -> name, reg2 -> name, label_buf);
+			fprintf(fp, "\t%s %s, %s, %s\n", relop_buf, reg1 -> name, reg2 -> name, label_buf);
 			
 			break;
 		}
 		case IC_RETURN:{
-			printf("\tmove $v0, %s\n", get_reg(ic -> op1) -> name);
-			printf("\tjr $ra\n");
+			fprintf(fp, "\tmove $v0, %s\n", get_reg(ic -> op1) -> name);
+			fprintf(fp, "\tjr $ra\n");
 			break;
 		}
 		case IC_DEC:{
@@ -205,7 +209,7 @@ assemble_one_intercode(struct intercode* ic){
 			struct intercode* arg_ic = ic -> prev;
 			int used_a_reg = 0;
 			while(arg_ic -> type == IC_ARG){
-				printf(	"\tmove $a%d, %s\n", used_a_reg++, get_reg(arg_ic -> op1) -> name);
+				fprintf(fp, 	"\tmove $a%d, %s\n", used_a_reg++, get_reg(arg_ic -> op1) -> name);
 				arg_ic = arg_ic -> prev;
 			}
 			assert(used_a_reg <= A_REG_NUM);
@@ -214,13 +218,13 @@ assemble_one_intercode(struct intercode* ic){
 			push_stack();
 			
 			//call func
-			printf(	"\tjal %s\n", ic -> func_name);
+			fprintf(fp, 	"\tjal %s\n", ic -> func_name);
 			
 			//pop s_regs out of stack
 			pop_stack();
 			
 			//fetch return value
-			printf("\tmove %s, $v0\n", get_reg(ic -> op1) -> name);
+			fprintf(fp, "\tmove %s, $v0\n", get_reg(ic -> op1) -> name);
 
 		}
 		case IC_PARAM:{
@@ -228,20 +232,20 @@ assemble_one_intercode(struct intercode* ic){
 		}
 		case IC_READ:{
 
-			printf(	"\taddi $sp, $sp, -4\n"
+			fprintf(fp, 	"\taddi $sp, $sp, -4\n"
 					"\tsw $ra, 0($sp)\n"
 					"\tjal read\n"
 					"\tlw $ra, 0($sp)\n"
 					"\taddi $sp, $sp, 4\n");
-			printf("\tmove %s, $v0\n", get_reg(ic -> op1) -> name);
+			fprintf(fp, "\tmove %s, $v0\n", get_reg(ic -> op1) -> name);
 
 			
 			break;
 		}
 		case IC_WRITE:{
 
-			printf(	"\tmove $a0, %s\n", get_reg(ic -> op1) -> name);
-			printf(	"\taddi $sp, $sp, -4\n"
+			fprintf(fp, 	"\tmove $a0, %s\n", get_reg(ic -> op1) -> name);
+			fprintf(fp, 	"\taddi $sp, $sp, -4\n"
 					"\tsw $ra, 0($sp)\n"
 					"\tjal write\n"
 					"\tlw $ra, 0($sp)\n"
@@ -249,13 +253,13 @@ assemble_one_intercode(struct intercode* ic){
 			break;
 		}
 		case IC_FUNC:{
-			printf("\n%s:\n", ic -> func_name);
+			fprintf(fp, "\n%s:\n", ic -> func_name);
 
 			/*get params out from a_regs*/
 			struct intercode* param_ic = ic -> next;
 			int used_a_reg = 0;
 			while(param_ic -> type == IC_PARAM){
-				printf(	"\tmove %s, $a%d\n", get_reg(param_ic -> op1) -> name, used_a_reg++);
+				fprintf(fp, 	"\tmove %s, $a%d\n", get_reg(param_ic -> op1) -> name, used_a_reg++);
 				param_ic = param_ic -> next;
 			}
 			assert(used_a_reg <= A_REG_NUM);
@@ -300,7 +304,7 @@ get_reg(struct operand *op){
 		}
 
 		case OP_CONST:{
-			printf("\tli %s, %d\n", t_reg[9].name, op -> value);
+			fprintf(fp, "\tli %s, %d\n", t_reg[9].name, op -> value);
 			return &t_reg[9];
 		}
 
@@ -322,7 +326,7 @@ alloc_reg(struct operand* op){
 				if(!s_reg[i].used)
 					break;
 			if(i == S_REG_NUM){
-				printf("no reg for variable, exit\n");
+				fprintf(fp, "no reg for variable, exit\n");
 				exit(-1);
 			}
 
@@ -337,7 +341,7 @@ alloc_reg(struct operand* op){
 				if(!t_reg[i].used)
 					break;
 			if(i == T_REG_NUM - 1){
-				printf("no more register for variable, exit\n");
+				fprintf(fp, "no more register for variable, exit\n");
 				exit(-1);
 			}
 
@@ -359,13 +363,13 @@ push_stack(){
 	int total_offset = calculate_offset();
 	int offset = 0;
 
-	printf(	"\taddi $sp, $sp, -%d\n", total_offset);
+	fprintf(fp, "\taddi $sp, $sp, -%d\n", total_offset);
 	int i;
 	
 	//store s_regs for variable
 	for (i = 0; i < S_REG_NUM; ++i){
 		if(s_reg[i].used){
-			printf(	"\tsw %s, %d($sp)\n", s_reg[i].name, offset);
+			fprintf(fp, "\tsw %s, %d($sp)\n", s_reg[i].name, offset);
 			offset += 4;
 		}
 	}
@@ -373,13 +377,13 @@ push_stack(){
 	//store t_regs for constant
 	for (i = 0; i < T_REG_NUM - 1; ++i){
 		if(t_reg[i].used){
-			printf(	"\tsw %s, %d($sp)\n", t_reg[i].name, offset);
+			fprintf(fp, "\tsw %s, %d($sp)\n", t_reg[i].name, offset);
 			offset += 4;
 		}
 	}
 
 	//store ra for return address
-	printf(	"\tsw $ra, %d($sp)\n", offset);
+	fprintf(fp, "\tsw $ra, %d($sp)\n", offset);
 	
 	assert((total_offset - offset) == 4);
 }
@@ -393,19 +397,19 @@ pop_stack(){
 	int i;
 	for (i = 0; i < S_REG_NUM; ++i){
 		if(s_reg[i].used){
-			printf(	"\tlw %s, %d($sp)\n", s_reg[i].name, offset);
+			fprintf(fp, 	"\tlw %s, %d($sp)\n", s_reg[i].name, offset);
 			offset += 4;
 		}
 	}
 	for (i = 0; i < T_REG_NUM - 1; ++i){
 		if(t_reg[i].used){
-			printf(	"\tlw %s, %d($sp)\n", t_reg[i].name, offset);
+			fprintf(fp, 	"\tlw %s, %d($sp)\n", t_reg[i].name, offset);
 			offset += 4;
 		}
 	}
-	printf(	"\tlw $ra, %d($sp)\n", offset);
+	fprintf(fp, 	"\tlw $ra, %d($sp)\n", offset);
 	offset += 4;
-	printf(	"\taddi $sp, $sp, %d\n", offset);
+	fprintf(fp, 	"\taddi $sp, $sp, %d\n", offset);
 }
 
 

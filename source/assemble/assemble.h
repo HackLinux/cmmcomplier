@@ -1,9 +1,10 @@
 #ifndef __ASSEMBLE_H__
 #define __ASSEMBLE_H__
 
+#include <stdio.h>
 #include "../translate/intercode.h"
 
-void assemble_intercode(struct intercode*);
+void assemble_intercode(struct intercode*, FILE* fp);
 void assemble_func(struct intercode*, struct intercode*);
 void assemble_one_intercode(struct intercode*);
 
