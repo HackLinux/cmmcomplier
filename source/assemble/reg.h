@@ -10,12 +10,14 @@
 #define S_REG 3
 
 struct reg_descriptor{
-	int type;
-	int num;
-	char name[10];
+	
+	int type;		//s0 is S_REG
+	int num;		//s0 is 0
 
-	bool used;
+	bool used;		
 	struct operand* stored_op;
+
+	char name[10]; 	//"$s0"
 };
 
 void init_reg(struct reg_descriptor* rd, int type, int num);

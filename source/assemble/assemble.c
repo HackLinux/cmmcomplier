@@ -81,10 +81,6 @@ assemble_one_intercode(struct intercode* ic){
 	
 	assert(ic != NULL);
 
-	//todo array
-
-	//todo & and * symbol in operand
-
 	switch(ic -> type){
 		
 		case IC_LABEL:{

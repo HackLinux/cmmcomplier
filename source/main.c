@@ -50,10 +50,6 @@ int main(int argc, char** argv){
 
 	struct intercode* ic_head = intermediate_generate(program_node);
 
-	//print_intercode_list(ic_head, fout);
-
-	//printf("\n\n");
-
 	assemble_intercode(ic_head, fout);
 	
 	destroy_tree(program_node);
